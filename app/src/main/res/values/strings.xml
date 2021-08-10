@@ -32,7 +32,7 @@
     <string name="all_have_an_account">Have an account?</string>
     <string name="all_login">Login</string>
     <string name="email_sign_up_fragment_choose_account_category">Choose account category</string>
-    <string name="client">Client</string>
+    <string name="client">Clients</string>
     <string name="weaver">Weaver</string>
     <string name="tailor">Tailor</string>
     <string name="all_confirm_password">Confirm Password</string>
@@ -41,7 +41,7 @@
     <string name="all_other_name">Other Name</string>
     <string name="lorem_ipsum_ipsum_sum">Lorem Ipsum. Ipsum sum.</string>
     <string name="sign_up">sign up</string>
-    <string name="Loading">Loading...</string>
+    <string name="Loading">Loading…</string>
     <string name="have_an_account_login">Have an account? Login</string>
     <string name="sign_up_with_phone_number">Sign up with phone number</string>
     <string name="signup_with_google">Signup with Google</string>

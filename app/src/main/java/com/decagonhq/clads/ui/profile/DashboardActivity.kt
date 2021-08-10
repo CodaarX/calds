@@ -325,36 +325,36 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
                     }
                     R.id.editProfileFragment -> {
                         bottomNavigationView.visibility = View.GONE
-                        toolbarProfilePicture.visibility = View.INVISIBLE
-                        toolbarUserName.visibility = View.INVISIBLE
+                        toolbarProfilePicture.visibility = View.GONE
+                        toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
                         toolbarFragmentName.visibility = View.VISIBLE
                     }
                     R.id.clientFragment -> {
-                        bottomNavigationView.visibility = View.VISIBLE
-                        toolbarProfilePicture.visibility = View.INVISIBLE
-                        toolbarUserName.visibility = View.INVISIBLE
+                        bottomNavigationView.visibility = View.GONE
+                        toolbarProfilePicture.visibility = View.GONE
+                        toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
-                        toolbarFragmentName.visibility = View.GONE
+                        toolbarFragmentName.visibility = View.VISIBLE
                     }
                     R.id.addClientFragment -> {
                         bottomNavigationView.visibility = View.GONE
-                        toolbarProfilePicture.visibility = View.INVISIBLE
-                        toolbarUserName.visibility = View.INVISIBLE
+                        toolbarProfilePicture.visibility = View.GONE
+                        toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
                         toolbarFragmentName.visibility = View.VISIBLE
                     }
                     R.id.nav_messages -> {
                         bottomNavigationView.visibility = View.VISIBLE
-                        toolbarProfilePicture.visibility = View.INVISIBLE
-                        toolbarUserName.visibility = View.INVISIBLE
+                        toolbarProfilePicture.visibility = View.GONE
+                        toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
                         toolbarFragmentName.visibility = View.VISIBLE
                     }
                     R.id.nav_media -> {
                         bottomNavigationView.visibility = View.VISIBLE
                         toolbarProfilePicture.visibility = View.GONE
-                        toolbarUserName.visibility = View.INVISIBLE
+                        toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
                         toolbarFragmentName.visibility = View.VISIBLE
                     }
@@ -374,22 +374,22 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
                     }
                     R.id.resourceArticlesFragment -> {
                         bottomNavigationView.visibility = View.GONE
-                        toolbarProfilePicture.visibility = View.INVISIBLE
-                        toolbarUserName.visibility = View.INVISIBLE
+                        toolbarProfilePicture.visibility = View.GONE
+                        toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
                         toolbarFragmentName.visibility = View.VISIBLE
                     }
                     R.id.resourceGeneralFragment -> {
                         bottomNavigationView.visibility = View.GONE
-                        toolbarProfilePicture.visibility = View.INVISIBLE
-                        toolbarUserName.visibility = View.INVISIBLE
+                        toolbarProfilePicture.visibility = View.GONE
+                        toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
                         toolbarFragmentName.visibility = View.VISIBLE
                     }
                     R.id.resourceVideosFragment -> {
                         bottomNavigationView.visibility = View.GONE
-                        toolbarProfilePicture.visibility = View.INVISIBLE
-                        toolbarUserName.visibility = View.INVISIBLE
+                        toolbarProfilePicture.visibility = View.GONE
+                        toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
                         toolbarFragmentName.visibility = View.VISIBLE
                     }
@@ -408,8 +408,8 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
                         toolbarFragmentName.visibility = View.INVISIBLE
                     }
                     else -> {
-                        bottomNavigationView.visibility = View.VISIBLE
-                        toolbarProfilePicture.visibility = View.INVISIBLE
+                        bottomNavigationView.visibility = View.GONE
+                        toolbarProfilePicture.visibility = View.GONE
                         toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
                         toolbarFragmentName.visibility = View.VISIBLE
