@@ -383,6 +383,8 @@
     <string name="state_label_str">STATE</string>
     <string name="hint_9_obasanjo_street">hint: 9, obasanjo street</string>
     <string name="Edit_delivery_address">Edit Delivery Address</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
 
     <string-array name="account_category">
         <item>Tailor</item>
