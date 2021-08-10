@@ -65,6 +65,7 @@ class PaymentMethodFragment : BaseFragment() {
         paymentOptionsListTextView = binding.paymentMethodFragmentPaymentOptionsListTextView
         // getting reference with the payment terms textView
         paymentTermsListTextView = binding.paymentMethodFragmentPaymentTermsListTextView
+
         // Initializing the variable for storing payment options
         selectedPaymentOptions = mutableSetOf()
         selectedPaymentOptions.add(getString(R.string.bank_deposit_naira))
@@ -81,6 +82,7 @@ class PaymentMethodFragment : BaseFragment() {
             limit = 3,
             truncated = "..."
         )
+
         // show the payment terms dialog on click of the paymentMethodFragmentPaymentTermsListTextView
         binding.paymentMethodFragmentPaymentTermsListTextView.setOnClickListener() {
             paymentTermsDialogBinding = PaymentTermsDialogFragmentBinding.inflate(layoutInflater)
@@ -127,8 +129,7 @@ class PaymentMethodFragment : BaseFragment() {
             ) { _: DialogInterface, _: Int -> }
             paymentTermsDialogBuilder.create().show()
         }
-        // set on click listener on my fab button
-        paymentMethodFab = binding.paymentMethodFragmentFab
+
         // Setting onClick listener to the payment options textView
         paymentOptionsListTextView.setOnClickListener() {
             paymentOptionsDialogBinding =
@@ -199,7 +200,12 @@ class PaymentMethodFragment : BaseFragment() {
                 } else if (it is Resource.Error) {
                     progressDialog.hideProgressDialog()
                     handleApiError(it, mainRetrofit, requireView(), sessionManager, database)
-                } else {
+                } else if (it.data?.paymentOptions.isNullOrEmpty()){
+                    binding.paymentMethodFragmentPaymentOptionsListTextView.text = getString(R.string.cash)
+                } else if (it.data?.paymentTerms.isNullOrEmpty()){
+                    binding.paymentMethodFragmentPaymentTermsListTextView.text = getString(R.string._100_deposit)
+                }
+                else {
                     progressDialog.hideProgressDialog()
                     it.data.let { userProfile ->
                         binding.apply {

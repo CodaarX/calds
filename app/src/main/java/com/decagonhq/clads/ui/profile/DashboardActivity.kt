@@ -178,11 +178,11 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
                     binding.appBarDashboard.dashboardActivityToolbarHiIjeomaTextView.text =
                         getString(
                             R.string.hi,
-                            userProfile?.firstName ?: " "
+                            userProfile?.firstName ?: "____"
                         )
 
-                    val fullName = "${userProfile?.firstName ?: getString(R.string.ijeoma)} ${
-                    userProfile?.lastName ?: getString(R.string.babangida)
+                    val fullName = "${userProfile?.firstName ?: " "} ${
+                    userProfile?.lastName ?: "____"
                     }"
                     profileName.text = fullName
 

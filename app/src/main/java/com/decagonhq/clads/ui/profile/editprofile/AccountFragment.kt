@@ -105,7 +105,6 @@ class AccountFragment : BaseFragment() {
         }
 
         /*Get users profile*/
-
         userProfileViewModel.getLocalDatabaseUserProfile()
         getUserProfile()
     }
