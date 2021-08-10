@@ -17,7 +17,6 @@
             android:layout_width="@dimen/layout_width_30dp"
             android:layout_height="@dimen/layout_height_30dp"
             android:src="@drawable/edit_profile_icon"
-            app:layout_constraintBottom_toBottomOf="@+id/clients_recycler_view_item_client_name_text_view"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/clients_recycler_view_item_client_name_text_view" />
 
@@ -29,24 +28,9 @@
             android:layout_marginStart="10dp"
             android:fontFamily="@font/poppins_medium"
             android:text="@string/ola_machiavelli"
-            android:textSize="@dimen/text_size_14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/clients_recycler_view_item_location_image_view"
-            app:layout_constraintHorizontal_bias="0.097"
+            android:textSize="@dimen/text_size_12sp"
             app:layout_constraintStart_toEndOf="@id/clients_recycler_view_item_initial_circle_image_view"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.277" />
-
-        <ImageView
-            android:id="@+id/clients_recycler_view_item_location_image_view"
-            android:layout_width="@dimen/margin_20dp"
-            android:layout_height="@dimen/margin_20dp"
-            android:layout_marginHorizontal="@dimen/margin_9dp"
-            android:layout_marginStart="10dp"
-            android:src="@drawable/location_icon"
-            app:layout_constraintBottom_toBottomOf="@+id/clients_recycler_view_item_location_text_view"
-            app:layout_constraintStart_toStartOf="@+id/clients_recycler_view_item_guideline"
-            app:layout_constraintTop_toTopOf="@+id/clients_recycler_view_item_location_text_view" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/clients_recycler_view_item_location_text_view"
@@ -56,12 +40,12 @@
             android:layout_marginEnd="10dp"
             android:fontFamily="@font/poppins_medium"
             android:text="@string/lagos"
-            android:textSize="14sp"
+            android:textSize="8sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.051"
-            app:layout_constraintStart_toEndOf="@+id/clients_recycler_view_item_location_image_view"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toEndOf="@+id/clients_recycler_view_item_initial_circle_image_view"
+            app:layout_constraintTop_toBottomOf="@+id/clients_recycler_view_item_client_name_text_view"
+            app:layout_constraintVertical_bias="0.0"
+            />
 
         <View
             android:layout_width="match_parent"
@@ -71,14 +55,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/clients_recycler_view_item_location_text_view"
             tools:layout_editor_absoluteX="18dp" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/clients_recycler_view_item_guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.63"
-            app:layout_constraintStart_toStartOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
