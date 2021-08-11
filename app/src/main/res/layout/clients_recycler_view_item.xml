@@ -14,8 +14,8 @@
 
         <ImageView
             android:id="@+id/clients_recycler_view_item_initial_circle_image_view"
-            android:layout_width="@dimen/layout_width_30dp"
-            android:layout_height="@dimen/layout_height_30dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:src="@drawable/edit_profile_icon"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/clients_recycler_view_item_client_name_text_view" />
@@ -28,7 +28,7 @@
             android:layout_marginStart="10dp"
             android:fontFamily="@font/poppins_medium"
             android:text="@string/ola_machiavelli"
-            android:textSize="@dimen/text_size_12sp"
+            android:textSize="@dimen/text_size_14sp"
             app:layout_constraintStart_toEndOf="@id/clients_recycler_view_item_initial_circle_image_view"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -40,7 +40,7 @@
             android:layout_marginEnd="10dp"
             android:fontFamily="@font/poppins_medium"
             android:text="@string/lagos"
-            android:textSize="8sp"
+            android:textSize="10sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/clients_recycler_view_item_initial_circle_image_view"
             app:layout_constraintTop_toBottomOf="@+id/clients_recycler_view_item_client_name_text_view"

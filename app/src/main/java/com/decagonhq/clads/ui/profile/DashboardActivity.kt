@@ -48,6 +48,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -178,13 +179,13 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
                     binding.appBarDashboard.dashboardActivityToolbarHiIjeomaTextView.text =
                         getString(
                             R.string.hi,
-                            userProfile?.firstName ?: "____"
+                            userProfile?.firstName?.capitalize(Locale.ROOT) ?: " "
                         )
 
-                    val fullName = "${userProfile?.firstName ?: " "} ${
-                    userProfile?.lastName ?: "____"
+                    val fullName = "${userProfile?.firstName ?: "---"} ${
+                    userProfile?.lastName ?: "---"
                     }"
-                    profileName.text = fullName
+                    profileName.text = fullName.capitalize(Locale.ROOT)
 
                     Glide.with(this)
                         .load(userProfile?.thumbnail)

@@ -19,6 +19,7 @@ import com.decagonhq.clads.util.ChartData.chartData
 import com.decagonhq.clads.viewmodels.ClientViewModel
 import com.decagonhq.clads.viewmodels.UserProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment(), ClientListRvAdapter.Interaction {
@@ -82,7 +83,7 @@ class HomeFragment : BaseFragment(), ClientListRvAdapter.Interaction {
                 it.data.let { userProfile ->
                     val fullName =
                         "${userProfile?.firstName ?: "---"} ${userProfile?.lastName ?: "---"}"
-                    binding.homeFragmentAccountNameTextView.text = fullName
+                    binding.homeFragmentAccountNameTextView.text = fullName.capitalize(Locale.ROOT)
                 }
             }
         )
