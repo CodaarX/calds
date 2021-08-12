@@ -3,6 +3,7 @@ package com.decagonhq.clads.ui.profile.editprofile
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -51,6 +52,13 @@ class PaymentMethodFragment : BaseFragment() {
         // Inflate the layout for this fragment
         _binding = PaymentMethodFragmentBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+//        updateUserProfile()
+        binding.paymentMethodFragmentPaymentOptionsListTextView.text = getString(R.string.select_payment_term)
+        binding.paymentMethodFragmentPaymentTermsListTextView.text = getString(R.string.select_payment_option)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -200,12 +208,18 @@ class PaymentMethodFragment : BaseFragment() {
                 } else if (it is Resource.Error) {
                     progressDialog.hideProgressDialog()
                     handleApiError(it, mainRetrofit, requireView(), sessionManager, database)
-                } else if (it.data?.paymentOptions.isNullOrEmpty()){
-                    binding.paymentMethodFragmentPaymentOptionsListTextView.text = getString(R.string.cash)
-                } else if (it.data?.paymentTerms.isNullOrEmpty()){
-                    binding.paymentMethodFragmentPaymentTermsListTextView.text = getString(R.string._100_deposit)
+
                 }
                 else {
+                    if (it.data?.paymentOptions.isNullOrEmpty() || it.data?.paymentOptions?.size!! < 1 ) {
+                        binding.paymentMethodFragmentPaymentOptionsListTextView.text =
+                            getString(R.string.cash)
+                    }
+
+                    if (it.data?.paymentTerms.isNullOrEmpty() || it.data?.paymentTerms?.size!! < 1){
+                        binding.paymentMethodFragmentPaymentTermsListTextView.text = getString(R.string._100_deposit)
+                    }
+
                     progressDialog.hideProgressDialog()
                     it.data.let { userProfile ->
                         binding.apply {

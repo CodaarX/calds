@@ -385,6 +385,8 @@
     <string name="Edit_delivery_address">Edit Delivery Address</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
+    <string name="select_payment_term">Select Payment Term</string>
+    <string name="select_payment_option">Select Payment Option</string>
 
     <string-array name="account_category">
         <item>Tailor</item>
