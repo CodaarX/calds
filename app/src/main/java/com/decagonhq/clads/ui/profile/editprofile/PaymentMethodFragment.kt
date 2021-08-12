@@ -54,12 +54,10 @@ class PaymentMethodFragment : BaseFragment() {
         return binding.root
     }
 
-    override fun onResume() {
-        super.onResume()
+//    override fun onResume() {
+//        super.onResume()
 //        updateUserProfile()
-        binding.paymentMethodFragmentPaymentOptionsListTextView.text = getString(R.string.select_payment_term)
-        binding.paymentMethodFragmentPaymentTermsListTextView.text = getString(R.string.select_payment_option)
-    }
+//    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
