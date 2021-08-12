@@ -54,11 +54,6 @@ class PaymentMethodFragment : BaseFragment() {
         return binding.root
     }
 
-//    override fun onResume() {
-//        super.onResume()
-//        updateUserProfile()
-//    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         /*Update User Profile*/
@@ -209,15 +204,6 @@ class PaymentMethodFragment : BaseFragment() {
 
                 }
                 else {
-                    if (it.data?.paymentOptions.isNullOrEmpty() || it.data?.paymentOptions?.size!! < 1 ) {
-                        binding.paymentMethodFragmentPaymentOptionsListTextView.text =
-                            getString(R.string.cash)
-                    }
-
-                    if (it.data?.paymentTerms.isNullOrEmpty() || it.data?.paymentTerms?.size!! < 1){
-                        binding.paymentMethodFragmentPaymentTermsListTextView.text = getString(R.string._100_deposit)
-                    }
-
                     progressDialog.hideProgressDialog()
                     it.data.let { userProfile ->
                         binding.apply {

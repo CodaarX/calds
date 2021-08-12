@@ -387,6 +387,22 @@
     <string name="previous">Previous</string>
     <string name="select_payment_term">Select Payment Term</string>
     <string name="select_payment_option">Select Payment Option</string>
+    <string name="tap_to_enter_number">Tap to Enter Number</string>
+    <string name="tap_to_select_gender">Tap to select gender</string>
+    <string name="tap_to_enter_state">Tap to Enter state</string>
+    <string name="tap_to_enter_city">Tap to Enter city</string>
+    <string name="tap_to_enter_street">Tap to Enter street</string>
+    <string name="tap_to_enter_address">Tap to Enter address</string>
+    <string name="tap_to_enter_employees_num">Tap to Enter employees num</string>
+    <string name="tap_to_enter_legal_status">Tap to Enter Legal status</string>
+    <string name="tap_to_enter_union_name">Tap to Enter union name</string>
+    <string name="tap_to_enter_union_ward">Tap to Enter union ward</string>
+    <string name="tap_to_enter_union_lga">Tap to Enter Union LGA</string>
+    <string name="tap_to_enter_union_state">Tap to Enter Union State</string>
+    <string name="tap_to_enter_first_name">Tap to Enter First name</string>
+    <string name="tap_to_enter_last_name">Tap to Enter Last name</string>
+    <string name="tap_to_select_payment_term">Tap to Select Payment Term</string>
+    <string name="tap_to_select_payment_option">Tap to Select Payment Option</string>
 
     <string-array name="account_category">
         <item>Tailor</item>

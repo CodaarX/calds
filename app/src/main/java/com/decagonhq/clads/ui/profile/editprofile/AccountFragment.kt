@@ -128,21 +128,17 @@ class AccountFragment : BaseFragment() {
                             accountFragmentPhoneNumberValueTextView.text = userProfile.phoneNumber
                             accountFragmentGenderValueTextView.text = userProfile.gender
                             accountFragmentStateValueTextView.text =
-                                userProfile.workshopAddress?.state ?: getString(R.string.lagos)
+                                userProfile.workshopAddress?.state
                             accountFragmentWorkshopAddressCityValueTextView.text =
-                                userProfile.workshopAddress?.city ?: getString(R.string.lagos)
+                                userProfile.workshopAddress?.city
                             accountFragmentWorkshopAddressStreetValueTextView.text =
-                                userProfile.workshopAddress?.street ?: getString(R.string.enter_address)
+                                userProfile.workshopAddress?.street
                             accountFragmentShowroomAddressValueTextView.text =
-                                userProfile.showroomAddress?.state ?: getString(R.string.enter_address)
+                                userProfile.showroomAddress?.state
                             accountFragmentNameOfUnionValueTextView.text = userProfile.union?.name
-                                ?: getString(R.string.enter_union_name)
                             accountFragmentWardValueTextView.text = userProfile.union?.ward
-                                ?: getString(R.string.enter_union_ward)
                             accountFragmentLocalGovtAreaValueTextView.text = userProfile.union?.lga
-                                ?: getString(R.string.enter_union_resource)
                             accountFragmentStateValueTextView.text = userProfile.union?.state
-                                ?: getString(R.string.enter_union_resource)
                             Glide.with(this@AccountFragment)
                                 .load(userProfile.thumbnail)
                                 .placeholder(R.drawable.nav_drawer_profile_avatar)
