@@ -222,5 +222,6 @@
     <dimen name="width_5dp">5dp</dimen>
     <dimen name="width_1dp">1dp</dimen>
     <dimen name="height_20dp">20dp</dimen>
+    <dimen name="width_270dp">270dp</dimen>
 
 </resources>
