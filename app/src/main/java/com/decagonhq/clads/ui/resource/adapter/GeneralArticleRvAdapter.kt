@@ -2,6 +2,7 @@ package com.decagonhq.clads.ui.resource.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.webkit.WebView
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView

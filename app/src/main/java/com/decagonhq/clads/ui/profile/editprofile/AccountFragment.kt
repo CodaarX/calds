@@ -1,6 +1,7 @@
 package com.decagonhq.clads.ui.profile.editprofile
 
 import android.Manifest
+import android.app.ProgressDialog.show
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -37,6 +38,7 @@ import com.decagonhq.clads.util.saveBitmap
 import com.decagonhq.clads.util.uriToBitmap
 import com.decagonhq.clads.viewmodels.ImageUploadViewModel
 import com.decagonhq.clads.viewmodels.UserProfileViewModel
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.theartofdev.edmodo.cropper.CropImage
 import dagger.hilt.android.AndroidEntryPoint
 import id.zelory.compressor.Compressor
@@ -45,6 +47,9 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import timber.log.Timber
+
+
+
 
 @AndroidEntryPoint
 class AccountFragment : BaseFragment() {
@@ -94,6 +99,14 @@ class AccountFragment : BaseFragment() {
             }
         }
 
+        //inflate bottom sheet
+        binding.accountFragmentWorkshopAddressTextView.setOnClickListener {
+            val view1: View = layoutInflater.inflate(com.decagonhq.clads.R.layout.account_fragment_add_address_bottom_sheet, null)
+            val dialog = BottomSheetDialog(requireContext(), com.decagonhq.clads.R.style.BottomSheetDialogStyle)
+            dialog.setContentView(view1)
+            dialog.show()
+        }
+
         /*Select profile image*/
         binding.accountFragmentEditProfileIconImageView.setOnClickListener {
             Manifest.permission.READ_EXTERNAL_STORAGE.checkForPermission(NAME, READ_IMAGE_STORAGE)
@@ -141,7 +154,7 @@ class AccountFragment : BaseFragment() {
                             accountFragmentStateValueTextView.text = userProfile.union?.state
                             Glide.with(this@AccountFragment)
                                 .load(userProfile.thumbnail)
-                                .placeholder(R.drawable.nav_drawer_profile_avatar)
+                                .placeholder(com.decagonhq.clads.R.drawable.nav_drawer_profile_avatar)
                                 .into(binding.accountFragmentEditProfileIconImageView)
                         }
                     }

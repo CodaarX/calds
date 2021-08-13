@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/account_fragment_location_bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/margin_37dp"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehaviour">
+
+    <TextView
+        android:id="@+id/account_fragment_location_bottom_sheet_lets_know_where_you_are_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_36dp"
+        android:fontFamily="@font/poppins_medium"
+        android:text="@string/let_s_know_where_you_are"
+        android:textColor="#393939"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/account_fragment_location_bottom_sheet_location_rationale_textview"
+        android:layout_width="270dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_18dp"
+        android:fontFamily="@font/poppins"
+        android:gravity="center"
+        android:text="@string/location_rationale"
+        android:textColor="#6D6D6D"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@+id/account_fragment_location_bottom_sheet_lets_know_where_you_are_textview"
+        app:layout_constraintStart_toStartOf="@+id/account_fragment_location_bottom_sheet_lets_know_where_you_are_textview"
+        app:layout_constraintTop_toBottomOf="@+id/account_fragment_location_bottom_sheet_lets_know_where_you_are_textview" />
+
+    <RadioGroup
+        android:id="@+id/account_fragment_location_bottom_sheet_set_location_now_radio_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_24dp"
+        android:layout_marginTop="@dimen/margin_30dp"
+        android:background="@drawable/fragment_client_list_screen_recycler_drawable_border"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/account_fragment_location_bottom_sheet_location_rationale_textview">
+
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins"
+            android:text="@string/set_location_now"
+            android:textAlignment="center"
+            android:textColor="#6D6D6D"
+            android:textSize="@dimen/text_size_14sp" />
+    </RadioGroup>
+
+    <RadioGroup
+        android:id="@+id/account_fragment_location_bottom_sheet_set_location_later_radio_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/padding_12dp"
+        android:layout_marginHorizontal="@dimen/margin_24dp"
+        android:layout_marginTop="@dimen/margin_16dp"
+        android:background="@drawable/location_drawable_border"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/account_fragment_location_bottom_sheet_set_location_now_radio_button">
+
+
+    <RadioButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins"
+        android:textAlignment="center"
+        android:text="@string/set_location_later"
+        android:textColor="#6D6D6D"
+        android:textSize="@dimen/text_size_14sp"/>
+
+    </RadioGroup>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
