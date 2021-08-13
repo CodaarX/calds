@@ -3,7 +3,6 @@ package com.decagonhq.clads.ui.profile.editprofile
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -201,9 +200,7 @@ class PaymentMethodFragment : BaseFragment() {
                 } else if (it is Resource.Error) {
                     progressDialog.hideProgressDialog()
                     handleApiError(it, mainRetrofit, requireView(), sessionManager, database)
-
-                }
-                else {
+                } else {
                     progressDialog.hideProgressDialog()
                     it.data.let { userProfile ->
                         binding.apply {

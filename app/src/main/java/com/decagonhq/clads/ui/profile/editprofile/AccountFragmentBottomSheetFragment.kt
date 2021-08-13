@@ -8,7 +8,7 @@ import com.decagonhq.clads.R
 import com.decagonhq.clads.databinding.AccountFragmentAddAddressBottomSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class AccountFragmentBottomSheetFragment: BottomSheetDialogFragment() {
+class AccountFragmentBottomSheetFragment : BottomSheetDialogFragment() {
 
     private val _binding: AccountFragmentAddAddressBottomSheetBinding? = null
     private val binding get() = _binding
@@ -23,7 +23,6 @@ class AccountFragmentBottomSheetFragment: BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setStyle(STYLE_NORMAL, R.style.BottomSheetDialogStyle);
+        setStyle(STYLE_NORMAL, R.style.BottomSheetDialogStyle)
     }
-
 }

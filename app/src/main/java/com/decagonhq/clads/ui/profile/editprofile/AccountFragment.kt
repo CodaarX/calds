@@ -48,9 +48,6 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import timber.log.Timber
 
-
-
-
 @AndroidEntryPoint
 class AccountFragment : BaseFragment() {
     private var _binding: AccountFragmentBinding? = null
@@ -99,7 +96,7 @@ class AccountFragment : BaseFragment() {
             }
         }
 
-        //inflate bottom sheet
+        // inflate bottom sheet
         binding.accountFragmentWorkshopAddressTextView.setOnClickListener {
             val view1: View = layoutInflater.inflate(com.decagonhq.clads.R.layout.account_fragment_add_address_bottom_sheet, null)
             val dialog = BottomSheetDialog(requireContext(), com.decagonhq.clads.R.style.BottomSheetDialogStyle)

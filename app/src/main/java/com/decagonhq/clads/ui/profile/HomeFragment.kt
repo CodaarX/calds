@@ -19,7 +19,7 @@ import com.decagonhq.clads.util.ChartData.chartData
 import com.decagonhq.clads.viewmodels.ClientViewModel
 import com.decagonhq.clads.viewmodels.UserProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
+import java.util.Locale
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment(), ClientListRvAdapter.Interaction {

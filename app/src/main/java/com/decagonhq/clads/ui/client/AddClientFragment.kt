@@ -90,7 +90,7 @@ class AddClientFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     }
 
     override fun onDestroyView() {
