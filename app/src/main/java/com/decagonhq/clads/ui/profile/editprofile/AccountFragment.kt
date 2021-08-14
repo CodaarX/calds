@@ -20,7 +20,6 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import com.bumptech.glide.Glide
 import com.decagonhq.clads.R
 import com.decagonhq.clads.data.domain.images.UserProfileImage
 import com.decagonhq.clads.data.domain.profile.ShowroomAddress
@@ -33,6 +32,7 @@ import com.decagonhq.clads.ui.BaseFragment
 import com.decagonhq.clads.ui.profile.dialogfragment.ProfileManagementDialogFragments.Companion.createProfileDialogFragment
 import com.decagonhq.clads.util.Resource
 import com.decagonhq.clads.util.handleApiError
+import com.decagonhq.clads.util.loadImage
 import com.decagonhq.clads.util.observeOnce
 import com.decagonhq.clads.util.saveBitmap
 import com.decagonhq.clads.util.uriToBitmap
@@ -98,8 +98,14 @@ class AccountFragment : BaseFragment() {
 
         // inflate bottom sheet
         binding.accountFragmentWorkshopAddressTextView.setOnClickListener {
-            val view1: View = layoutInflater.inflate(com.decagonhq.clads.R.layout.account_fragment_add_address_bottom_sheet, null)
-            val dialog = BottomSheetDialog(requireContext(), com.decagonhq.clads.R.style.BottomSheetDialogStyle)
+            val view1: View = layoutInflater.inflate(
+                R.layout.account_fragment_add_address_bottom_sheet,
+                null
+            )
+            val dialog = BottomSheetDialog(
+                requireContext(),
+                R.style.BottomSheetDialogStyle
+            )
             dialog.setContentView(view1)
             dialog.show()
         }
@@ -149,10 +155,8 @@ class AccountFragment : BaseFragment() {
                             accountFragmentWardValueTextView.text = userProfile.union?.ward
                             accountFragmentLocalGovtAreaValueTextView.text = userProfile.union?.lga
                             accountFragmentStateValueTextView.text = userProfile.union?.state
-                            Glide.with(this@AccountFragment)
-                                .load(userProfile.thumbnail)
-                                .placeholder(com.decagonhq.clads.R.drawable.nav_drawer_profile_avatar)
-                                .into(binding.accountFragmentEditProfileIconImageView)
+                            /*Load Profile Picture with Glide*/
+                            binding.accountFragmentEditProfileIconImageView.loadImage(userProfile.thumbnail)
                         }
                     }
                 }
@@ -365,10 +369,8 @@ class AccountFragment : BaseFragment() {
                     showToast("Upload Successful")
                     it.data?.downloadUri?.let { imageUrl ->
                         updateUserProfilePicture(imageUrl)
-                        Glide.with(this@AccountFragment)
-                            .load(imageUrl)
-                            .placeholder(R.drawable.nav_drawer_profile_avatar)
-                            .into(binding.accountFragmentEditProfileIconImageView)
+                        /*Load Profile Picture with Glide*/
+                        binding.accountFragmentEditProfileIconImageView.loadImage(imageUrl)
                     }
                 }
             }
