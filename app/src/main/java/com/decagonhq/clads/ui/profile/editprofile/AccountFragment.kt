@@ -23,7 +23,6 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import com.bumptech.glide.Glide
 import com.decagonhq.clads.R
 import com.decagonhq.clads.data.domain.images.UserProfileImage
 import com.decagonhq.clads.data.domain.location.GeoPoints
@@ -38,6 +37,7 @@ import com.decagonhq.clads.ui.profile.dialogfragment.ProfileManagementDialogFrag
 import com.decagonhq.clads.util.Resource
 import com.decagonhq.clads.util.checkGPSEnabled
 import com.decagonhq.clads.util.handleApiError
+import com.decagonhq.clads.util.loadImage
 import com.decagonhq.clads.util.observeOnce
 import com.decagonhq.clads.util.saveBitmap
 import com.decagonhq.clads.util.uriToBitmap
@@ -166,10 +166,8 @@ class AccountFragment : BaseFragment() {
                                 ?: getString(R.string.enter_union_resource)
                             accountFragmentStateValueTextView.text = userProfile.union?.state
                                 ?: getString(R.string.enter_union_resource)
-                            Glide.with(this@AccountFragment)
-                                .load(userProfile.thumbnail)
-                                .placeholder(R.drawable.nav_drawer_profile_avatar)
-                                .into(binding.accountFragmentEditProfileIconImageView)
+                            /*Load Profile Picture with Glide*/
+                            binding.accountFragmentEditProfileIconImageView.loadImage(userProfile.thumbnail)
                         }
                     }
                 }
@@ -401,10 +399,8 @@ class AccountFragment : BaseFragment() {
                     showToast("Upload Successful")
                     it.data?.downloadUri?.let { imageUrl ->
                         updateUserProfilePicture(imageUrl)
-                        Glide.with(this@AccountFragment)
-                            .load(imageUrl)
-                            .placeholder(R.drawable.nav_drawer_profile_avatar)
-                            .into(binding.accountFragmentEditProfileIconImageView)
+                        /*Load Profile Picture with Glide*/
+                        binding.accountFragmentEditProfileIconImageView.loadImage(imageUrl)
                     }
                 }
             }
