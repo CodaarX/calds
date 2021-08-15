@@ -176,138 +176,31 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_24dp"
-            android:layout_marginTop="@dimen/margin_45dp"
-            android:fontFamily="@font/poppins_bold"
-            android:text="@string/workshop_address"
-            android:textAllCaps="true"
-            android:textColor="@color/text_gray"
+            android:layout_marginTop="@dimen/margin_30dp"
+            android:fontFamily="@font/poppins"
+            android:text="Address"
+            android:textColor="@color/navy_blue"
             android:textSize="@dimen/text_size_12sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/account_fragment_gender_text_view" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/account_fragment_workshop_address_state_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_24dp"
-            android:fontFamily="@font/poppins"
-            android:text="@string/state"
-            android:textColor="@color/navy_blue"
-            android:textSize="@dimen/text_size_12sp"
-            app:layout_constraintBaseline_toBaselineOf="@+id/account_fragment_workshop_address_state_value_text_view"
-            app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/account_fragment_workshop_address_state_value_text_view"
-            android:layout_width="@dimen/margin_0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_20dp"
-            android:layout_marginEnd="@dimen/margin_23dp"
-            android:layout_marginStart="@dimen/margin_16dp"
-            android:fontFamily="@font/poppins"
-            android:gravity="end"
-            android:text=""
-            android:hint="@string/tap_to_enter_state"
-            android:textColor="@color/navy_blue"
-            android:textSize="@dimen/text_size_12sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="@+id/account_fragment_guideline"
-            app:layout_constraintTop_toBottomOf="@+id/account_fragment_workshop_address_text_view" />
-
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/account_fragment_workshop_address_city_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_24dp"
-            android:fontFamily="@font/poppins"
-            android:text="@string/city"
-            android:textColor="@color/navy_blue"
-            android:textSize="@dimen/text_size_12sp"
-            app:layout_constraintBaseline_toBaselineOf="@+id/account_fragment_workshop_address_city_value_text_view"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/account_fragment_workshop_address_state_value_text_view" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/account_fragment_workshop_address_city_value_text_view"
+            android:id="@+id/account_fragment_workshop_address_value_text_view"
             android:layout_width="@dimen/margin_0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_30dp"
-            android:layout_marginEnd="@dimen/margin_23dp"
-            android:layout_marginStart="@dimen/margin_16dp"
+            android:layout_marginEnd="20dp"
             android:fontFamily="@font/poppins"
             android:gravity="end"
+            android:hint="Tap to setup address"
             android:text=""
-            android:hint="@string/tap_to_enter_city"
+            android:layout_marginStart="@dimen/margin_16dp"
             android:textColor="@color/navy_blue"
             android:textSize="@dimen/text_size_12sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="@+id/account_fragment_guideline"
-            app:layout_constraintTop_toBottomOf="@+id/account_fragment_workshop_address_state_text_view" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/account_fragment_workshop_address_street_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_24dp"
-            android:fontFamily="@font/poppins"
-            android:text="@string/street"
-            android:textColor="@color/navy_blue"
-            android:textSize="@dimen/text_size_12sp"
-            app:layout_constraintBaseline_toBaselineOf="@+id/account_fragment_workshop_address_street_value_text_view"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/account_fragment_workshop_address_street_value_text_view"
-            android:layout_width="@dimen/margin_0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_30dp"
-            android:layout_marginEnd="@dimen/margin_23dp"
-            android:layout_marginStart="@dimen/margin_16dp"
-            android:fontFamily="@font/poppins"
-            android:gravity="end"
-            android:text=""
-            android:hint="@string/tap_to_enter_street"
-            android:textColor="@color/navy_blue"
-            android:textSize="@dimen/text_size_12sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="@+id/account_fragment_guideline"
-            app:layout_constraintTop_toBottomOf="@+id/account_fragment_workshop_address_city_text_view" />
-
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/account_fragment_showroom_address_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_24dp"
-            android:fontFamily="@font/poppins"
-            android:text="@string/showroom_address"
-            android:textColor="@color/navy_blue"
-            android:textSize="@dimen/text_size_12sp"
-            app:layout_constraintBaseline_toBaselineOf="@+id/account_fragment_showroom_address_value_text_view"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/account_fragment_workshop_address_street_text_view" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/account_fragment_showroom_address_value_text_view"
-            android:layout_width="@dimen/margin_0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_55dp"
-            android:layout_marginEnd="@dimen/margin_23dp"
-            android:layout_marginStart="@dimen/margin_16dp"
-            android:fontFamily="@font/poppins"
-            android:gravity="end"
-            android:text=""
-            android:hint="@string/tap_to_enter_address"
-            android:textColor="@color/navy_blue"
-            android:textSize="@dimen/text_size_12sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="@+id/account_fragment_guideline"
-            app:layout_constraintTop_toBottomOf="@+id/account_fragment_workshop_address_street_value_text_view" />
+            app:layout_constraintTop_toBottomOf="@+id/account_fragment_gender_value_text_view" />
 
 
         <com.google.android.material.textview.MaterialTextView
@@ -327,19 +220,19 @@
             android:id="@+id/account_fragment_number_of_employee_apprentice_value_text_view"
             android:layout_width="@dimen/margin_0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_55dp"
-            android:layout_marginEnd="@dimen/margin_23dp"
             android:layout_marginStart="@dimen/margin_16dp"
+            android:layout_marginEnd="@dimen/margin_23dp"
             android:fontFamily="@font/poppins"
             android:gravity="end"
-            android:text="@string/_12"
             android:hint="@string/tap_to_enter_employees_num"
+            android:text="@string/_12"
+            android:layout_marginTop="@dimen/margin_30dp"
             android:textColor="@color/navy_blue"
             android:textSize="@dimen/text_size_12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="@+id/account_fragment_guideline"
-            app:layout_constraintTop_toBottomOf="@+id/account_fragment_showroom_address_value_text_view" />
+            app:layout_constraintTop_toBottomOf="@+id/account_fragment_workshop_address_value_text_view" />
 
 
         <com.google.android.material.textview.MaterialTextView

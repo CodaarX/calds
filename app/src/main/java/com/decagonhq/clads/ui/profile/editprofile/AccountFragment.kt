@@ -81,10 +81,6 @@ class AccountFragment : BaseFragment() {
         accountUnionNameDialogFragment()
         accountLastNameDialogFragment()
         accountEmployeeNumberDialogFragment()
-        accountShowRoomAddressDialog()
-        accountWorkshopStreetDialog()
-        accountWorkshopCityDialog()
-        accountWorkshopStateDialog()
         accountOtherNameEditDialog()
 //        accountLegalStatusDialog()
 
@@ -145,12 +141,6 @@ class AccountFragment : BaseFragment() {
                             accountFragmentGenderValueTextView.text = userProfile.gender
                             accountFragmentStateValueTextView.text =
                                 userProfile.workshopAddress?.state
-                            accountFragmentWorkshopAddressCityValueTextView.text =
-                                userProfile.workshopAddress?.city
-                            accountFragmentWorkshopAddressStreetValueTextView.text =
-                                userProfile.workshopAddress?.street
-                            accountFragmentShowroomAddressValueTextView.text =
-                                userProfile.showroomAddress?.state
                             accountFragmentNameOfUnionValueTextView.text = userProfile.union?.name
                             accountFragmentWardValueTextView.text = userProfile.union?.ward
                             accountFragmentLocalGovtAreaValueTextView.text = userProfile.union?.lga
@@ -189,16 +179,6 @@ class AccountFragment : BaseFragment() {
                             measurementOption = profile.measurementOption,
                             phoneNumber = binding.accountFragmentPhoneNumberValueTextView.text.toString(),
                             role = profile.role,
-                            workshopAddress = WorkshopAddress(
-                                street = binding.accountFragmentWorkshopAddressStreetValueTextView.text.toString(),
-                                state = binding.accountFragmentShowroomAddressValueTextView.text.toString(),
-                                city = binding.accountFragmentWorkshopAddressCityValueTextView.text.toString(),
-                            ),
-                            showroomAddress = ShowroomAddress(
-                                street = binding.accountFragmentWorkshopAddressCityValueTextView.text.toString(),
-                                city = binding.accountFragmentWorkshopAddressCityValueTextView.text.toString(),
-                                state = binding.accountFragmentShowroomAddressValueTextView.text.toString(),
-                            ),
                             specialties = profile.specialties,
                             thumbnail = profile.thumbnail,
                             trained = profile.trained,
@@ -476,109 +456,7 @@ class AccountFragment : BaseFragment() {
         }
     }
 
-    // Workshop state Dialog
-    private fun accountWorkshopStateDialog() {
-        // when account shop name value is clicked
-        childFragmentManager.setFragmentResultListener(
-            ACCOUNT_WORKSHOP_STATE_REQUEST_KEY,
-            requireActivity()
-        ) { key, bundle ->
-            // collect input values from dialog fragment and update the state text of user
-            val workshopState = bundle.getString(ACCOUNT_WORKSHOP_STATE_BUNDLE_KEY)
-            binding.accountFragmentWorkshopAddressStateValueTextView.text = workshopState
-        }
 
-        // when state value is clicked
-        binding.accountFragmentWorkshopAddressStateValueTextView.setOnClickListener {
-            val currentState =
-                binding.accountFragmentWorkshopAddressStateValueTextView.text.toString()
-            val bundle = bundleOf(CURRENT_ACCOUNT_WORKSHOP_STATE_BUNDLE_KEY to currentState)
-            createProfileDialogFragment(
-                R.layout.account_workshop_state_dialog_fragment,
-                bundle
-            ).show(
-                childFragmentManager, AccountFragment::class.java.simpleName
-            )
-        }
-    }
-
-    // Workshop state Dialog
-    private fun accountWorkshopCityDialog() {
-        // when city value is clicked
-        childFragmentManager.setFragmentResultListener(
-            ACCOUNT_WORKSHOP_CITY_REQUEST_KEY,
-            requireActivity()
-        ) { key, bundle ->
-            // collect input values from dialog fragment and update the city text of user
-            val workshopCity = bundle.getString(ACCOUNT_WORKSHOP_CITY_BUNDLE_KEY)
-            binding.accountFragmentWorkshopAddressCityValueTextView.text = workshopCity
-        }
-
-        // when city is clicked
-        binding.accountFragmentWorkshopAddressCityValueTextView.setOnClickListener {
-            val currentCity =
-                binding.accountFragmentWorkshopAddressCityValueTextView.text.toString()
-            val bundle = bundleOf(CURRENT_ACCOUNT_WORKSHOP_CITY_BUNDLE_KEY to currentCity)
-            createProfileDialogFragment(
-                R.layout.account_workshop_city_dialog_fragment,
-                bundle
-            ).show(
-                childFragmentManager, AccountFragment::class.java.simpleName
-            )
-        }
-    }
-
-    // Workshop street Dialog
-    private fun accountWorkshopStreetDialog() {
-        // when street value is clicked
-        childFragmentManager.setFragmentResultListener(
-            ACCOUNT_WORKSHOP_STREET_REQUEST_KEY,
-            requireActivity()
-        ) { key, bundle ->
-            // collect input values from dialog fragment and update the street text of user
-            val workshopStreet = bundle.getString(ACCOUNT_WORKSHOP_STREET_BUNDLE_KEY)
-            binding.accountFragmentWorkshopAddressStreetValueTextView.text = workshopStreet
-        }
-
-        // when street value is clicked
-        binding.accountFragmentWorkshopAddressStreetValueTextView.setOnClickListener {
-            val currentStreet =
-                binding.accountFragmentWorkshopAddressStreetValueTextView.text.toString()
-            val bundle = bundleOf(CURRENT_ACCOUNT_WORKSHOP_STREET_BUNDLE_KEY to currentStreet)
-            createProfileDialogFragment(
-                R.layout.account_workshop_street_dialog_fragment,
-                bundle
-            ).show(
-                childFragmentManager, AccountFragment::class.java.simpleName
-            )
-        }
-    }
-
-    private fun accountShowRoomAddressDialog() {
-        // when showroom name value is clicked
-        childFragmentManager.setFragmentResultListener(
-            ACCOUNT_SHOWROOM_ADDRESS_REQUEST_KEY,
-            requireActivity()
-        ) { key, bundle ->
-            // collect input values from dialog fragment and update the showroom address text of user
-            val showroomAddress = bundle.getString(ACCOUNT_SHOWROOM_ADDRESS_BUNDLE_KEY)
-            binding.accountFragmentShowroomAddressValueTextView.text = showroomAddress
-        }
-
-        // when showroom address is clicked
-        binding.accountFragmentShowroomAddressValueTextView.setOnClickListener {
-            val currentShowroomAddress =
-                binding.accountFragmentShowroomAddressValueTextView.text.toString()
-            val bundle =
-                bundleOf(CURRENT_ACCOUNT_SHOWROOM_ADDRESS_BUNDLE_KEY to currentShowroomAddress)
-            createProfileDialogFragment(
-                R.layout.account_showroom_address_dialog_fragment,
-                bundle
-            ).show(
-                childFragmentManager, AccountFragment::class.java.simpleName
-            )
-        }
-    }
 
     private fun accountEmployeeNumberDialogFragment() {
         childFragmentManager.setFragmentResultListener(
