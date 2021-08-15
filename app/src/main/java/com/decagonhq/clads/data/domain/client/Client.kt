@@ -10,7 +10,7 @@ import kotlinx.parcelize.Parcelize
 data class Client(
     @PrimaryKey(autoGenerate = false)
     val id: Int? = null,
-    val artisanId: Int? = null,
+    val artisanId: Long? = null,
     val email: String,
     val fullName: String,
     val gender: String,

@@ -389,11 +389,11 @@ class ProfileManagementDialogFragments(
                     dismiss()
                 }
             }
+
             R.layout.account_workshop_state_dialog_fragment -> {
                 /*Initialise binding*/
                 val binding = AccountWorkshopStateDialogFragmentBinding.bind(view)
-                val stateEditText =
-                    binding.accountWorkshopStateDialogFragmentWorkshopStateEditTextView
+                val stateEditText = binding.accountWorkshopStateDialogFragmentWorkshopStateEditTextView
                 val okButton = binding.accountWorkshopStateDialogFragmentOkButton
                 val cancelButton = binding.accountWorkshopStateDialogFragmentCancelButton
 
@@ -451,6 +451,7 @@ class ProfileManagementDialogFragments(
                     }
                 }
             }
+
             R.layout.account_workshop_city_dialog_fragment -> {
                 /*Initialise binding*/
                 val binding = AccountWorkshopCityDialogFragmentBinding.bind(view)

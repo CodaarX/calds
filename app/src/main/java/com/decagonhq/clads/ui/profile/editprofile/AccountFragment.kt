@@ -4,12 +4,16 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AlertDialog
@@ -22,6 +26,7 @@ import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.decagonhq.clads.R
 import com.decagonhq.clads.data.domain.images.UserProfileImage
+import com.decagonhq.clads.data.domain.location.GeoPoints
 import com.decagonhq.clads.data.domain.profile.ShowroomAddress
 import com.decagonhq.clads.data.domain.profile.Union
 import com.decagonhq.clads.data.domain.profile.UserProfile
@@ -31,12 +36,14 @@ import com.decagonhq.clads.databinding.AccountFragmentBinding
 import com.decagonhq.clads.ui.BaseFragment
 import com.decagonhq.clads.ui.profile.dialogfragment.ProfileManagementDialogFragments.Companion.createProfileDialogFragment
 import com.decagonhq.clads.util.Resource
+import com.decagonhq.clads.util.checkGPSEnabled
 import com.decagonhq.clads.util.handleApiError
 import com.decagonhq.clads.util.observeOnce
 import com.decagonhq.clads.util.saveBitmap
 import com.decagonhq.clads.util.uriToBitmap
 import com.decagonhq.clads.viewmodels.ImageUploadViewModel
 import com.decagonhq.clads.viewmodels.UserProfileViewModel
+import com.google.android.gms.location.LocationRequest
 import com.theartofdev.edmodo.cropper.CropImage
 import dagger.hilt.android.AndroidEntryPoint
 import id.zelory.compressor.Compressor
@@ -45,9 +52,12 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import timber.log.Timber
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class AccountFragment : BaseFragment() {
+
     private var _binding: AccountFragmentBinding? = null
 
     // This property is only valid between onCreateView and onDestroyView.
@@ -56,6 +66,14 @@ class AccountFragment : BaseFragment() {
     private val imageUploadViewModel: ImageUploadViewModel by activityViewModels()
     private val userProfileViewModel: UserProfileViewModel by activityViewModels()
     private lateinit var cropActivityResultLauncher: ActivityResultLauncher<Any?>
+
+    private lateinit var geoPoints: GeoPoints
+    private lateinit var geocoder: Geocoder
+    private lateinit var addresses: List<Address>
+    private var locationLat: Double = 0.0
+    private var locationLong: Double = 0.0
+    private lateinit var locationRequest: LocationRequest
+    private val LOCATION_REQUEST_CODE = 1
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,6 +87,8 @@ class AccountFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        initializeLocations()
 
         /*Dialog fragment functions*/
         accountFirstNameEditDialog()
@@ -128,7 +148,8 @@ class AccountFragment : BaseFragment() {
                             accountFragmentLastNameValueTextView.text = userProfile.lastName
                             accountFragmentPhoneNumberValueTextView.text = userProfile.phoneNumber
                             accountFragmentGenderValueTextView.text = userProfile.gender
-                            accountFragmentStateValueTextView.text =
+
+                            accountFragmentWorkshopAddressStateValueTextView.text =
                                 userProfile.workshopAddress?.state ?: getString(R.string.lagos)
                             accountFragmentWorkshopAddressCityValueTextView.text =
                                 userProfile.workshopAddress?.city ?: getString(R.string.lagos)
@@ -136,6 +157,7 @@ class AccountFragment : BaseFragment() {
                                 userProfile.workshopAddress?.street ?: getString(R.string.enter_address)
                             accountFragmentShowroomAddressValueTextView.text =
                                 userProfile.showroomAddress?.state ?: getString(R.string.enter_address)
+
                             accountFragmentNameOfUnionValueTextView.text = userProfile.union?.name
                                 ?: getString(R.string.enter_union_name)
                             accountFragmentWardValueTextView.text = userProfile.union?.ward
@@ -157,18 +179,32 @@ class AccountFragment : BaseFragment() {
 
     /*Update User Profile*/
     private fun updateUserProfile() {
+
         userProfileViewModel.userProfile.observeOnce(
             viewLifecycleOwner,
-            Observer {
+            {
                 if (it is Resource.Loading && it.data?.firstName.isNullOrEmpty()) {
-                    progressDialog.showDialogFragment("Updating..")
+                    progressDialog.showDialogFragment("Fetching...")
                 } else if (it is Resource.Error) {
                     progressDialog.hideProgressDialog()
                     handleApiError(it, mainRetrofit, requireView(), sessionManager, database)
                 } else {
+
                     progressDialog.hideProgressDialog()
-                    showToast("Update Successful")
+                    showToast("Update successful")
+
+                    /* set the value of location */
+                    val street = binding.accountFragmentWorkshopAddressStreetValueTextView.text.toString()
+                    val city = binding.accountFragmentWorkshopAddressCityValueTextView.text.toString()
+                    val state = binding.accountFragmentWorkshopAddressStateValueTextView.text.toString()
+
+                    val fullAddress = "$street.capitalize(Locale.ROOT), $city.capitalize(Locale.ROOT), $state, Nigeria"
+
+                    /* extract location from set address*/
+                    geoPoints = getLocationFromAddress(fullAddress)
+
                     it.data?.let { profile ->
+
                         val userProfile = UserProfile(
                             country = profile.country,
                             deliveryTime = profile.deliveryTime,
@@ -181,15 +217,19 @@ class AccountFragment : BaseFragment() {
                             phoneNumber = binding.accountFragmentPhoneNumberValueTextView.text.toString(),
                             role = profile.role,
                             workshopAddress = WorkshopAddress(
-                                street = binding.accountFragmentWorkshopAddressStreetValueTextView.text.toString(),
-                                state = binding.accountFragmentShowroomAddressValueTextView.text.toString(),
-                                city = binding.accountFragmentWorkshopAddressCityValueTextView.text.toString(),
+                                binding.accountFragmentWorkshopAddressStreetValueTextView.text.toString(),
+                                binding.accountFragmentWorkshopAddressCityValueTextView.text.toString(),
+                                binding.accountFragmentWorkshopAddressStateValueTextView.text.toString(),
+                                geoPoints.longitude.toString(),
+                                geoPoints.latitude.toString()
                             ),
-                            showroomAddress = ShowroomAddress(
-                                street = binding.accountFragmentWorkshopAddressCityValueTextView.text.toString(),
+
+                            showroomAddress = ShowroomAddress( // -------- //
+                                street = binding.accountFragmentWorkshopAddressCityValueTextView.text.toString(), // -------- //
                                 city = binding.accountFragmentWorkshopAddressCityValueTextView.text.toString(),
                                 state = binding.accountFragmentShowroomAddressValueTextView.text.toString(),
                             ),
+
                             specialties = profile.specialties,
                             thumbnail = profile.thumbnail,
                             trained = profile.trained,
@@ -202,8 +242,9 @@ class AccountFragment : BaseFragment() {
                             paymentTerms = profile.paymentTerms,
                             paymentOptions = profile.paymentOptions
                         )
-
-                        userProfileViewModel.updateUserProfile(userProfile)
+                        userProfileViewModel.updateUserProfile(userProfile).also {
+                            Log.d("PROFILE", userProfile.workshopAddress.toString())
+                        }
                     }
                 }
             }
@@ -469,6 +510,8 @@ class AccountFragment : BaseFragment() {
         }
     }
 
+    // --------------------------------------------------------------------------------------------
+
     // Workshop state Dialog
     private fun accountWorkshopStateDialog() {
         // when account shop name value is clicked
@@ -483,8 +526,7 @@ class AccountFragment : BaseFragment() {
 
         // when state value is clicked
         binding.accountFragmentWorkshopAddressStateValueTextView.setOnClickListener {
-            val currentState =
-                binding.accountFragmentWorkshopAddressStateValueTextView.text.toString()
+            val currentState = binding.accountFragmentWorkshopAddressStateValueTextView.text.toString()
             val bundle = bundleOf(CURRENT_ACCOUNT_WORKSHOP_STATE_BUNDLE_KEY to currentState)
             createProfileDialogFragment(
                 R.layout.account_workshop_state_dialog_fragment,
@@ -546,6 +588,8 @@ class AccountFragment : BaseFragment() {
             )
         }
     }
+
+    // --------------------------------------------------------------------------------------------
 
     private fun accountShowRoomAddressDialog() {
         // when showroom name value is clicked
@@ -700,6 +744,34 @@ class AccountFragment : BaseFragment() {
                 AccountFragment::class.java.simpleName
             )
         }
+    }
+
+    private fun getLocationFromAddress(address: String): GeoPoints {
+
+        try {
+            addresses = geocoder.getFromLocationName(address, 5)
+
+            val location = addresses[0]
+            locationLat = location.latitude
+            locationLong = location.longitude
+        } catch (e: java.lang.Exception) {
+            Toast.makeText(requireContext(), "Address does not exist.", Toast.LENGTH_SHORT).show()
+        }
+
+        return GeoPoints(latitude = locationLat, longitude = locationLong)
+    }
+
+    private fun initializeLocations() {
+        geocoder = Geocoder(requireContext(), Locale.getDefault()) // -------- //
+
+        locationRequest = LocationRequest().apply {
+            interval = TimeUnit.SECONDS.toMillis(1000) // -------- //
+            fastestInterval = TimeUnit.SECONDS.toMillis(2000)
+            maxWaitTime = TimeUnit.MINUTES.toMillis(1)
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        }
+
+        checkGPSEnabled(LOCATION_REQUEST_CODE, locationRequest) // -------- //
     }
 
     // Gender Dialog

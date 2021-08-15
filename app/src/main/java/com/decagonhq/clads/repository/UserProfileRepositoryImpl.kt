@@ -1,5 +1,6 @@
 package com.decagonhq.clads.repository
 
+import android.util.Log
 import androidx.room.withTransaction
 import com.decagonhq.clads.data.domain.profile.UserProfile
 import com.decagonhq.clads.data.local.CladsDatabase
@@ -38,7 +39,7 @@ class UserProfileRepositoryImpl(
             saveToLocalDB = {
                 database.withTransaction {
                     database.userProfileDao().deleteUserProfile()
-                    database.userProfileDao().addUserProfile(
+                    database.userProfileDao().addUserProfile (
                         it.payload
 //                        userProfileEntityMapper.mapFromDomainModel(it.payload)
                     )
@@ -64,9 +65,13 @@ class UserProfileRepositoryImpl(
                     ?.let {
                         database.userProfileDao().addUserProfile(
                             it
-                        )
+                        ).also {
+                            Log.d("DATABASE_IT", "Database insertion successful ${it.toString()}")
+                        }
                     }
             }
+        } else {
+           Log.d("DATABASE_ERROR", "Update Profile Failed")
         }
     }
 

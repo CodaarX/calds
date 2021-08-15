@@ -86,7 +86,7 @@ interface ApiService {
         @Query("token") token: String
     ): GenericResponseClass<String>
 
-    /*Update User Profile*/
+    /*Update Client Profile*/
     @PUT("client/{clientId}")
     suspend fun updateClient(
         @Path("clientId") clientId: String,

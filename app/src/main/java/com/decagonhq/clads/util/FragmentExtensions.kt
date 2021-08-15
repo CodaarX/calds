@@ -2,10 +2,13 @@ package com.decagonhq.clads.util
 
 import android.app.Dialog
 import android.content.Intent
+import android.content.IntentSender
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.provider.Settings
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
@@ -15,6 +18,13 @@ import androidx.navigation.fragment.findNavController
 import com.decagonhq.clads.R
 import com.decagonhq.clads.data.local.CladsDatabase
 import com.decagonhq.clads.ui.authentication.MainActivity
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.location.LocationSettingsResponse
+import com.google.android.gms.location.SettingsClient
+import com.google.android.gms.tasks.Task
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -116,3 +126,53 @@ fun Fragment.showLoadingBar(message: String): Dialog {
     }
     return dialog
 }
+
+fun Fragment.checkGPSEnabled(LOCATION_REQUEST_CODE: Int, locationRequest: LocationRequest) {                        // -------- //
+
+    val builder = LocationSettingsRequest.Builder()
+        .addLocationRequest(locationRequest)
+
+
+    val client: SettingsClient = LocationServices.getSettingsClient(requireActivity())
+    val task: Task<LocationSettingsResponse> = client.checkLocationSettings(builder.build())
+
+    task.addOnSuccessListener { locationSettingsResponse ->
+        println("GPS IS ON")
+    }
+
+    task.addOnFailureListener { exception ->
+        if (exception is ResolvableApiException) {
+            // Location settings are not satisfied, but this can be fixed
+            // by showing the user a dialog.
+            try {
+                /** Make alert dialog to request user to turn on GPS**/
+                android.app.AlertDialog.Builder(requireContext())
+                    .setTitle("GPS Settings")
+                    .setMessage("GPS is off. App requires location turned on for verification.")
+                    .setPositiveButton(
+                        "SETTINGS"
+                    ) { dialogInterface, i ->
+                        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                        startActivityForResult(intent, LOCATION_REQUEST_CODE)
+                    }
+                    .setNegativeButton(
+                        "Cancel"
+                    ) { dialogInterface, i ->
+                        Toast.makeText(
+                            requireContext(),
+                            "GPS is off. App requires location turned on for verification.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        dialogInterface.cancel()
+                    }
+                    .create()
+                    .show()
+
+            } catch (sendEx: IntentSender.SendIntentException) {
+                // Ignore the error.
+            }
+        }
+    }
+
+}
+
