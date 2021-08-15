@@ -22,10 +22,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.decagonhq.clads.R
 import com.decagonhq.clads.data.domain.images.UserProfileImage
-import com.decagonhq.clads.data.domain.profile.ShowroomAddress
 import com.decagonhq.clads.data.domain.profile.Union
 import com.decagonhq.clads.data.domain.profile.UserProfile
-import com.decagonhq.clads.data.domain.profile.WorkshopAddress
 import com.decagonhq.clads.data.local.UserProfileEntity
 import com.decagonhq.clads.databinding.AccountFragmentBinding
 import com.decagonhq.clads.ui.BaseFragment
@@ -455,8 +453,6 @@ class AccountFragment : BaseFragment() {
             )
         }
     }
-
-
 
     private fun accountEmployeeNumberDialogFragment() {
         childFragmentManager.setFragmentResultListener(
