@@ -39,7 +39,7 @@ class UserProfileRepositoryImpl(
             saveToLocalDB = {
                 database.withTransaction {
                     database.userProfileDao().deleteUserProfile()
-                    database.userProfileDao().addUserProfile (
+                    database.userProfileDao().addUserProfile(
                         it.payload
 //                        userProfileEntityMapper.mapFromDomainModel(it.payload)
                     )
@@ -66,13 +66,11 @@ class UserProfileRepositoryImpl(
                         database.userProfileDao().addUserProfile(
                             it
                         ).also {
-                            Log.d("DATABASE_IT", "Database insertion successful ${it.toString()}")
+                            Log.d("DATABASE_IT", "Database insertion successful $it")
                         }
                     }
             }
-        } else {
-           Log.d("DATABASE_ERROR", "Update Profile Failed")
-        }
+        } else Log.d("DATABASE_ERROR", "Update Profile Failed")
     }
 
     override suspend fun saveUserProfileToLocalDatabase() {

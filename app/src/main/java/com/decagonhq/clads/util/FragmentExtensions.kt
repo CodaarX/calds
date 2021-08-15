@@ -127,11 +127,10 @@ fun Fragment.showLoadingBar(message: String): Dialog {
     return dialog
 }
 
-fun Fragment.checkGPSEnabled(LOCATION_REQUEST_CODE: Int, locationRequest: LocationRequest) {                        // -------- //
+fun Fragment.checkGPSEnabled(LOCATION_REQUEST_CODE: Int, locationRequest: LocationRequest) {
 
     val builder = LocationSettingsRequest.Builder()
         .addLocationRequest(locationRequest)
-
 
     val client: SettingsClient = LocationServices.getSettingsClient(requireActivity())
     val task: Task<LocationSettingsResponse> = client.checkLocationSettings(builder.build())
@@ -167,12 +166,9 @@ fun Fragment.checkGPSEnabled(LOCATION_REQUEST_CODE: Int, locationRequest: Locati
                     }
                     .create()
                     .show()
-
             } catch (sendEx: IntentSender.SendIntentException) {
                 // Ignore the error.
             }
         }
     }
-
 }
-

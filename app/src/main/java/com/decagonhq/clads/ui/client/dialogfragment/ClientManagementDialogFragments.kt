@@ -28,7 +28,7 @@ import com.decagonhq.clads.ui.client.MeasurementsFragment.Companion.EDIT_MEASURE
 import com.decagonhq.clads.viewmodels.ClientsRegisterViewModel
 import com.google.gson.Gson
 import java.io.InputStream
-import java.util.*
+import java.util.Locale
 
 class ClientManagementDialogFragments(
     private var dialogLayoutId: Int,

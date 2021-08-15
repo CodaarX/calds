@@ -9,8 +9,8 @@ data class WorkshopAddress(
     val city: String? = null,
     @ColumnInfo(name = "workshop_address_state")
     val state: String? = null,
-    @ColumnInfo(name  = "longitude")
+    @ColumnInfo(name = "longitude")
     val longitude: String? = null,
-    @ColumnInfo(name  = "latitude")
+    @ColumnInfo(name = "latitude")
     val latitude: String? = null
 )
