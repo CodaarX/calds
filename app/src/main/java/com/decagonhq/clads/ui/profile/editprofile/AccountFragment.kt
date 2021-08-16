@@ -11,8 +11,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioGroup
-import android.widget.Toast
+import android.widget.LinearLayout
+import android.widget.RadioButton
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AlertDialog
@@ -22,7 +22,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import androidx.test.core.app.ApplicationProvider
+import com.decagonhq.clads.R
 import com.decagonhq.clads.data.domain.images.UserProfileImage
 import com.decagonhq.clads.data.domain.profile.Union
 import com.decagonhq.clads.data.domain.profile.UserProfile
@@ -47,12 +47,6 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import timber.log.Timber
-import android.widget.RadioButton
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.TextView
-import com.decagonhq.clads.R
-
 
 @AndroidEntryPoint
 class AccountFragment : BaseFragment() {
@@ -104,7 +98,8 @@ class AccountFragment : BaseFragment() {
                 requireContext(),
                 R.style.BottomSheetDialogStyle
             )
-            val bottomSheetView: View = layoutInflater.inflate(R.layout.account_fragment_add_address_bottom_sheet, view.findViewById(R.id.account_fragment_location_bottom_sheet) as LinearLayout?
+            val bottomSheetView: View = layoutInflater.inflate(
+                R.layout.account_fragment_add_address_bottom_sheet, view.findViewById(R.id.account_fragment_location_bottom_sheet) as LinearLayout?
             )
             val setLocationLaterRadioButton: RadioButton? =
                 bottomSheetView.findViewById(R.id.account_fragment_location_bottom_sheet_set_location_later_radio_button)
@@ -122,7 +117,6 @@ class AccountFragment : BaseFragment() {
             dialog.setContentView(bottomSheetView)
             dialog.show()
         }
-
 
         /*Select profile image*/
         binding.accountFragmentEditProfileIconImageView.setOnClickListener {
@@ -171,7 +165,6 @@ class AccountFragment : BaseFragment() {
             }
         )
     }
-
 
     /*Update User Profile*/
     private fun updateUserProfile() {
