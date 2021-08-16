@@ -11,6 +11,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AlertDialog
@@ -80,7 +82,7 @@ class AccountFragment : BaseFragment() {
         accountLastNameDialogFragment()
         accountEmployeeNumberDialogFragment()
         accountOtherNameEditDialog()
-//        accountLegalStatusDialog()
+        accountLegalStatusDialog()
 
         /*Initialize Image Cropper*/
         cropActivityResultLauncher = registerForActivityResult(cropActivityResultContract) {
@@ -91,7 +93,7 @@ class AccountFragment : BaseFragment() {
         }
 
         // inflate bottom sheet
-        binding.accountFragmentWorkshopAddressTextView.setOnClickListener {
+        binding.accountFragmentWorkshopAddressValueTextView.setOnClickListener {
             val view1: View = layoutInflater.inflate(
                 R.layout.account_fragment_add_address_bottom_sheet,
                 null
@@ -100,9 +102,16 @@ class AccountFragment : BaseFragment() {
                 requireContext(),
                 R.style.BottomSheetDialogStyle
             )
+
+            val radioButton: RadioGroup? = dialog.findViewById(R.id.account_fragment_location_bottom_sheet_set_location_later_radio_group)
+            radioButton?.setOnClickListener {
+                showToast("radio button")
+            }
+
             dialog.setContentView(view1)
             dialog.show()
         }
+
 
         /*Select profile image*/
         binding.accountFragmentEditProfileIconImageView.setOnClickListener {

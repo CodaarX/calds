@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/account_fragment_location_bottom_sheet"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingBottom="@dimen/margin_37dp"
+    tools:context=".ui.profile.editprofile.AccountFragmentBottomSheetFragment"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehaviour">
 
     <TextView
@@ -53,12 +55,13 @@
             android:fontFamily="@font/poppins"
             android:text="@string/set_location_now"
             android:textAlignment="center"
+            android:checked="false"
             android:textColor="@color/ash"
             android:textSize="@dimen/text_size_14sp" />
     </RadioGroup>
 
     <RadioGroup
-        android:id="@+id/account_fragment_location_bottom_sheet_set_location_later_radio_button"
+        android:id="@+id/account_fragment_location_bottom_sheet_set_location_later_radio_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="@dimen/padding_12dp"
@@ -72,10 +75,12 @@
 
 
     <RadioButton
+        android:id="@+id/account_fragment_location_bottom_sheet_set_location_later_radio_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/poppins"
         android:textAlignment="center"
+        android:checked="false"
         android:text="@string/set_location_later"
         android:textColor="@color/ash"
         android:textSize="@dimen/text_size_14sp"/>
