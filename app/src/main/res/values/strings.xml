@@ -32,7 +32,7 @@
     <string name="all_have_an_account">Have an account?</string>
     <string name="all_login">Login</string>
     <string name="email_sign_up_fragment_choose_account_category">Choose account category</string>
-    <string name="client">Client</string>
+    <string name="client">Clients</string>
     <string name="weaver">Weaver</string>
     <string name="tailor">Tailor</string>
     <string name="all_confirm_password">Confirm Password</string>
@@ -41,7 +41,7 @@
     <string name="all_other_name">Other Name</string>
     <string name="lorem_ipsum_ipsum_sum">Lorem Ipsum. Ipsum sum.</string>
     <string name="sign_up">sign up</string>
-    <string name="Loading">Loading...</string>
+    <string name="Loading">Loading…</string>
     <string name="have_an_account_login">Have an account? Login</string>
     <string name="sign_up_with_phone_number">Sign up with phone number</string>
     <string name="signup_with_google">Signup with Google</string>
@@ -383,9 +383,31 @@
     <string name="state_label_str">STATE</string>
     <string name="hint_9_obasanjo_street">hint: 9, obasanjo street</string>
     <string name="Edit_delivery_address">Edit Delivery Address</string>
-    <string name="tap_to_add_state">Tap to add State</string>
-    <string name="tap_to_add_city">Tap to add City</string>
-    <string name="tap_to_add_street">Tap to add Street</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="select_payment_term">Select Payment Term</string>
+    <string name="select_payment_option">Select Payment Option</string>
+    <string name="tap_to_enter_number">Tap to Enter Number</string>
+    <string name="tap_to_select_gender">Tap to select gender</string>
+    <string name="tap_to_enter_state">Tap to Enter state</string>
+    <string name="tap_to_enter_city">Tap to Enter city</string>
+    <string name="tap_to_enter_street">Tap to Enter street</string>
+    <string name="tap_to_enter_address">Tap to Enter address</string>
+    <string name="tap_to_enter_employees_num">Tap to Enter employees num</string>
+    <string name="tap_to_enter_legal_status">Tap to Enter Legal status</string>
+    <string name="tap_to_enter_union_name">Tap to Enter union name</string>
+    <string name="tap_to_enter_union_ward">Tap to Enter union ward</string>
+    <string name="tap_to_enter_union_lga">Tap to Enter Union LGA</string>
+    <string name="tap_to_enter_union_state">Tap to Enter Union State</string>
+    <string name="tap_to_enter_first_name">Tap to Enter First name</string>
+    <string name="tap_to_enter_last_name">Tap to Enter Last name</string>
+    <string name="tap_to_select_payment_term">Tap to Select Payment Term</string>
+    <string name="tap_to_select_payment_option">Tap to Select Payment Option</string>
+    <string name="location_rationale">Clads connects Tailors to potential clients that are within their proximities. We need to know your location to do this</string>
+    <string name="let_s_know_where_you_are">Let\'s Know Where you are</string>
+    <string name="set_location_later">Set Location later</string>
+    <string name="set_location_now">Set Location now</string>
+>>>>>>> 42e1253d8771bfe0ae2b71a22ae5f11b04f9b226
 
     <string-array name="account_category">
         <item>Tailor</item>

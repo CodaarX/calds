@@ -47,6 +47,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -177,13 +178,13 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
                     binding.appBarDashboard.dashboardActivityToolbarHiIjeomaTextView.text =
                         getString(
                             R.string.hi,
-                            userProfile?.firstName ?: " "
+                            userProfile?.firstName?.capitalize(Locale.ROOT) ?: " "
                         )
 
-                    val fullName = "${userProfile?.firstName ?: getString(R.string.ijeoma)} ${
-                    userProfile?.lastName ?: getString(R.string.babangida)
+                    val fullName = "${userProfile?.firstName ?: "---"} ${
+                    userProfile?.lastName ?: "---"
                     }"
-                    profileName.text = fullName
+                    profileName.text = fullName.capitalize(Locale.ROOT)
 
                     /*Load Profile Picture with Glide*/
                     toolbarProfilePicture.loadImage(userProfile?.thumbnail)
@@ -319,36 +320,36 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
                     }
                     R.id.editProfileFragment -> {
                         bottomNavigationView.visibility = View.GONE
-                        toolbarProfilePicture.visibility = View.INVISIBLE
-                        toolbarUserName.visibility = View.INVISIBLE
+                        toolbarProfilePicture.visibility = View.GONE
+                        toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
                         toolbarFragmentName.visibility = View.VISIBLE
                     }
                     R.id.clientFragment -> {
-                        bottomNavigationView.visibility = View.VISIBLE
-                        toolbarProfilePicture.visibility = View.INVISIBLE
-                        toolbarUserName.visibility = View.INVISIBLE
+                        bottomNavigationView.visibility = View.GONE
+                        toolbarProfilePicture.visibility = View.GONE
+                        toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
-                        toolbarFragmentName.visibility = View.GONE
+                        toolbarFragmentName.visibility = View.VISIBLE
                     }
                     R.id.addClientFragment -> {
                         bottomNavigationView.visibility = View.GONE
-                        toolbarProfilePicture.visibility = View.INVISIBLE
-                        toolbarUserName.visibility = View.INVISIBLE
+                        toolbarProfilePicture.visibility = View.GONE
+                        toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
                         toolbarFragmentName.visibility = View.VISIBLE
                     }
                     R.id.nav_messages -> {
                         bottomNavigationView.visibility = View.VISIBLE
-                        toolbarProfilePicture.visibility = View.INVISIBLE
-                        toolbarUserName.visibility = View.INVISIBLE
+                        toolbarProfilePicture.visibility = View.GONE
+                        toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
                         toolbarFragmentName.visibility = View.VISIBLE
                     }
                     R.id.nav_media -> {
                         bottomNavigationView.visibility = View.VISIBLE
                         toolbarProfilePicture.visibility = View.GONE
-                        toolbarUserName.visibility = View.INVISIBLE
+                        toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
                         toolbarFragmentName.visibility = View.VISIBLE
                     }
@@ -368,22 +369,22 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
                     }
                     R.id.resourceArticlesFragment -> {
                         bottomNavigationView.visibility = View.GONE
-                        toolbarProfilePicture.visibility = View.INVISIBLE
-                        toolbarUserName.visibility = View.INVISIBLE
+                        toolbarProfilePicture.visibility = View.GONE
+                        toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
                         toolbarFragmentName.visibility = View.VISIBLE
                     }
                     R.id.resourceGeneralFragment -> {
                         bottomNavigationView.visibility = View.GONE
-                        toolbarProfilePicture.visibility = View.INVISIBLE
-                        toolbarUserName.visibility = View.INVISIBLE
+                        toolbarProfilePicture.visibility = View.GONE
+                        toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
                         toolbarFragmentName.visibility = View.VISIBLE
                     }
                     R.id.resourceVideosFragment -> {
                         bottomNavigationView.visibility = View.GONE
-                        toolbarProfilePicture.visibility = View.INVISIBLE
-                        toolbarUserName.visibility = View.INVISIBLE
+                        toolbarProfilePicture.visibility = View.GONE
+                        toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
                         toolbarFragmentName.visibility = View.VISIBLE
                     }
@@ -402,8 +403,8 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
                         toolbarFragmentName.visibility = View.INVISIBLE
                     }
                     else -> {
-                        bottomNavigationView.visibility = View.VISIBLE
-                        toolbarProfilePicture.visibility = View.INVISIBLE
+                        bottomNavigationView.visibility = View.GONE
+                        toolbarProfilePicture.visibility = View.GONE
                         toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
                         toolbarFragmentName.visibility = View.VISIBLE

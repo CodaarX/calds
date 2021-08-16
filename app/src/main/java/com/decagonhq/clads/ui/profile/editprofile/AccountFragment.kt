@@ -2,6 +2,7 @@ package com.decagonhq.clads.ui.profile.editprofile
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.ProgressDialog.show
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -14,6 +15,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.RadioButton
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AlertDialog
@@ -25,8 +28,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.decagonhq.clads.R
 import com.decagonhq.clads.data.domain.images.UserProfileImage
-import com.decagonhq.clads.data.domain.location.GeoPoints
-import com.decagonhq.clads.data.domain.profile.ShowroomAddress
 import com.decagonhq.clads.data.domain.profile.Union
 import com.decagonhq.clads.data.domain.profile.UserProfile
 import com.decagonhq.clads.data.domain.profile.WorkshopAddress
@@ -46,6 +47,7 @@ import com.decagonhq.clads.viewmodels.UserProfileViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.theartofdev.edmodo.cropper.CropImage
 import dagger.hilt.android.AndroidEntryPoint
 import id.zelory.compressor.Compressor
@@ -54,7 +56,6 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import timber.log.Timber
-import java.util.*
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
@@ -68,9 +69,7 @@ class AccountFragment : BaseFragment() {
     private val imageUploadViewModel: ImageUploadViewModel by activityViewModels()
     private val userProfileViewModel: UserProfileViewModel by activityViewModels()
     private lateinit var cropActivityResultLauncher: ActivityResultLauncher<Any?>
-
     private lateinit var fusedLocationProvider: FusedLocationProviderClient
-    private lateinit var geoPoints: GeoPoints
     private lateinit var geocoder: Geocoder
     private lateinit var addresses: MutableList<Address>
     private var artisanLatitude: Double = 0.0
@@ -106,18 +105,51 @@ class AccountFragment : BaseFragment() {
         accountUnionNameDialogFragment()
         accountLastNameDialogFragment()
         accountEmployeeNumberDialogFragment()
-        accountShowRoomAddressDialog()
-        accountWorkshopStreetDialog()
-        accountWorkshopCityDialog()
-        accountWorkshopStateDialog()
         accountOtherNameEditDialog()
-//        accountLegalStatusDialog()
+        accountLegalStatusDialog()
 
         /*Initialize Image Cropper*/
         cropActivityResultLauncher = registerForActivityResult(cropActivityResultContract) {
             it?.let { uri ->
                 binding.accountFragmentEditProfileIconImageView.imageAlpha = 140
                 uploadImageToServer(uri)
+            }
+        }
+
+        // inflate bottom sheet
+        binding.accountFragmentWorkshopAddressValueTextView.setOnClickListener {
+
+            if (binding.accountFragmentWorkshopAddressValueTextView.text.isNullOrEmpty()) {
+
+                val dialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogStyle)
+
+                val bottomSheetView: View = layoutInflater.inflate(
+                    R.layout.account_fragment_add_address_bottom_sheet,
+                    view.findViewById(R.id.account_fragment_location_bottom_sheet) as LinearLayout?
+                )
+
+                val setLocationLaterRadioButton: RadioButton? =
+                    bottomSheetView.findViewById(R.id.account_fragment_location_bottom_sheet_set_location_later_radio_button)
+
+                val setLocationNowRadioButton: RadioButton? =
+                    bottomSheetView.findViewById(R.id.account_fragment_location_bottom_sheet_set_location_now_radio_button)
+
+                setLocationNowRadioButton?.setOnClickListener {
+                    dialog.dismiss()
+                    if (binding.accountFragmentWorkshopAddressValueTextView.text.isNullOrEmpty()) {
+                        initializeLocations()
+                    }
+                }
+
+                setLocationLaterRadioButton?.setOnClickListener {
+                    showToast(setLocationLaterRadioButton.text as String)
+                }
+
+                dialog.setContentView(bottomSheetView)
+                dialog.show()
+            } else {
+                // EDIT ADDRESS HERE
+                showToast("EDIT ADDRESS HERE")
             }
         }
 
@@ -132,15 +164,8 @@ class AccountFragment : BaseFragment() {
         }
 
         /*Get users profile*/
-
         userProfileViewModel.getLocalDatabaseUserProfile()
         getUserProfile()
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        initializeLocations()
     }
 
     /*Get User Profile*/
@@ -161,24 +186,11 @@ class AccountFragment : BaseFragment() {
                             accountFragmentLastNameValueTextView.text = userProfile.lastName
                             accountFragmentPhoneNumberValueTextView.text = userProfile.phoneNumber
                             accountFragmentGenderValueTextView.text = userProfile.gender
-
-                            accountFragmentWorkshopAddressStateValueTextView.text =
-                                userProfile.workshopAddress?.state ?: getString(R.string.lagos)
-                            accountFragmentWorkshopAddressCityValueTextView.text =
-                                userProfile.workshopAddress?.city ?: getString(R.string.lagos)
-                            accountFragmentWorkshopAddressStreetValueTextView.text =
-                                userProfile.workshopAddress?.street ?: getString(R.string.enter_address)
-                            accountFragmentShowroomAddressValueTextView.text =
-                                userProfile.showroomAddress?.state ?: getString(R.string.enter_address)
-
+                            accountFragmentWorkshopAddressValueTextView.text = "${userProfile.workshopAddress?.street}, ${userProfile.workshopAddress?.city}, ${userProfile.workshopAddress?.state}."
                             accountFragmentNameOfUnionValueTextView.text = userProfile.union?.name
-                                ?: getString(R.string.enter_union_name)
                             accountFragmentWardValueTextView.text = userProfile.union?.ward
-                                ?: getString(R.string.enter_union_ward)
                             accountFragmentLocalGovtAreaValueTextView.text = userProfile.union?.lga
-                                ?: getString(R.string.enter_union_resource)
                             accountFragmentStateValueTextView.text = userProfile.union?.state
-                                ?: getString(R.string.enter_union_resource)
                             /*Load Profile Picture with Glide*/
                             binding.accountFragmentEditProfileIconImageView.loadImage(userProfile.thumbnail)
                         }
@@ -195,7 +207,7 @@ class AccountFragment : BaseFragment() {
             viewLifecycleOwner,
             {
                 if (it is Resource.Loading && it.data?.firstName.isNullOrEmpty()) {
-                    progressDialog.showDialogFragment("Fetching...")
+                    progressDialog.showDialogFragment("Fetching profile data...")
                 } else if (it is Resource.Error) {
                     progressDialog.hideProgressDialog()
                     handleApiError(it, mainRetrofit, requireView(), sessionManager, database)
@@ -203,18 +215,6 @@ class AccountFragment : BaseFragment() {
 
                     progressDialog.hideProgressDialog()
                     showToast("Update successful")
-
-
-                    /* set the value of location */
-//                    val street = binding.accountFragmentWorkshopAddressStreetValueTextView.text.toString()
-//                    val city = binding.accountFragmentWorkshopAddressCityValueTextView.text.toString()
-//                    val state = binding.accountFragmentWorkshopAddressStateValueTextView.text.toString()
-
-//                    val fullAddress = "$street.capitalize(Locale.ROOT), $city.capitalize(Locale.ROOT), $state, Nigeria"
-
-                    /* extract location from set address*/
-//                    geoPoints = getLocationFromAddress(fullAddress)
-
 
                     it.data?.let { profile ->
 
@@ -237,13 +237,6 @@ class AccountFragment : BaseFragment() {
                                 artisanLatitude.toString()
                             ),
 
-                            showroomAddress = ShowroomAddress(
-                                // -------- //
-                                street = binding.accountFragmentWorkshopAddressCityValueTextView.text.toString(), // -------- //
-                                city = binding.accountFragmentWorkshopAddressCityValueTextView.text.toString(),
-                                state = binding.accountFragmentShowroomAddressValueTextView.text.toString(),
-                            ),
-
                             specialties = profile.specialties,
                             thumbnail = profile.thumbnail,
                             trained = profile.trained,
@@ -256,15 +249,13 @@ class AccountFragment : BaseFragment() {
                             paymentTerms = profile.paymentTerms,
                             paymentOptions = profile.paymentOptions
                         )
-                        userProfileViewModel.updateUserProfile(userProfile).also {
-                            Log.d("PROFILE", userProfile.workshopAddress.toString())
-                        }
+
+                        userProfileViewModel.updateUserProfile(userProfile)
                     }
                 }
             }
         )
     }
-
 
     /*Update User Profile Picture*/
     private fun updateUserProfilePicture(downloadUri: String) {
@@ -346,15 +337,14 @@ class AccountFragment : BaseFragment() {
             READ_IMAGE_STORAGE -> innerCheck(NAME)
         }
 
-        if(grantResults.contains(PackageManager.PERMISSION_GRANTED) && requestCode == LOCATION_REQUEST_CODE){
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+        if (grantResults.contains(PackageManager.PERMISSION_GRANTED) && requestCode == LOCATION_REQUEST_CODE) {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 showToast("Permission granted")
                 getArtisanLocation()
             }
         } else {
-            showToast( "Location permission is required for this feature to run")
+            showToast("Location permission is required for this feature to run")
         }
-
     }
 
     // Show dialog for permission dialog
@@ -533,109 +523,6 @@ class AccountFragment : BaseFragment() {
         }
     }
 
-    // Workshop state Dialog
-    private fun accountWorkshopStateDialog() {
-        // when account shop name value is clicked
-        childFragmentManager.setFragmentResultListener(
-            ACCOUNT_WORKSHOP_STATE_REQUEST_KEY,
-            requireActivity()
-        ) { key, bundle ->
-            // collect input values from dialog fragment and update the state text of user
-            val workshopState = bundle.getString(ACCOUNT_WORKSHOP_STATE_BUNDLE_KEY)
-            binding.accountFragmentWorkshopAddressStateValueTextView.text = workshopState
-        }
-
-        // when state value is clicked
-        binding.accountFragmentWorkshopAddressStateValueTextView.setOnClickListener {
-            val currentState = binding.accountFragmentWorkshopAddressStateValueTextView.text.toString()
-            val bundle = bundleOf(CURRENT_ACCOUNT_WORKSHOP_STATE_BUNDLE_KEY to currentState)
-            createProfileDialogFragment(
-                R.layout.account_workshop_state_dialog_fragment,
-                bundle
-            ).show(
-                childFragmentManager, AccountFragment::class.java.simpleName
-            )
-        }
-    }
-
-    // Workshop state Dialog
-    private fun accountWorkshopCityDialog() {
-        // when city value is clicked
-        childFragmentManager.setFragmentResultListener(
-            ACCOUNT_WORKSHOP_CITY_REQUEST_KEY,
-            requireActivity()
-        ) { key, bundle ->
-            // collect input values from dialog fragment and update the city text of user
-            val workshopCity = bundle.getString(ACCOUNT_WORKSHOP_CITY_BUNDLE_KEY)
-            binding.accountFragmentWorkshopAddressCityValueTextView.text = workshopCity
-        }
-
-        // when city is clicked
-        binding.accountFragmentWorkshopAddressCityValueTextView.setOnClickListener {
-            val currentCity =
-                binding.accountFragmentWorkshopAddressCityValueTextView.text.toString()
-            val bundle = bundleOf(CURRENT_ACCOUNT_WORKSHOP_CITY_BUNDLE_KEY to currentCity)
-            createProfileDialogFragment(
-                R.layout.account_workshop_city_dialog_fragment,
-                bundle
-            ).show(
-                childFragmentManager, AccountFragment::class.java.simpleName
-            )
-        }
-    }
-
-    // Workshop street Dialog
-    private fun accountWorkshopStreetDialog() {
-        // when street value is clicked
-        childFragmentManager.setFragmentResultListener(
-            ACCOUNT_WORKSHOP_STREET_REQUEST_KEY,
-            requireActivity()
-        ) { key, bundle ->
-            // collect input values from dialog fragment and update the street text of user
-            val workshopStreet = bundle.getString(ACCOUNT_WORKSHOP_STREET_BUNDLE_KEY)
-            binding.accountFragmentWorkshopAddressStreetValueTextView.text = workshopStreet
-        }
-
-        // when street value is clicked
-        binding.accountFragmentWorkshopAddressStreetValueTextView.setOnClickListener {
-            val currentStreet =
-                binding.accountFragmentWorkshopAddressStreetValueTextView.text.toString()
-            val bundle = bundleOf(CURRENT_ACCOUNT_WORKSHOP_STREET_BUNDLE_KEY to currentStreet)
-            createProfileDialogFragment(
-                R.layout.account_workshop_street_dialog_fragment,
-                bundle
-            ).show(
-                childFragmentManager, AccountFragment::class.java.simpleName
-            )
-        }
-    }
-
-    private fun accountShowRoomAddressDialog() {
-        // when showroom name value is clicked
-        childFragmentManager.setFragmentResultListener(
-            ACCOUNT_SHOWROOM_ADDRESS_REQUEST_KEY,
-            requireActivity()
-        ) { key, bundle ->
-            // collect input values from dialog fragment and update the showroom address text of user
-            val showroomAddress = bundle.getString(ACCOUNT_SHOWROOM_ADDRESS_BUNDLE_KEY)
-            binding.accountFragmentShowroomAddressValueTextView.text = showroomAddress
-        }
-
-        // when showroom address is clicked
-        binding.accountFragmentShowroomAddressValueTextView.setOnClickListener {
-            val currentShowroomAddress =
-                binding.accountFragmentShowroomAddressValueTextView.text.toString()
-            val bundle =
-                bundleOf(CURRENT_ACCOUNT_SHOWROOM_ADDRESS_BUNDLE_KEY to currentShowroomAddress)
-            createProfileDialogFragment(
-                R.layout.account_showroom_address_dialog_fragment,
-                bundle
-            ).show(
-                childFragmentManager, AccountFragment::class.java.simpleName
-            )
-        }
-    }
-
     private fun accountEmployeeNumberDialogFragment() {
         childFragmentManager.setFragmentResultListener(
             ACCOUNT_EMPLOYEE_REQUEST_KEY,
@@ -765,7 +652,6 @@ class AccountFragment : BaseFragment() {
         }
     }
 
-    
     private fun initializeLocations() {
 
         locationRequest = LocationRequest().apply {
@@ -775,8 +661,12 @@ class AccountFragment : BaseFragment() {
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
 
-        if(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), LOCATION_REQUEST_CODE)
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), LOCATION_REQUEST_CODE).also {
+                checkGPSEnabled(LOCATION_REQUEST_CODE, locationRequest).also {
+                    getArtisanLocation()
+                }
+            }
         } else {
             checkGPSEnabled(LOCATION_REQUEST_CODE, locationRequest).also {
                 getArtisanLocation()
@@ -784,16 +674,14 @@ class AccountFragment : BaseFragment() {
         }
     }
 
-
     @SuppressLint("MissingPermission")
-    private fun getArtisanLocation(){
+    private fun getArtisanLocation() {
 
         fusedLocationProvider.lastLocation?.addOnSuccessListener {
 
-            if(it == null){
+            if (it == null) {
 
                 showToast("Sorry cant get location")
-
             } else it.apply {
                 val locationLatitude = it.latitude
                 val locationLongitude = it.longitude
@@ -803,22 +691,21 @@ class AccountFragment : BaseFragment() {
                     locationLongitude,
                     1
                 )
-                // Here 1 represent max location result to returned, by documents it recommended 1 to 5
 
-                artisanStreet = "{${addresses[0].featureName} ${addresses[0].thoroughfare}}"
-                // locality = addresses[0].subAdminArea
+                artisanStreet = "${addresses[0].featureName} ${addresses[0].thoroughfare}, ${addresses[0].subAdminArea}"
+                var locality = addresses[0].subAdminArea
                 artisanCity = addresses[0].locality
                 artisanState = addresses[0].adminArea
-                //artisanCountry = addresses[0].countryName
+                var artisanCountry = addresses[0].countryName
                 artisanLatitude = addresses[0].latitude
                 artisanLongitude = addresses[0].longitude
 
-                //Log.d("BBBBBBBBBB", " $number, $street, $locality, $city, $state, $country}")
+                binding.accountFragmentWorkshopAddressValueTextView.text = "${addresses[0].featureName}, ${addresses[0].thoroughfare}, $locality, $artisanCity, $artisanState"
 
+                Log.d("BBBBBBBBBB", " ${addresses[0].featureName}, ${addresses[0].thoroughfare}, $locality, $artisanCity, $artisanState, $artisanCountry}")
             }
         }
     }
-
 
     // Gender Dialog
     private fun accountGenderSelectDialog() {

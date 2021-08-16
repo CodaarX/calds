@@ -41,7 +41,7 @@ class ResourceIndividualArticleWebViewFragment : Fragment() {
         webView.webViewClient = object :
             WebViewClient() {}
         if (articleLink != null) {
-            webView.loadUrl("https://www.google.com")
+            webView.loadUrl("https://www.africa.com/top-10-nigerian-fashion-designers/")
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             if (webView.canGoBack()) {

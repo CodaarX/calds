@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:paddingHorizontal="@dimen/padding_20dp"
     tools:context=".ui.profile.editprofile.PaymentMethodFragment">
+
     <LinearLayout
         android:id="@+id/payment_method_terms_linear_layout"
         android:layout_width="match_parent"
@@ -28,12 +29,14 @@
             android:textSize="@dimen/text_size_12sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
             android:id="@+id/payment_method_fragment_payment_terms_list_text_view"
             android:layout_width="@dimen/margin_0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_25dp"
             android:layout_weight="2"
+            android:hint="@string/tap_to_select_payment_term"
             android:text="@string/_100_deposit"
             android:textAlignment="textEnd"
             android:textSize="@dimen/text_size_13sp"
@@ -41,26 +44,17 @@
             app:layout_constraintTop_toTopOf="parent" />
     </LinearLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/payment_method_fragment_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/margin_48dp"
-        android:layout_marginTop="@dimen/margin_44dp"
-        android:src="@drawable/payment_method_fragment_fab_plus_sign"
-        app:backgroundTint="@color/white"
-        app:fabSize="mini"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/payment_method_terms_linear_layout"
-        app:tint="@color/white" />
+
     <View
         android:id="@+id/security_fragment_fine_line_view"
         android:layout_width="match_parent"
         android:layout_height="@dimen/margin_1dp"
-        android:layout_marginTop="@dimen/margin_15dp"
         android:background="@color/dark_gray"
+        app:layout_constraintTop_toTopOf="@id/guideline5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/payment_method_fragment_fab" />
+        tools:layout_editor_absoluteY="155dp" />
+
     <LinearLayout
         android:id="@+id/payment_method_fragment_payment_options_list_text_view_container"
         android:layout_width="match_parent"
@@ -70,6 +64,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/security_fragment_fine_line_view">
+
         <TextView
             android:id="@+id/payment_method_fragment_payment_option_text_view"
             android:layout_width="@dimen/margin_0dp"
@@ -81,6 +76,7 @@
             android:textSize="@dimen/text_size_12sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/security_fragment_fine_line_view" />
+
         <TextView
             android:id="@+id/payment_method_fragment_payment_options_list_text_view"
             android:layout_width="@dimen/margin_0dp"
@@ -88,18 +84,20 @@
             android:layout_weight="2"
             android:maxLines="6"
             android:text="@string/payment_options"
+            android:hint="@string/tap_to_select_payment_option"
             android:textAlignment="textEnd"
             android:textSize="@dimen/text_size_13sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/security_fragment_fine_line_view" />
     </LinearLayout>
+
     <Button
         android:id="@+id/payment_method_fragment_save_changes_button"
+        style="@style/ClientAccountFragmentButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:layout_marginBottom="24dp"
-        style="@style/ClientAccountFragmentButton"
         android:text="@string/save_changes"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -113,5 +111,12 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_end="417dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="155dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
