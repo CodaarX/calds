@@ -23,7 +23,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.test.core.app.ApplicationProvider
-import com.decagonhq.clads.R
 import com.decagonhq.clads.data.domain.images.UserProfileImage
 import com.decagonhq.clads.data.domain.profile.Union
 import com.decagonhq.clads.data.domain.profile.UserProfile
@@ -48,6 +47,12 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import timber.log.Timber
+import android.widget.RadioButton
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
+import com.decagonhq.clads.R
+
 
 @AndroidEntryPoint
 class AccountFragment : BaseFragment() {
@@ -95,27 +100,29 @@ class AccountFragment : BaseFragment() {
 
         // inflate bottom sheet
         binding.accountFragmentWorkshopAddressValueTextView.setOnClickListener {
-            val view1: View = layoutInflater.inflate(
-                R.layout.account_fragment_add_address_bottom_sheet,
-                null
-            )
             val dialog = BottomSheetDialog(
                 requireContext(),
                 R.style.BottomSheetDialogStyle
             )
+            val bottomSheetView: View = layoutInflater.inflate(R.layout.account_fragment_add_address_bottom_sheet, view.findViewById(R.id.account_fragment_location_bottom_sheet) as LinearLayout?
+            )
+            val setLocationLaterRadioButton: RadioButton? =
+                bottomSheetView.findViewById(R.id.account_fragment_location_bottom_sheet_set_location_later_radio_button)
 
-            val radioButton: RadioGroup? = dialog.findViewById(R.id.account_fragment_location_bottom_sheet_set_location_later_radio_button)
-            radioButton?.setOnClickListener {
-                showToast("radio button")
+            val setLocationNowRadioButton: RadioButton? =
+                bottomSheetView.findViewById(R.id.account_fragment_location_bottom_sheet_set_location_now_radio_button)
+
+            setLocationNowRadioButton?.setOnClickListener {
+                showToast(setLocationNowRadioButton.text as String)
             }
-            radioButton?.setOnClickListener(View.OnClickListener {
-                Toast.makeText(ApplicationProvider.getApplicationContext(), "Copy is Clicked ", Toast.LENGTH_LONG).show()
-                dialog.dismiss()
-            })
+            setLocationLaterRadioButton?.setOnClickListener {
+                showToast(setLocationLaterRadioButton.text as String)
+            }
 
-            dialog.setContentView(view1)
+            dialog.setContentView(bottomSheetView)
             dialog.show()
         }
+
 
         /*Select profile image*/
         binding.accountFragmentEditProfileIconImageView.setOnClickListener {
@@ -164,6 +171,7 @@ class AccountFragment : BaseFragment() {
             }
         )
     }
+
 
     /*Update User Profile*/
     private fun updateUserProfile() {

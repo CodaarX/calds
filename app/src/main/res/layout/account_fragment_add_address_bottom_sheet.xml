@@ -37,7 +37,7 @@
         app:layout_constraintTop_toBottomOf="@+id/account_fragment_location_bottom_sheet_lets_know_where_you_are_textview" />
 
     <RadioGroup
-        android:id="@+id/account_fragment_location_bottom_sheet_set_location_now_radio_button"
+        android:id="@+id/account_fragment_location_bottom_sheet_set_location_radio_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_24dp"
@@ -47,12 +47,13 @@
         app:layout_constraintTop_toBottomOf="@+id/account_fragment_location_bottom_sheet_location_rationale_textview">
 
         <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/account_fragment_location_bottom_sheet_set_location_now_radio_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:checked="false"
             android:fontFamily="@font/poppins"
             android:layout_marginBottom="@dimen/margin_30dp"
-            android:background="@drawable/location_drawable_border"
+            android:background="@drawable/location_drawable_background_selector"
             android:text="@string/set_location_now"
             android:outlineProvider="background"
             android:textAlignment="center"
@@ -64,7 +65,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:checked="false"
-            android:background="@drawable/location_drawable_border"
+            android:background="@drawable/location_drawable_background_selector"
             android:fontFamily="@font/poppins"
             android:text="@string/set_location_later"
             android:textAlignment="center"
