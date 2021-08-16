@@ -1,6 +1,7 @@
 package com.decagonhq.clads.ui.profile.editprofile
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -13,7 +14,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AlertDialog
@@ -43,7 +43,9 @@ import com.decagonhq.clads.util.saveBitmap
 import com.decagonhq.clads.util.uriToBitmap
 import com.decagonhq.clads.viewmodels.ImageUploadViewModel
 import com.decagonhq.clads.viewmodels.UserProfileViewModel
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
 import com.theartofdev.edmodo.cropper.CropImage
 import dagger.hilt.android.AndroidEntryPoint
 import id.zelory.compressor.Compressor
@@ -52,7 +54,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import timber.log.Timber
-import java.util.Locale
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
@@ -67,11 +69,15 @@ class AccountFragment : BaseFragment() {
     private val userProfileViewModel: UserProfileViewModel by activityViewModels()
     private lateinit var cropActivityResultLauncher: ActivityResultLauncher<Any?>
 
+    private lateinit var fusedLocationProvider: FusedLocationProviderClient
     private lateinit var geoPoints: GeoPoints
     private lateinit var geocoder: Geocoder
-    private lateinit var addresses: List<Address>
-    private var locationLat: Double = 0.0
-    private var locationLong: Double = 0.0
+    private lateinit var addresses: MutableList<Address>
+    private var artisanLatitude: Double = 0.0
+    private var artisanLongitude: Double = 0.0
+    private var artisanStreet: String = ""
+    private var artisanCity: String = ""
+    private var artisanState: String = ""
     private lateinit var locationRequest: LocationRequest
     private val LOCATION_REQUEST_CODE = 1
 
@@ -88,7 +94,8 @@ class AccountFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initializeLocations()
+        geocoder = Geocoder(requireContext(), Locale.getDefault())
+        fusedLocationProvider = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         /*Dialog fragment functions*/
         accountFirstNameEditDialog()
@@ -128,6 +135,12 @@ class AccountFragment : BaseFragment() {
 
         userProfileViewModel.getLocalDatabaseUserProfile()
         getUserProfile()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        initializeLocations()
     }
 
     /*Get User Profile*/
@@ -191,15 +204,17 @@ class AccountFragment : BaseFragment() {
                     progressDialog.hideProgressDialog()
                     showToast("Update successful")
 
-                    /* set the value of location */
-                    val street = binding.accountFragmentWorkshopAddressStreetValueTextView.text.toString()
-                    val city = binding.accountFragmentWorkshopAddressCityValueTextView.text.toString()
-                    val state = binding.accountFragmentWorkshopAddressStateValueTextView.text.toString()
 
-                    val fullAddress = "$street.capitalize(Locale.ROOT), $city.capitalize(Locale.ROOT), $state, Nigeria"
+                    /* set the value of location */
+//                    val street = binding.accountFragmentWorkshopAddressStreetValueTextView.text.toString()
+//                    val city = binding.accountFragmentWorkshopAddressCityValueTextView.text.toString()
+//                    val state = binding.accountFragmentWorkshopAddressStateValueTextView.text.toString()
+
+//                    val fullAddress = "$street.capitalize(Locale.ROOT), $city.capitalize(Locale.ROOT), $state, Nigeria"
 
                     /* extract location from set address*/
-                    geoPoints = getLocationFromAddress(fullAddress)
+//                    geoPoints = getLocationFromAddress(fullAddress)
+
 
                     it.data?.let { profile ->
 
@@ -215,14 +230,15 @@ class AccountFragment : BaseFragment() {
                             phoneNumber = binding.accountFragmentPhoneNumberValueTextView.text.toString(),
                             role = profile.role,
                             workshopAddress = WorkshopAddress(
-                                binding.accountFragmentWorkshopAddressStreetValueTextView.text.toString(),
-                                binding.accountFragmentWorkshopAddressCityValueTextView.text.toString(),
-                                binding.accountFragmentWorkshopAddressStateValueTextView.text.toString(),
-                                geoPoints.longitude.toString(),
-                                geoPoints.latitude.toString()
+                                artisanStreet,
+                                artisanCity,
+                                artisanState,
+                                artisanLongitude.toString(),
+                                artisanLatitude.toString()
                             ),
 
-                            showroomAddress = ShowroomAddress( // -------- //
+                            showroomAddress = ShowroomAddress(
+                                // -------- //
                                 street = binding.accountFragmentWorkshopAddressCityValueTextView.text.toString(), // -------- //
                                 city = binding.accountFragmentWorkshopAddressCityValueTextView.text.toString(),
                                 state = binding.accountFragmentShowroomAddressValueTextView.text.toString(),
@@ -248,6 +264,7 @@ class AccountFragment : BaseFragment() {
             }
         )
     }
+
 
     /*Update User Profile Picture*/
     private fun updateUserProfilePicture(downloadUri: String) {
@@ -328,6 +345,16 @@ class AccountFragment : BaseFragment() {
         when (requestCode) {
             READ_IMAGE_STORAGE -> innerCheck(NAME)
         }
+
+        if(grantResults.contains(PackageManager.PERMISSION_GRANTED) && requestCode == LOCATION_REQUEST_CODE){
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                showToast("Permission granted")
+                getArtisanLocation()
+            }
+        } else {
+            showToast( "Location permission is required for this feature to run")
+        }
+
     }
 
     // Show dialog for permission dialog
@@ -506,8 +533,6 @@ class AccountFragment : BaseFragment() {
         }
     }
 
-    // --------------------------------------------------------------------------------------------
-
     // Workshop state Dialog
     private fun accountWorkshopStateDialog() {
         // when account shop name value is clicked
@@ -584,8 +609,6 @@ class AccountFragment : BaseFragment() {
             )
         }
     }
-
-    // --------------------------------------------------------------------------------------------
 
     private fun accountShowRoomAddressDialog() {
         // when showroom name value is clicked
@@ -742,33 +765,60 @@ class AccountFragment : BaseFragment() {
         }
     }
 
-    private fun getLocationFromAddress(address: String): GeoPoints {
-
-        try {
-            addresses = geocoder.getFromLocationName(address, 5)
-
-            val location = addresses[0]
-            locationLat = location.latitude
-            locationLong = location.longitude
-        } catch (e: java.lang.Exception) {
-            Toast.makeText(requireContext(), "Address does not exist.", Toast.LENGTH_SHORT).show()
-        }
-
-        return GeoPoints(latitude = locationLat, longitude = locationLong)
-    }
-
+    
     private fun initializeLocations() {
-        geocoder = Geocoder(requireContext(), Locale.getDefault()) // -------- //
 
         locationRequest = LocationRequest().apply {
-            interval = TimeUnit.SECONDS.toMillis(1000) // -------- //
+            interval = TimeUnit.SECONDS.toMillis(1000)
             fastestInterval = TimeUnit.SECONDS.toMillis(2000)
             maxWaitTime = TimeUnit.MINUTES.toMillis(1)
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
 
-        checkGPSEnabled(LOCATION_REQUEST_CODE, locationRequest) // -------- //
+        if(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), LOCATION_REQUEST_CODE)
+        } else {
+            checkGPSEnabled(LOCATION_REQUEST_CODE, locationRequest).also {
+                getArtisanLocation()
+            }
+        }
     }
+
+
+    @SuppressLint("MissingPermission")
+    private fun getArtisanLocation(){
+
+        fusedLocationProvider.lastLocation?.addOnSuccessListener {
+
+            if(it == null){
+
+                showToast("Sorry cant get location")
+
+            } else it.apply {
+                val locationLatitude = it.latitude
+                val locationLongitude = it.longitude
+
+                addresses = geocoder.getFromLocation(
+                    locationLatitude,
+                    locationLongitude,
+                    1
+                )
+                // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+
+                artisanStreet = "{${addresses[0].featureName} ${addresses[0].thoroughfare}}"
+                // locality = addresses[0].subAdminArea
+                artisanCity = addresses[0].locality
+                artisanState = addresses[0].adminArea
+                //artisanCountry = addresses[0].countryName
+                artisanLatitude = addresses[0].latitude
+                artisanLongitude = addresses[0].longitude
+
+                //Log.d("BBBBBBBBBB", " $number, $street, $locality, $city, $state, $country}")
+
+            }
+        }
+    }
+
 
     // Gender Dialog
     private fun accountGenderSelectDialog() {
@@ -866,5 +916,7 @@ class AccountFragment : BaseFragment() {
 
         const val READ_IMAGE_STORAGE = 102
         const val NAME = "CLads"
+
+        const val GPS_KEY = "false"
     }
 }

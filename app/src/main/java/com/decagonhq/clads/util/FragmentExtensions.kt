@@ -130,8 +130,8 @@ fun Fragment.showLoadingBar(message: String): Dialog {
 
 fun Fragment.checkGPSEnabled(LOCATION_REQUEST_CODE: Int, locationRequest: LocationRequest) {
 
-    val builder = LocationSettingsRequest.Builder()
-        .addLocationRequest(locationRequest)
+
+    val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
 
     val client: SettingsClient = LocationServices.getSettingsClient(requireActivity())
     val task: Task<LocationSettingsResponse> = client.checkLocationSettings(builder.build())
