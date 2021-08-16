@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioGroup
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AlertDialog
@@ -21,6 +22,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.test.core.app.ApplicationProvider
 import com.decagonhq.clads.R
 import com.decagonhq.clads.data.domain.images.UserProfileImage
 import com.decagonhq.clads.data.domain.profile.Union
@@ -102,10 +104,14 @@ class AccountFragment : BaseFragment() {
                 R.style.BottomSheetDialogStyle
             )
 
-            val radioButton: RadioGroup? = dialog.findViewById(R.id.account_fragment_location_bottom_sheet_set_location_later_radio_group)
+            val radioButton: RadioGroup? = dialog.findViewById(R.id.account_fragment_location_bottom_sheet_set_location_later_radio_button)
             radioButton?.setOnClickListener {
                 showToast("radio button")
             }
+            radioButton?.setOnClickListener(View.OnClickListener {
+                Toast.makeText(ApplicationProvider.getApplicationContext(), "Copy is Clicked ", Toast.LENGTH_LONG).show()
+                dialog.dismiss()
+            })
 
             dialog.setContentView(view1)
             dialog.show()
