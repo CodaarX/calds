@@ -91,9 +91,7 @@ class AccountFragment : BaseFragment() {
     private val LOCATION_REQUEST_CODE = 1
 
     /* set broadcast receiver object */
-    private fun listenForBroadcast(): BroadcastReceiver {
-
-        return object : BroadcastReceiver() {
+        var broadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 /* listen for changes in cell broadcast */
                 if (LocationManager.PROVIDERS_CHANGED_ACTION == intent.action) {
@@ -111,7 +109,6 @@ class AccountFragment : BaseFragment() {
                 }
             }
         }
-    }
 
     override fun onStart() {
         super.onStart()
@@ -119,7 +116,7 @@ class AccountFragment : BaseFragment() {
         /* register broadcast receivers */
         val filter = IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION)
         filter.addAction(Intent.ACTION_PROVIDER_CHANGED)
-        requireContext().registerReceiver(listenForBroadcast(), filter)
+        requireContext().registerReceiver(broadcastReceiver, filter)
     }
 
     override fun onCreateView(
@@ -344,7 +341,6 @@ class AccountFragment : BaseFragment() {
                             paymentTerms = profile.paymentTerms,
                             paymentOptions = profile.paymentOptions
                         )
-
                         userProfileViewModel.updateUserProfile(userProfile)
                     }
                 }
@@ -396,7 +392,7 @@ class AccountFragment : BaseFragment() {
                 if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     showToast("permission refused")
                 } else {
-                    checkGPSEnabled(LOCATION_REQUEST_CODE) { listenForBroadcast() }
+                    checkGPSEnabled(LOCATION_REQUEST_CODE) { broadcastReceiver }
                 }
             }
         }
@@ -726,7 +722,7 @@ class AccountFragment : BaseFragment() {
                     showToast("GPS ENABLED")
                     getArtisanLocation()
                 } else {
-                    checkGPSEnabled(LOCATION_REQUEST_CODE) { listenForBroadcast() }
+                    checkGPSEnabled(LOCATION_REQUEST_CODE) { broadcastReceiver }
                 }
             } catch (ex: java.lang.Exception) {
             }
@@ -808,12 +804,16 @@ class AccountFragment : BaseFragment() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        /* unregister from broadcast receiver */
+        requireContext().unregisterReceiver(broadcastReceiver)
+
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-
-        /* unregister from broadcast receiver */
-        requireContext().unregisterReceiver(listenForBroadcast())
     }
 
     companion object {
