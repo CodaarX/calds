@@ -407,7 +407,6 @@
     <string name="let_s_know_where_you_are">Let\'s Know Where you are</string>
     <string name="set_location_later">Set Location later</string>
     <string name="set_location_now">Set Location now</string>
->>>>>>> 42e1253d8771bfe0ae2b71a22ae5f11b04f9b226
 
     <string-array name="account_category">
         <item>Tailor</item>
