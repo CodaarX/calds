@@ -270,12 +270,12 @@
     <fragment
         android:id="@+id/individualVideoScreenFragment"
         android:name="com.decagonhq.clads.ui.resource.IndividualVideoScreenFragment"
-        android:label="@string/individual_video"
+        android:label="Videos"
         tools:layout="@layout/individual_video_screen_fragment" />
     <fragment
         android:id="@+id/resourceViewIndividualArticleFragment"
         android:name="com.decagonhq.clads.ui.resource.ResourceIndividualArticleWebViewFragment"
-        android:label="Article/Publications" />
+        android:label="Articles" />
     <fragment
         android:id="@+id/clientDetailsFragment"
         android:name="com.decagonhq.clads.ui.client.ClientDetailsFragment"
