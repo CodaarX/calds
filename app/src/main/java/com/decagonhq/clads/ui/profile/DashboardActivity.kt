@@ -393,14 +393,14 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
                         toolbarProfilePicture.visibility = View.GONE
                         toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
-                        toolbarFragmentName.visibility = View.INVISIBLE
+                        toolbarFragmentName.visibility = View.VISIBLE
                     }
                     R.id.individualVideoScreenFragment -> {
                         bottomNavigationView.visibility = View.GONE
                         toolbarProfilePicture.visibility = View.GONE
                         toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
-                        toolbarFragmentName.visibility = View.INVISIBLE
+                        toolbarFragmentName.visibility = View.VISIBLE
                     }
                     else -> {
                         bottomNavigationView.visibility = View.GONE
