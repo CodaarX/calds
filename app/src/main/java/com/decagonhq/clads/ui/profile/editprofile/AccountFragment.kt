@@ -92,6 +92,7 @@ class AccountFragment : BaseFragment() {
 
     /* set broadcast receiver object */
         var broadcastReceiver = object : BroadcastReceiver() {
+
             override fun onReceive(context: Context, intent: Intent) {
                 /* listen for changes in cell broadcast */
                 if (LocationManager.PROVIDERS_CHANGED_ACTION == intent.action) {
@@ -113,10 +114,15 @@ class AccountFragment : BaseFragment() {
     override fun onStart() {
         super.onStart()
 
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         /* register broadcast receivers */
         val filter = IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION)
         filter.addAction(Intent.ACTION_PROVIDER_CHANGED)
         requireContext().registerReceiver(broadcastReceiver, filter)
+        showToast("Registered")
     }
 
     override fun onCreateView(
@@ -731,6 +737,7 @@ class AccountFragment : BaseFragment() {
     @SuppressLint("MissingPermission")
     private fun getArtisanLocation() {
 
+        progressDialog.showDialogFragment("fetching your location")
         /* set location request necessities */
         locationRequest.apply {
             interval = TimeUnit.SECONDS.toMillis(60000)
@@ -765,6 +772,11 @@ class AccountFragment : BaseFragment() {
 
                             binding.accountFragmentWorkshopAddressValueTextView.text =
                                 "${addresses[0].featureName}, ${addresses[0].thoroughfare}, $locality, $artisanCity, $artisanState"
+
+                            if(binding.accountFragmentWorkshopAddressValueTextView.text.isNotEmpty()){
+                                progressDialog.hideProgressDialog()
+                            }
+
                         }
                     }
                 }
