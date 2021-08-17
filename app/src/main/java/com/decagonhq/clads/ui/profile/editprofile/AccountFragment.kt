@@ -60,7 +60,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import timber.log.Timber
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
@@ -91,24 +91,24 @@ class AccountFragment : BaseFragment() {
     private val LOCATION_REQUEST_CODE = 1
 
     /* set broadcast receiver object */
-        var broadcastReceiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-                /* listen for changes in cell broadcast */
-                if (LocationManager.PROVIDERS_CHANGED_ACTION == intent.action) {
-                    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-                    val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+    var broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            /* listen for changes in cell broadcast */
+            if (LocationManager.PROVIDERS_CHANGED_ACTION == intent.action) {
+                val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
 //                val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-                    if (isGpsEnabled) {
-                        // Handle Location turned ON
-                        getArtisanLocation()
-                        Toast.makeText(requireContext(), "LOCATION ENABLED", Toast.LENGTH_LONG).show()
-                    } else {
-                        Toast.makeText(requireContext(), "LOCATION DISABLED", Toast.LENGTH_LONG).show()
-                        // Handle Location turned OFF
-                    }
+                if (isGpsEnabled) {
+                    // Handle Location turned ON
+                    getArtisanLocation()
+                    Toast.makeText(requireContext(), "LOCATION ENABLED", Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(requireContext(), "LOCATION DISABLED", Toast.LENGTH_LONG).show()
+                    // Handle Location turned OFF
                 }
             }
         }
+    }
 
     override fun onStart() {
         super.onStart()
@@ -807,7 +807,6 @@ class AccountFragment : BaseFragment() {
         super.onPause()
         /* unregister from broadcast receiver */
         requireContext().unregisterReceiver(broadcastReceiver)
-
     }
 
     override fun onDestroyView() {
