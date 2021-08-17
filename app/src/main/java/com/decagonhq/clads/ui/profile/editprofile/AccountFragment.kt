@@ -60,12 +60,8 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import timber.log.Timber
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.TimeUnit
-
-
-
-
 
 @AndroidEntryPoint
 class AccountFragment : BaseFragment() {
@@ -159,7 +155,6 @@ class AccountFragment : BaseFragment() {
                 uploadImageToServer(uri)
             }
         }
-
 
         // inflate bottom sheet
         binding.accountFragmentWorkshopAddressValueTextView.setOnClickListener {
@@ -769,18 +764,14 @@ class AccountFragment : BaseFragment() {
                             artisanLatitude = addresses[0].latitude
                             artisanLongitude = addresses[0].longitude
 
+                            binding.accountFragmentWorkshopAddressValueTextView.text = "${addresses[0].featureName}, ${addresses[0].thoroughfare}, $locality, $artisanCity, $artisanState"
 
-                                binding.accountFragmentWorkshopAddressValueTextView.text = "${addresses[0].featureName}, ${addresses[0].thoroughfare}, $locality, $artisanCity, $artisanState"
-
-                                if(binding.accountFragmentWorkshopAddressValueTextView.text.isNotEmpty()){
-                                    progressDialog.hideProgressDialog()
-                                }
-
+                            if (binding.accountFragmentWorkshopAddressValueTextView.text.isNotEmpty()) {
+                                progressDialog.hideProgressDialog()
+                            }
                         }
                     }
-
                 }
-
             }
 
             /* initialize geoCoder */
