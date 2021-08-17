@@ -60,11 +60,8 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import timber.log.Timber
-import java.util.Locale
+import java.util.*
 import java.util.concurrent.TimeUnit
-import android.R.attr.name
-import androidx.fragment.app.Fragment
-import android.R.attr.name
 
 
 
@@ -772,13 +769,13 @@ class AccountFragment : BaseFragment() {
                             artisanLatitude = addresses[0].latitude
                             artisanLongitude = addresses[0].longitude
 
-                            if (AccountFragment().isVisible){
+
                                 binding.accountFragmentWorkshopAddressValueTextView.text = "${addresses[0].featureName}, ${addresses[0].thoroughfare}, $locality, $artisanCity, $artisanState"
 
                                 if(binding.accountFragmentWorkshopAddressValueTextView.text.isNotEmpty()){
                                     progressDialog.hideProgressDialog()
                                 }
-                            }
+
                         }
                     }
 
