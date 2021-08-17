@@ -30,10 +30,11 @@ object ColorSelector {
             -0x2b1ea9,
             -0x9b4a0a
         )
-    fun selectColorByCharacter(char: String): Int {
+
+    fun selectColorByCharacter(char: Char): Int {
         val colors = colors()
         val charArray = (65..90).map {
-            it.toString()
+            it.toChar()
         }
         return colors[charArray.indexOf(char)]
     }
