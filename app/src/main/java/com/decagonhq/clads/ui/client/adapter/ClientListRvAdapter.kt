@@ -9,6 +9,7 @@ import com.amulyakhare.textdrawable.TextDrawable
 import com.amulyakhare.textdrawable.util.ColorGenerator
 import com.decagonhq.clads.data.domain.client.Client
 import com.decagonhq.clads.databinding.ClientsRecyclerViewItemBinding
+import com.decagonhq.clads.util.ColorSelector
 import java.util.Locale
 
 class ClientListRvAdapter(private val interaction: Interaction? = null) :
@@ -69,7 +70,7 @@ class ClientListRvAdapter(private val interaction: Interaction? = null) :
             val clientInitials = item.fullName.split(" ")[0].substring(0, 1).capitalize(Locale.ROOT) +
                 item.fullName.split(" ")[1].substring(0, 1).capitalize(Locale.ROOT)
             val generator: ColorGenerator = ColorGenerator.MATERIAL
-            val color = generator.randomColor
+            val color = ColorSelector.selectColorByCharacter((item.fullName.split(" ")[0].first()))
             val drawable = TextDrawable.builder().beginConfig()
                 .width(150)
                 .height(150)
