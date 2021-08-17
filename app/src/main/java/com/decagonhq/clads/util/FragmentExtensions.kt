@@ -132,10 +132,10 @@ fun Fragment.showLoadingBar(message: String): Dialog {
 fun Fragment.checkGPSEnabled(LOCATION_REQUEST_CODE: Int, action: () -> Unit) {
 
     val locationRequest = LocationRequest().apply {
-        interval = TimeUnit.SECONDS.toMillis(1000)
-        fastestInterval = TimeUnit.SECONDS.toMillis(2000)
-        maxWaitTime = TimeUnit.MINUTES.toMillis(1)
-        priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            interval = TimeUnit.SECONDS.toMillis(7000)
+            fastestInterval = TimeUnit.SECONDS.toMillis(5000)
+            maxWaitTime = TimeUnit.SECONDS.toMillis(30000)
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
 
     val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)

@@ -60,8 +60,15 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import timber.log.Timber
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.TimeUnit
+import android.R.attr.name
+import androidx.fragment.app.Fragment
+import android.R.attr.name
+
+
+
+
 
 @AndroidEntryPoint
 class AccountFragment : BaseFragment() {
@@ -88,32 +95,27 @@ class AccountFragment : BaseFragment() {
     private var artisanStreet: String = ""
     private var artisanCity: String = ""
     private var artisanState: String = ""
+    private var locality: String = ""
     private val LOCATION_REQUEST_CODE = 1
 
-    /* set broadcast receiver object */
-        var broadcastReceiver = object : BroadcastReceiver() {
-
-            override fun onReceive(context: Context, intent: Intent) {
-                /* listen for changes in cell broadcast */
-                if (LocationManager.PROVIDERS_CHANGED_ACTION == intent.action) {
-                    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-                    val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+    var broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            /* listen for changes in cell broadcast */
+            if (LocationManager.PROVIDERS_CHANGED_ACTION == intent.action) {
+                val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
 //                val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-                    if (isGpsEnabled) {
-                        // Handle Location turned ON
-                        getArtisanLocation()
-                        Toast.makeText(requireContext(), "LOCATION ENABLED", Toast.LENGTH_LONG).show()
-                    } else {
-                        Toast.makeText(requireContext(), "LOCATION DISABLED", Toast.LENGTH_LONG).show()
-                        // Handle Location turned OFF
-                    }
+
+                if (isGpsEnabled) {
+                    // Handle Location turned ON
+                    Toast.makeText(requireContext(), "LOCATION ENABLED", Toast.LENGTH_LONG).show()
+                    getArtisanLocation()
+                } else {
+                    Toast.makeText(requireContext(), "LOCATION DISABLED", Toast.LENGTH_LONG).show()
+                    // Handle Location turned OFF
                 }
             }
         }
-
-    override fun onStart() {
-        super.onStart()
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -122,14 +124,13 @@ class AccountFragment : BaseFragment() {
         val filter = IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION)
         filter.addAction(Intent.ACTION_PROVIDER_CHANGED)
         requireContext().registerReceiver(broadcastReceiver, filter)
-        showToast("Registered")
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding = AccountFragmentBinding.inflate(inflater, container, false)
         return binding.root
@@ -161,6 +162,7 @@ class AccountFragment : BaseFragment() {
                 uploadImageToServer(uri)
             }
         }
+
 
         // inflate bottom sheet
         binding.accountFragmentWorkshopAddressValueTextView.setOnClickListener {
@@ -737,12 +739,12 @@ class AccountFragment : BaseFragment() {
     @SuppressLint("MissingPermission")
     private fun getArtisanLocation() {
 
-        progressDialog.showDialogFragment("fetching your location")
+        progressDialog.showDialogFragment("fetching your location...")
         /* set location request necessities */
         locationRequest.apply {
-            interval = TimeUnit.SECONDS.toMillis(60000)
+            interval = TimeUnit.SECONDS.toMillis(7000)
             fastestInterval = TimeUnit.SECONDS.toMillis(5000)
-            maxWaitTime = TimeUnit.MINUTES.toMillis(1)
+            maxWaitTime = TimeUnit.SECONDS.toMillis(30000)
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
 
             /* callback for location result after request */
@@ -764,22 +766,24 @@ class AccountFragment : BaseFragment() {
                             /* extract address */
                             artisanStreet =
                                 "${addresses[0].featureName} ${addresses[0].thoroughfare}, ${addresses[0].subAdminArea}"
-                            var locality = addresses[0].subAdminArea
+                            locality = addresses[0].subAdminArea
                             artisanCity = addresses[0].locality
                             artisanState = addresses[0].adminArea
                             artisanLatitude = addresses[0].latitude
                             artisanLongitude = addresses[0].longitude
 
-                            binding.accountFragmentWorkshopAddressValueTextView.text =
-                                "${addresses[0].featureName}, ${addresses[0].thoroughfare}, $locality, $artisanCity, $artisanState"
+                            if (AccountFragment().isVisible){
+                                binding.accountFragmentWorkshopAddressValueTextView.text = "${addresses[0].featureName}, ${addresses[0].thoroughfare}, $locality, $artisanCity, $artisanState"
 
-                            if(binding.accountFragmentWorkshopAddressValueTextView.text.isNotEmpty()){
-                                progressDialog.hideProgressDialog()
+                                if(binding.accountFragmentWorkshopAddressValueTextView.text.isNotEmpty()){
+                                    progressDialog.hideProgressDialog()
+                                }
                             }
-
                         }
                     }
+
                 }
+
             }
 
             /* initialize geoCoder */
@@ -815,12 +819,11 @@ class AccountFragment : BaseFragment() {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        /* unregister from broadcast receiver */
-        requireContext().unregisterReceiver(broadcastReceiver)
-
-    }
+//    override fun onPause() {
+//        super.onPause()
+//        /* unregister from broadcast receiver */
+//        requireContext().unregisterReceiver(broadcastReceiver)
+//    }
 
     override fun onDestroyView() {
         super.onDestroyView()
