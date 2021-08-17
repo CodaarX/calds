@@ -30,6 +30,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
+import java.util.concurrent.TimeUnit
 
 fun Fragment.showView(view: View) {
 
@@ -128,7 +129,14 @@ fun Fragment.showLoadingBar(message: String): Dialog {
     return dialog
 }
 
-fun Fragment.checkGPSEnabled(LOCATION_REQUEST_CODE: Int, locationRequest: LocationRequest) {
+fun Fragment.checkGPSEnabled(LOCATION_REQUEST_CODE: Int, action: () -> Unit) {
+
+    val locationRequest = LocationRequest().apply {
+        interval = TimeUnit.SECONDS.toMillis(1000)
+        fastestInterval = TimeUnit.SECONDS.toMillis(2000)
+        maxWaitTime = TimeUnit.MINUTES.toMillis(1)
+        priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+    }
 
     val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
 
@@ -136,13 +144,12 @@ fun Fragment.checkGPSEnabled(LOCATION_REQUEST_CODE: Int, locationRequest: Locati
     val task: Task<LocationSettingsResponse> = client.checkLocationSettings(builder.build())
 
     task.addOnSuccessListener { locationSettingsResponse ->
-        println("GPS IS ON")
+
+        action.invoke()
     }
 
     task.addOnFailureListener { exception ->
         if (exception is ResolvableApiException) {
-            // Location settings are not satisfied, but this can be fixed
-            // by showing the user a dialog.
             try {
                 /** Make alert dialog to request user to turn on GPS**/
                 android.app.AlertDialog.Builder(requireContext())

@@ -2,21 +2,23 @@ package com.decagonhq.clads.ui.profile.editprofile
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.ProgressDialog.show
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.RadioButton
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AlertDialog
@@ -45,7 +47,9 @@ import com.decagonhq.clads.util.uriToBitmap
 import com.decagonhq.clads.viewmodels.ImageUploadViewModel
 import com.decagonhq.clads.viewmodels.UserProfileViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.theartofdev.edmodo.cropper.CropImage
@@ -56,8 +60,8 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import timber.log.Timber
+import java.util.*
 import java.util.concurrent.TimeUnit
-
 @AndroidEntryPoint
 class AccountFragment : BaseFragment() {
 
@@ -70,15 +74,48 @@ class AccountFragment : BaseFragment() {
     private val userProfileViewModel: UserProfileViewModel by activityViewModels()
     private lateinit var cropActivityResultLauncher: ActivityResultLauncher<Any?>
     private lateinit var fusedLocationProvider: FusedLocationProviderClient
+    private lateinit var locationCallback: LocationCallback
     private lateinit var geocoder: Geocoder
+    private lateinit var locationRequest: LocationRequest
     private lateinit var addresses: MutableList<Address>
     private var artisanLatitude: Double = 0.0
     private var artisanLongitude: Double = 0.0
     private var artisanStreet: String = ""
     private var artisanCity: String = ""
     private var artisanState: String = ""
-    private lateinit var locationRequest: LocationRequest
     private val LOCATION_REQUEST_CODE = 1
+
+    /* set broadcast receiver object */
+    private fun listenForBroadcast(): BroadcastReceiver {
+
+        return object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                /* listen for changes in cell broadcast */
+                if (LocationManager.PROVIDERS_CHANGED_ACTION == intent.action) {
+                    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                    val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+//                val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+                    if (isGpsEnabled) {
+                        // Handle Location turned ON
+                        getArtisanLocation()
+                        Toast.makeText(requireContext(), "LOCATION ENABLED", Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(requireContext(), "LOCATION DISABLED", Toast.LENGTH_LONG).show()
+                        // Handle Location turned OFF
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        /* register broadcast receivers */
+        val filter = IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION)
+        filter.addAction(Intent.ACTION_PROVIDER_CHANGED)
+        requireContext().registerReceiver(listenForBroadcast(), filter)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -93,8 +130,8 @@ class AccountFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        geocoder = Geocoder(requireContext(), Locale.getDefault())
-        fusedLocationProvider = LocationServices.getFusedLocationProviderClient(requireActivity())
+        /* initialize location request */
+        locationRequest = LocationRequest()
 
         /*Dialog fragment functions*/
         accountFirstNameEditDialog()
@@ -186,7 +223,14 @@ class AccountFragment : BaseFragment() {
                             accountFragmentLastNameValueTextView.text = userProfile.lastName
                             accountFragmentPhoneNumberValueTextView.text = userProfile.phoneNumber
                             accountFragmentGenderValueTextView.text = userProfile.gender
-                            accountFragmentWorkshopAddressValueTextView.text = "${userProfile.workshopAddress?.street}, ${userProfile.workshopAddress?.city}, ${userProfile.workshopAddress?.state}."
+                            if (userProfile.workshopAddress?.street == null) {
+                                accountFragmentWorkshopAddressValueTextView.hint =
+                                    // ---------------------------------------------------//
+                                    "Tap to enter shop address"
+                            } else {
+                                accountFragmentWorkshopAddressValueTextView.text =
+                                    "${userProfile.workshopAddress?.street}, ${userProfile.workshopAddress?.city}, ${userProfile.workshopAddress?.state}."
+                            }
                             accountFragmentNameOfUnionValueTextView.text = userProfile.union?.name
                             accountFragmentWardValueTextView.text = userProfile.union?.ward
                             accountFragmentLocalGovtAreaValueTextView.text = userProfile.union?.lga
@@ -251,6 +295,9 @@ class AccountFragment : BaseFragment() {
                         )
 
                         userProfileViewModel.updateUserProfile(userProfile)
+
+                        /* remove location update calls */
+                        fusedLocationProvider.removeLocationUpdates(locationCallback)
                     }
                 }
             }
@@ -325,25 +372,30 @@ class AccountFragment : BaseFragment() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        fun innerCheck(name: String) {
-            if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                showToast("$name permission refused")
-            } else {
-                showToast("$name permission granted")
-                cropActivityResultLauncher.launch(null)
-            }
-        }
-        when (requestCode) {
-            READ_IMAGE_STORAGE -> innerCheck(NAME)
-        }
 
-        if (grantResults.contains(PackageManager.PERMISSION_GRANTED) && requestCode == LOCATION_REQUEST_CODE) {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                showToast("Permission granted")
-                getArtisanLocation()
+        when (requestCode) {
+
+            READ_IMAGE_STORAGE -> {
+                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    showToast("permission refused")
+                } else {
+                    showToast("Permission granted")
+                    cropActivityResultLauncher.launch(null)
+                }
             }
-        } else {
-            showToast("Location permission is required for this feature to run")
+
+            LOCATION_REQUEST_CODE -> {
+
+                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    showToast("permission refused")
+                } else {
+
+                    checkGPSEnabled(LOCATION_REQUEST_CODE) {
+                        listenForBroadcast()
+//                        getArtisanLocation()
+                    }
+                }
+            }
         }
     }
 
@@ -652,58 +704,73 @@ class AccountFragment : BaseFragment() {
         }
     }
 
-    private fun initializeLocations() {
+    private fun initializeLocations() { // ---------------------------------------------------//
 
-        locationRequest = LocationRequest().apply {
-            interval = TimeUnit.SECONDS.toMillis(1000)
-            fastestInterval = TimeUnit.SECONDS.toMillis(2000)
-            maxWaitTime = TimeUnit.MINUTES.toMillis(1)
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
-
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), LOCATION_REQUEST_CODE).also {
-                checkGPSEnabled(LOCATION_REQUEST_CODE, locationRequest).also {
-                    getArtisanLocation()
-                }
-            }
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(
+                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
+                LOCATION_REQUEST_CODE
+            )
         } else {
-            checkGPSEnabled(LOCATION_REQUEST_CODE, locationRequest).also {
-                getArtisanLocation()
-            }
+
+            checkGPSEnabled(LOCATION_REQUEST_CODE) { listenForBroadcast() }
         }
     }
 
     @SuppressLint("MissingPermission")
     private fun getArtisanLocation() {
 
-        fusedLocationProvider.lastLocation?.addOnSuccessListener {
+        /* set location request necessities */
+        locationRequest.apply {
+            interval = TimeUnit.SECONDS.toMillis(60000)
+            fastestInterval = TimeUnit.SECONDS.toMillis(5000)
+            maxWaitTime = TimeUnit.MINUTES.toMillis(1)
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
 
-            if (it == null) {
+            /* callback for location result after request */
+            val locationCallback: LocationCallback = object : LocationCallback() {
+                override fun onLocationResult(locationResult: LocationResult) {
+                    for (location in locationResult.locations) {
+                        if (location != null) {
 
-                showToast("Sorry cant get location")
-            } else it.apply {
-                val locationLatitude = it.latitude
-                val locationLongitude = it.longitude
+                            val locationLatitude = location.latitude
+                            val locationLongitude = location.longitude
 
-                addresses = geocoder.getFromLocation(
-                    locationLatitude,
-                    locationLongitude,
-                    1
-                )
+                            /* use co-orrdinates to get address */
+                            addresses = geocoder.getFromLocation(
+                                locationLatitude,
+                                locationLongitude,
+                                1
+                            )
 
-                artisanStreet = "${addresses[0].featureName} ${addresses[0].thoroughfare}, ${addresses[0].subAdminArea}"
-                var locality = addresses[0].subAdminArea
-                artisanCity = addresses[0].locality
-                artisanState = addresses[0].adminArea
-                var artisanCountry = addresses[0].countryName
-                artisanLatitude = addresses[0].latitude
-                artisanLongitude = addresses[0].longitude
+                            /* extract address */
+                            artisanStreet =
+                                "${addresses[0].featureName} ${addresses[0].thoroughfare}, ${addresses[0].subAdminArea}"
+                            var locality = addresses[0].subAdminArea
+                            artisanCity = addresses[0].locality
+                            artisanState = addresses[0].adminArea
+                            artisanLatitude = addresses[0].latitude
+                            artisanLongitude = addresses[0].longitude
 
-                binding.accountFragmentWorkshopAddressValueTextView.text = "${addresses[0].featureName}, ${addresses[0].thoroughfare}, $locality, $artisanCity, $artisanState"
-
-                Log.d("BBBBBBBBBB", " ${addresses[0].featureName}, ${addresses[0].thoroughfare}, $locality, $artisanCity, $artisanState, $artisanCountry}")
+                            binding.accountFragmentWorkshopAddressValueTextView.text =
+                                "${addresses[0].featureName}, ${addresses[0].thoroughfare}, $locality, $artisanCity, $artisanState"
+                        }
+                    }
+                }
             }
+
+            /* initialize geoCoder */
+            geocoder = Geocoder(requireContext(), Locale.getDefault())
+
+            /* initialize fusedLocation client */
+            fusedLocationProvider = LocationServices.getFusedLocationProviderClient(requireContext())
+
+            /* actual location request */
+            fusedLocationProvider.requestLocationUpdates(locationRequest, locationCallback, null)
         }
     }
 
@@ -732,6 +799,9 @@ class AccountFragment : BaseFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+
+        /* unregister from broadcast receiver */
+        requireContext().unregisterReceiver(listenForBroadcast())
     }
 
     companion object {
