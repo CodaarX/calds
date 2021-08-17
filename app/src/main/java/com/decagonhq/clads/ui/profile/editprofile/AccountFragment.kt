@@ -719,7 +719,6 @@ class AccountFragment : BaseFragment() {
                 gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
 
                 if (gps_enabled) {
-                    showToast("GPS ENABLED")
                     getArtisanLocation()
                 } else {
                     checkGPSEnabled(LOCATION_REQUEST_CODE) { broadcastReceiver }
