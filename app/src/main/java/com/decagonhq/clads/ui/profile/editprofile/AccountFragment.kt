@@ -60,7 +60,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import timber.log.Timber
-import java.util.Locale
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
@@ -76,6 +76,10 @@ class AccountFragment : BaseFragment() {
     private lateinit var cropActivityResultLauncher: ActivityResultLauncher<Any?>
     private lateinit var fusedLocationProvider: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
+    private lateinit var locationManager: LocationManager
+    var gps_enabled = false
+    var network_enabled = false
+
     private lateinit var geocoder: Geocoder
     private lateinit var locationRequest: LocationRequest
     private lateinit var addresses: MutableList<Address>
@@ -133,6 +137,7 @@ class AccountFragment : BaseFragment() {
 
         /* initialize location request */
         locationRequest = LocationRequest()
+        locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
         /*Dialog fragment functions*/
         accountFirstNameEditDialog()
@@ -181,6 +186,7 @@ class AccountFragment : BaseFragment() {
 
                 setLocationLaterRadioButton?.setOnClickListener {
                     showToast(setLocationLaterRadioButton.text as String)
+                    dialog.dismiss()
                 }
 
                 dialog.setContentView(bottomSheetView)
@@ -390,11 +396,7 @@ class AccountFragment : BaseFragment() {
                 if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     showToast("permission refused")
                 } else {
-
-                    checkGPSEnabled(LOCATION_REQUEST_CODE) {
-                        listenForBroadcast()
-//                        getArtisanLocation()
-                    }
+                    checkGPSEnabled(LOCATION_REQUEST_CODE) { listenForBroadcast() }
                 }
             }
         }
@@ -717,8 +719,17 @@ class AccountFragment : BaseFragment() {
                 LOCATION_REQUEST_CODE
             )
         } else {
+            try {
+                gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
 
-            checkGPSEnabled(LOCATION_REQUEST_CODE) { listenForBroadcast() }
+                if (gps_enabled) {
+                    showToast("GPS ENABLED")
+                    getArtisanLocation()
+                } else {
+                    checkGPSEnabled(LOCATION_REQUEST_CODE) { listenForBroadcast() }
+                }
+            } catch (ex: java.lang.Exception) {
+            }
         }
     }
 
@@ -741,7 +752,7 @@ class AccountFragment : BaseFragment() {
                             val locationLatitude = location.latitude
                             val locationLongitude = location.longitude
 
-                            /* use co-orrdinates to get address */
+                            /* use co-ordinates to get address */
                             addresses = geocoder.getFromLocation(
                                 locationLatitude,
                                 locationLongitude,
