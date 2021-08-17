@@ -47,7 +47,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Named
 
