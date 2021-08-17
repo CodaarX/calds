@@ -708,7 +708,7 @@ class AccountFragment : BaseFragment() {
         }
     }
 
-    private fun initializeLocations() { // ---------------------------------------------------//
+    private fun initializeLocations() {
 
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
