@@ -238,10 +238,10 @@ class AccountFragment : BaseFragment() {
                                 accountFragmentWorkshopAddressValueTextView.text =
                                     "${userProfile.workshopAddress?.street}, ${userProfile.workshopAddress?.city}, ${userProfile.workshopAddress?.state}."
                             }
-                            accountFragmentNameOfUnionValueTextView.text = userProfile.union?.name?:"Tap to enter Union name"
-                            accountFragmentWardValueTextView.text = userProfile.union?.ward?:"Tap to enter Union ward"
-                            accountFragmentLocalGovtAreaValueTextView.text = userProfile.union?.lga?:"Tap to enter Union LGA"
-                            accountFragmentStateValueTextView.text = userProfile.union?.state?:"Tap to enter Union State"
+                            accountFragmentNameOfUnionValueTextView.text = userProfile.union?.name ?: "Tap to enter Union name"
+                            accountFragmentWardValueTextView.text = userProfile.union?.ward ?: "Tap to enter Union ward"
+                            accountFragmentLocalGovtAreaValueTextView.text = userProfile.union?.lga ?: "Tap to enter Union LGA"
+                            accountFragmentStateValueTextView.text = userProfile.union?.state ?: "Tap to enter Union State"
                             /*Load Profile Picture with Glide*/
                             binding.accountFragmentEditProfileIconImageView.loadImage(userProfile.thumbnail)
                         }
@@ -257,7 +257,6 @@ class AccountFragment : BaseFragment() {
             .setMessage("Location needs to be set to be visible to clients")
             .setCancelable(false)
             .setNegativeButton("Cancel") { _, _ ->
-
             }
             .setPositiveButton("Set Now") { _, _ ->
                 initializeLocations()
