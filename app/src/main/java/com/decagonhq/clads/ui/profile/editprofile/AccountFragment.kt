@@ -52,6 +52,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.theartofdev.edmodo.cropper.CropImage
 import dagger.hilt.android.AndroidEntryPoint
 import id.zelory.compressor.Compressor
@@ -184,7 +185,7 @@ class AccountFragment : BaseFragment() {
                 }
 
                 setLocationLaterRadioButton?.setOnClickListener {
-                    showToast(setLocationLaterRadioButton.text as String)
+                    setLocationLaterDialog()
                     dialog.dismiss()
                 }
 
@@ -237,10 +238,10 @@ class AccountFragment : BaseFragment() {
                                 accountFragmentWorkshopAddressValueTextView.text =
                                     "${userProfile.workshopAddress?.street}, ${userProfile.workshopAddress?.city}, ${userProfile.workshopAddress?.state}."
                             }
-                            accountFragmentNameOfUnionValueTextView.text = userProfile.union?.name
-                            accountFragmentWardValueTextView.text = userProfile.union?.ward
-                            accountFragmentLocalGovtAreaValueTextView.text = userProfile.union?.lga
-                            accountFragmentStateValueTextView.text = userProfile.union?.state
+                            accountFragmentNameOfUnionValueTextView.text = userProfile.union?.name?:"Tap to enter Union name"
+                            accountFragmentWardValueTextView.text = userProfile.union?.ward?:"Tap to enter Union ward"
+                            accountFragmentLocalGovtAreaValueTextView.text = userProfile.union?.lga?:"Tap to enter Union LGA"
+                            accountFragmentStateValueTextView.text = userProfile.union?.state?:"Tap to enter Union State"
                             /*Load Profile Picture with Glide*/
                             binding.accountFragmentEditProfileIconImageView.loadImage(userProfile.thumbnail)
                         }
@@ -248,6 +249,20 @@ class AccountFragment : BaseFragment() {
                 }
             }
         )
+    }
+
+    private fun setLocationLaterDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.set_location_later))
+            .setMessage("Location needs to be set to be visible to clients")
+            .setCancelable(false)
+            .setNegativeButton("Cancel") { _, _ ->
+
+            }
+            .setPositiveButton("Set Now") { _, _ ->
+                initializeLocations()
+            }
+            .show()
     }
 
     /*Update User Profile*/
