@@ -75,7 +75,6 @@ class AccountFragment : BaseFragment() {
     private val userProfileViewModel: UserProfileViewModel by activityViewModels()
     private lateinit var cropActivityResultLauncher: ActivityResultLauncher<Any?>
     private lateinit var fusedLocationProvider: FusedLocationProviderClient
-    private lateinit var locationCallback: LocationCallback
     private lateinit var locationManager: LocationManager
     var gps_enabled = false
     var network_enabled = false
@@ -117,6 +116,13 @@ class AccountFragment : BaseFragment() {
         val filter = IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION)
         filter.addAction(Intent.ACTION_PROVIDER_CHANGED)
         requireContext().registerReceiver(broadcastReceiver, filter)
+
+        geocoder = Geocoder(requireContext(), Locale.getDefault()) /* initialize geoCoder */
+
+        fusedLocationProvider = LocationServices.getFusedLocationProviderClient(requireContext()) /* initialize fusedLocation client */
+
+        locationRequest = LocationRequest() /* initialize location request */
+        locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
     }
 
     override fun onCreateView(
@@ -131,10 +137,6 @@ class AccountFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        /* initialize location request */
-        locationRequest = LocationRequest()
-        locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
         /*Dialog fragment functions*/
         accountFirstNameEditDialog()
@@ -299,9 +301,6 @@ class AccountFragment : BaseFragment() {
                         )
 
                         userProfileViewModel.updateUserProfile(userProfile)
-
-                        /* remove location update calls */
-                        fusedLocationProvider.removeLocationUpdates(locationCallback)
                     }
                 }
             }
@@ -731,7 +730,7 @@ class AccountFragment : BaseFragment() {
     @SuppressLint("MissingPermission")
     private fun getArtisanLocation() {
 
-        progressDialog.showDialogFragment("fetching your location...")
+        // progressDialog.showDialogFragment("fetching your location...")
         /* set location request necessities */
         locationRequest.apply {
             interval = TimeUnit.SECONDS.toMillis(7000)
@@ -765,23 +764,19 @@ class AccountFragment : BaseFragment() {
                             artisanLongitude = addresses[0].longitude
 
                             binding.accountFragmentWorkshopAddressValueTextView.text = "${addresses[0].featureName}, ${addresses[0].thoroughfare}, $locality, $artisanCity, $artisanState"
-
-                            if (binding.accountFragmentWorkshopAddressValueTextView.text.isNotEmpty()) {
-                                progressDialog.hideProgressDialog()
-                            }
                         }
                     }
                 }
             }
 
-            /* initialize geoCoder */
-            geocoder = Geocoder(requireContext(), Locale.getDefault())
-
-            /* initialize fusedLocation client */
-            fusedLocationProvider = LocationServices.getFusedLocationProviderClient(requireContext())
-
             /* actual location request */
             fusedLocationProvider.requestLocationUpdates(locationRequest, locationCallback, null)
+
+            if (binding.accountFragmentWorkshopAddressValueTextView.text.isNotEmpty()) {
+                fusedLocationProvider.removeLocationUpdates(locationCallback)
+            }
+
+            // fusedLocationProvider.removeLocationUpdates(locationCallback)
         }
     }
 
@@ -891,3 +886,12 @@ class AccountFragment : BaseFragment() {
         const val GPS_KEY = "false"
     }
 }
+
+// private fun FusedLocationProviderClient.requestLocationUpdates(
+//    locationRequest: LocationRequest,
+//    locationCallback: LocationCallback,
+//    nothing: Nothing?,
+//    function: () -> Unit
+// ) {
+//    function.invoke()
+// }
