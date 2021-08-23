@@ -13,4 +13,5 @@ object Constants {
     const val timeOutSec = 30L
     const val IMAGE_URL = "image_url"
     const val GOOGLE_SIGN_IN_REQUEST_CODE = 100
+    const val LOCATION_REQUEST_CODE = 1
 }

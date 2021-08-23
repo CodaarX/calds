@@ -22,6 +22,21 @@ android {
         versionName "1.0"
         // multiDexEnabled true
 
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
+
+        kapt {
+            javacOptions {
+                // These options are normally set automatically via the Hilt Gradle plugin, but we
+                // set them manually to workaround a bug in the Kotlin 1.5.20
+                option("-Adagger.fastInit=ENABLED")
+                option("-Adagger.hilt.android.internal.disableAndroidSuperclassValidation=true")
+            }
+        }
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -48,20 +63,19 @@ android {
 dependencies {
 
     // Default Dependencies
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin_version"
-    implementation 'androidx.core:core-ktx:1.5.0'
-    implementation 'androidx.appcompat:appcompat:1.3.0'
-    implementation 'com.google.android.material:material:1.3.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.core:core-ktx:1.6.0'
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.firebase:firebase-auth:21.0.1'
     implementation 'com.google.firebase:firebase-auth:21.0.1'
     implementation 'com.google.firebase:firebase-crashlytics:18.0.0'
-    implementation 'com.google.firebase:firebase-analytics:19.0.0'
+    implementation 'com.google.firebase:firebase-analytics:19.0.1'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-    implementation 'com.google.android.material:material:1.5.0-alpha01'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    implementation 'com.google.android.material:material:1.5.0-alpha02'
     implementation 'com.github.PhilJay:MPAndroidChart:v2.2.2'
 
     implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
@@ -134,9 +148,7 @@ dependencies {
     implementation "com.github.bumptech.glide:glide:$versions.glide_version"
     annotationProcessor "com.github.bumptech.glide:compiler:$versions.glide_version"
 
-
     // location implementation with lifecycle
-    implementation 'com.google.android.gms:play-services-location:17.1.0'
     implementation "android.arch.lifecycle:extensions:1.1.1"
 
     // Image crop
@@ -146,6 +158,7 @@ dependencies {
     implementation "id.zelory:compressor:$versions.image_compressor"
 
     /* Location */
-    implementation "com.google.android.gms:play-services-location:$versions.location_version"
+    implementation "com.google.android.gms:play-services-location:$versions.location_versions"
+    implementation "com.google.android.gms:play-services-maps:$versions.map_version"
 
 }
