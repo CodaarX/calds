@@ -302,7 +302,9 @@
         tools:layout="@layout/fragment_maps" >
         <action
             android:id="@+id/action_mapsFragment_to_editProfileFragment"
-            app:destination="@id/editProfileFragment" />
+            app:destination="@id/editProfileFragment"
+            app:popUpTo="@id/editProfileFragment"
+            app:popUpToInclusive="false" />
     </fragment>
 
 </navigation>

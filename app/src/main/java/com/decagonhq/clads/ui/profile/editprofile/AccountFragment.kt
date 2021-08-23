@@ -7,12 +7,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.location.Address
-import android.location.Geocoder
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +29,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.decagonhq.clads.MapsFragment
 import com.decagonhq.clads.R
 import com.decagonhq.clads.data.domain.images.UserProfileImage
 import com.decagonhq.clads.data.domain.profile.Union
@@ -46,11 +47,9 @@ import com.decagonhq.clads.util.loadImage
 import com.decagonhq.clads.util.observeOnce
 import com.decagonhq.clads.util.saveBitmap
 import com.decagonhq.clads.util.uriToBitmap
+import com.decagonhq.clads.viewmodels.ArtisanLocationViewModel
 import com.decagonhq.clads.viewmodels.ImageUploadViewModel
 import com.decagonhq.clads.viewmodels.UserProfileViewModel
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationServices
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.theartofdev.edmodo.cropper.CropImage
@@ -61,29 +60,26 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import timber.log.Timber
-import java.util.*
 
 @AndroidEntryPoint
 class AccountFragment : BaseFragment() {
 
-    private var _binding: AccountFragmentBinding? = null
+    private lateinit var _binding: AccountFragmentBinding
 
     // This property is only valid between onCreateView and onDestroyView.
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
+    private val artisanAddressViewModel: ArtisanLocationViewModel by activityViewModels()
     private val imageUploadViewModel: ImageUploadViewModel by activityViewModels()
     private val userProfileViewModel: UserProfileViewModel by activityViewModels()
     private lateinit var cropActivityResultLauncher: ActivityResultLauncher<Any?>
-    private lateinit var fusedLocationProvider: FusedLocationProviderClient
     private lateinit var locationManager: LocationManager
     var gps_enabled = false
     var network_enabled = false
 
-    private lateinit var geocoder: Geocoder
-    private lateinit var locationRequest: LocationRequest
-    private lateinit var addresses: MutableList<Address>
-    private var artisanLatitude: Double = 0.0
-    private var artisanLongitude: Double = 0.0
+
+    private var artisanLatitude: String = ""
+    private var artisanLongitude: String = ""
     private var artisanStreet: String = ""
     private var artisanCity: String = ""
     private var artisanState: String = ""
@@ -94,10 +90,10 @@ class AccountFragment : BaseFragment() {
         override fun onReceive(context: Context, intent: Intent) {
             /* listen for changes in cell broadcast */
             if (LocationManager.PROVIDERS_CHANGED_ACTION == intent.action) {
-                val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                val locationManager =
+                    context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
                 val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
 //                val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-
                 if (isGpsEnabled) {
                     // Handle Location turned ON
                     Toast.makeText(requireContext(), "LOCATION ENABLED", Toast.LENGTH_LONG).show()
@@ -117,12 +113,9 @@ class AccountFragment : BaseFragment() {
         filter.addAction(Intent.ACTION_PROVIDER_CHANGED)
         requireContext().registerReceiver(broadcastReceiver, filter)
 
-        geocoder = Geocoder(requireContext(), Locale.getDefault()) /* initialize geoCoder */
-
-        fusedLocationProvider = LocationServices.getFusedLocationProviderClient(requireContext()) /* initialize fusedLocation client */
-
-        locationRequest = LocationRequest() /* initialize location request */
         locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+
     }
 
     override fun onCreateView(
@@ -179,8 +172,7 @@ class AccountFragment : BaseFragment() {
                 setLocationNowRadioButton?.setOnClickListener {
                     dialog.dismiss()
                     if (binding.accountFragmentWorkshopAddressValueTextView.text.isNullOrEmpty()) {
-                        findNavController().navigate(R.id.mapsFragment)
-                        // initializeLocations()
+                        initializeLocations()
                     }
                 }
 
@@ -210,6 +202,21 @@ class AccountFragment : BaseFragment() {
         /*Get users profile*/
         userProfileViewModel.getLocalDatabaseUserProfile()
         getUserProfile()
+
+        /* extract address */
+        artisanAddressViewModel.artisanLocation.observe(
+
+            viewLifecycleOwner, {
+                artisanStreet = "${it.featureName} ${it.thoroughfare} ${it.subAdminArea}"
+                artisanCity = it.subAdminArea.toString()
+                artisanState = it.locality.toString()
+                artisanLatitude = it.artisanLatitude.toString()
+                artisanLongitude = it.artisanLongitude.toString()
+
+
+                binding.accountFragmentWorkshopAddressValueTextView.text = "${it.featureName.toString()}, ${it.thoroughfare.toString()}, $locality, $artisanCity, $artisanState."
+            }
+        )
     }
 
     /*Get User Profile*/
@@ -232,16 +239,20 @@ class AccountFragment : BaseFragment() {
                             accountFragmentGenderValueTextView.text = userProfile.gender
                             if (userProfile.workshopAddress?.street == null) {
                                 accountFragmentWorkshopAddressValueTextView.hint =
-                                    // ---------------------------------------------------//
+                                        // ---------------------------------------------------//
                                     "Tap to enter shop address"
                             } else {
                                 accountFragmentWorkshopAddressValueTextView.text =
                                     "${userProfile.workshopAddress?.street}, ${userProfile.workshopAddress?.city}, ${userProfile.workshopAddress?.state}."
                             }
-                            accountFragmentNameOfUnionValueTextView.text = userProfile.union?.name ?: "Tap to enter Union name"
-                            accountFragmentWardValueTextView.text = userProfile.union?.ward ?: "Tap to enter Union ward"
-                            accountFragmentLocalGovtAreaValueTextView.text = userProfile.union?.lga ?: "Tap to enter Union LGA"
-                            accountFragmentStateValueTextView.text = userProfile.union?.state ?: "Tap to enter Union State"
+                            accountFragmentNameOfUnionValueTextView.text =
+                                userProfile.union?.name ?: "Tap to enter Union name"
+                            accountFragmentWardValueTextView.text =
+                                userProfile.union?.ward ?: "Tap to enter Union ward"
+                            accountFragmentLocalGovtAreaValueTextView.text =
+                                userProfile.union?.lga ?: "Tap to enter Union LGA"
+                            accountFragmentStateValueTextView.text =
+                                userProfile.union?.state ?: "Tap to enter Union State"
                             /*Load Profile Picture with Glide*/
                             binding.accountFragmentEditProfileIconImageView.loadImage(userProfile.thumbnail)
                         }
@@ -297,8 +308,8 @@ class AccountFragment : BaseFragment() {
                                 artisanStreet,
                                 artisanCity,
                                 artisanState,
-                                artisanLongitude.toString(),
-                                artisanLatitude.toString()
+                                artisanLongitude,
+                                artisanLatitude
                             ),
 
                             specialties = profile.specialties,
@@ -740,61 +751,22 @@ class AccountFragment : BaseFragment() {
         }
     }
 
+
     @SuppressLint("MissingPermission")
     private fun getArtisanLocation() {
 
         findNavController().navigate(R.id.mapsFragment)
 
-
-        // progressDialog.showDialogFragment("fetching your location...")
-        /* set location request necessities */
-//        locationRequest.apply {
-//            interval = TimeUnit.SECONDS.toMillis(7000)
-//            fastestInterval = TimeUnit.SECONDS.toMillis(5000)
-//            maxWaitTime = TimeUnit.SECONDS.toMillis(30000)
-//            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-//
-//            /* callback for location result after request */
-//            val locationCallback: LocationCallback = object : LocationCallback() {
-//                override fun onLocationResult(locationResult: LocationResult) {
-//                    for (location in locationResult.locations) {
-//                        if (location != null) {
-//
-//                            val locationLatitude = location.latitude
-//                            val locationLongitude = location.longitude
-//
-//                            /* use co-ordinates to get address */
-//                            addresses = geocoder.getFromLocation(
-//                                locationLatitude,
-//                                locationLongitude,
-//                                1
-//                            )
-//
-//                            /* extract address */
-//                            artisanStreet =
-//                                "${addresses[0].featureName} ${addresses[0].thoroughfare}, ${addresses[0].subAdminArea}"
-//                            locality = addresses[0].subAdminArea
-//                            artisanCity = addresses[0].locality
-//                            artisanState = addresses[0].adminArea
-//                            artisanLatitude = addresses[0].latitude
-//                            artisanLongitude = addresses[0].longitude
-//
-//                            binding.accountFragmentWorkshopAddressValueTextView.text = "${addresses[0].featureName}, ${addresses[0].thoroughfare}, $locality, $artisanCity, $artisanState"
-//                        }
-//                    }
-//                }
-//            }
-//
-//            /* actual location request */
-//            fusedLocationProvider.requestLocationUpdates(locationRequest, locationCallback, null)
-//
-//            if (binding.accountFragmentWorkshopAddressValueTextView.text.isNotEmpty()) {
-//                fusedLocationProvider.removeLocationUpdates(locationCallback)
-//            }
-//
-//            // fusedLocationProvider.removeLocationUpdates(locationCallback)
-//        }
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (
+                (!MapsFragment().isVisible) && (binding.accountFragmentWorkshopAddressValueTextView.text.isNullOrEmpty())
+            ) {
+                findNavController().navigate(R.id.mapsFragment)
+            }
+        }, 2000)
     }
+
+
 
     // Gender Dialog
     private fun accountGenderSelectDialog() {
@@ -816,11 +788,6 @@ class AccountFragment : BaseFragment() {
                 childFragmentManager, AccountFragment::class.java.simpleName
             )
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     companion object {
@@ -896,12 +863,3 @@ class AccountFragment : BaseFragment() {
         const val GPS_KEY = "false"
     }
 }
-
-// private fun FusedLocationProviderClient.requestLocationUpdates(
-//    locationRequest: LocationRequest,
-//    locationCallback: LocationCallback,
-//    nothing: Nothing?,
-//    function: () -> Unit
-// ) {
-//    function.invoke()
-// }

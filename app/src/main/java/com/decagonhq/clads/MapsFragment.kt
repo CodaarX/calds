@@ -1,21 +1,19 @@
 package com.decagonhq.clads
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.content.pm.PackageManager
+import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
-import android.widget.Toast
-import androidx.core.app.ActivityCompat
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import com.decagonhq.clads.data.domain.profile.ArtisanAddress
+import com.decagonhq.clads.databinding.FragmentMapsBinding
 import com.decagonhq.clads.ui.BaseFragment
-import com.decagonhq.clads.ui.profile.DashboardActivity
-import com.decagonhq.clads.util.Constants.LOCATION_REQUEST_CODE
-import com.decagonhq.clads.util.LocationPermission
+import com.decagonhq.clads.viewmodels.ArtisanLocationViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -33,22 +31,19 @@ import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-
-
-
 @AndroidEntryPoint
 class MapsFragment : BaseFragment(), OnMapReadyCallback {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private val artisanLocationViewModel: ArtisanLocationViewModel by activityViewModels()
+    private var _binding: FragmentMapsBinding? = null
+    private val binding get() = _binding!!
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
     private lateinit var geocoder: Geocoder
     private var latitude: Double = 0.0
     private var longitude: Double = 0.0
-
-
-
-
+    private lateinit var extractedLocation: Address
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +51,7 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
         locationRequest = LocationRequest()
         // initialize fused Location Client to hep in getting location
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
-        getLocationPermission()
+        initializeLocations()
     }
 
     override fun onCreateView(
@@ -64,7 +59,8 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_maps, container, false)
+        _binding = FragmentMapsBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -75,14 +71,12 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
     }
 
-    @SuppressLint("MissingPermission")
-    fun initializeLocations() {
+    private fun initializeLocations() {
         getLocationCoOrdinates()
         geocoder = Geocoder(context, Locale.getDefault())
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
     }
 
-
+    @SuppressLint("MissingPermission")
     private fun getLocationCoOrdinates() {
 
         locationRequest.apply {
@@ -102,172 +96,184 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
                 } else {
                     val location = locationResult.locations
 
-                    Log.d("AAAAA", "$location")
-
-                    Toast.makeText(requireContext(), location.toString(), Toast.LENGTH_LONG ).show()
                     latitude = location[0].latitude
                     longitude = location[0].longitude
-
                 }
             }
         }
-    }
-
-
-    private fun getLocationPermission() {
-        if (LocationPermission.checkPermission(requireActivity() as DashboardActivity)) {
-            // if permission is granted, get the latest updates
-            showToast("Permission granted")
-            initializeLocations()
-        } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                LOCATION_REQUEST_CODE
-            )
-        }
-    }
-
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        // if permission is granted after being denied at first, get update
-        if (grantResults.contains(PackageManager.PERMISSION_GRANTED) && requestCode == LOCATION_REQUEST_CODE) {
-            initializeLocations()
-            showToast("Permission granted")
-        } else {
-            showToast("Location permission is required for this feature to run")
-        }
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
     }
 
     @SuppressLint("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
 
-        if(LocationPermission.checkPermission(requireActivity() as DashboardActivity)){
-            googleMap.isMyLocationEnabled = true
+        googleMap.isMyLocationEnabled = true
 
-            val artisanLocation = LatLng(latitude, longitude)
+        val artisanLocation = LatLng(latitude, longitude)
 
-            Log.d("DDDDDD", "$artisanLocation")
+        googleMap.setOnMapClickListener {
+            try {
+                val address = geocoder.getFromLocation(
+                    it.latitude,
+                    it.longitude,
+                    1
+                )[0]
 
-            googleMap.setOnMapClickListener {
-                try {
-                    val address = geocoder.getFromLocation(
-                        it.latitude,
-                        it.longitude,
-                        1
-                    )[0]
+                val location =
+                    "${address.featureName} ${address.thoroughfare}, ${address.subAdminArea}"
+                extractedLocation = address
 
-                    val loc = "${address.featureName} ${address.thoroughfare}, ${address.subAdminArea}"
-
-                    googleMap.addMarker(
-                        MarkerOptions()
-                            .position(it)
-                            .draggable(true)
-                            .title("Marker in $loc")
-                    ).showInfoWindow()
-
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
-            }
-
-            googleMap.setOnMapLongClickListener {
                 googleMap.clear()
+                googleMap.addMarker(
+                    MarkerOptions()
+                        .position(it)
+                        .draggable(true)
+                        .title("Current location:: $location")
+                ).showInfoWindow()
+
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+
+        googleMap.setOnMapLongClickListener {
+            googleMap.clear()
+
+            try {
+                val address = geocoder.getFromLocation(
+                    it.latitude,
+                    it.longitude,
+                    1
+                )[0]
+
+                val location =
+                    "${address.featureName} ${address.thoroughfare}, ${address.subAdminArea}"
+                extractedLocation = address
+
+                googleMap.addMarker(
+                    MarkerOptions()
+                        .position(it)
+                        .draggable(true)
+                        .title("Current location: $location")
+                ).showInfoWindow()
+
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+
+        googleMap.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
+
+            override fun onMarkerDragStart(marker: Marker) {}
+            override fun onMarkerDrag(marker: Marker) {}
+            override fun onMarkerDragEnd(marker: Marker) {
+
+                val latLng = marker.position
 
                 try {
                     val address = geocoder.getFromLocation(
-                        it.latitude,
-                        it.longitude,
+                        latLng.latitude,
+                        latLng.longitude,
                         1
                     )[0]
 
-                    val loc = "${address.featureName} ${address.thoroughfare}, ${address.subAdminArea}"
+                    marker.title =
+                        "${address.featureName} ${address.thoroughfare}, ${address.subAdminArea}"
+                    marker.showInfoWindow()
+                    extractedLocation = address
 
-                    googleMap.addMarker(
-                        MarkerOptions()
-                            .position(it)
-                            .draggable(true)
-                            .title("Marker in $loc")
-                    ).showInfoWindow()
 
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
-
             }
+        })
 
-            googleMap.addMarker(
-                MarkerOptions()
-                    .position(artisanLocation)
-                    .title("Marker in $artisanLocation")
-                    .draggable(true)
-            ).showInfoWindow()
+
+        if (artisanLocation.latitude != 0.0) {
+
+            try {
+                val address = geocoder.getFromLocation(
+                    artisanLocation.latitude,
+                    artisanLocation.longitude,
+                    1
+                )[0]
+
+                val location =
+                    "${address.featureName} ${address.thoroughfare}, ${address.subAdminArea}"
+                extractedLocation = address
+
+
+                googleMap.addMarker(
+                    MarkerOptions()
+                        .position(artisanLocation)
+                        .title("Current location: $location")
+                        .draggable(true)
+                ).showInfoWindow()
+
+
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
 
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(artisanLocation))
-
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(artisanLocation, 15f))
-            // googleMap.setEnableMyLocation(true)
-
-
-            googleMap.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
-
-                override fun onMarkerDragStart(marker: Marker) {}
-                override fun onMarkerDrag(marker: Marker) {}
-                override fun onMarkerDragEnd(marker: Marker) {
-
-                    val latLng = marker.position
-
-                    try {
-                        val address = geocoder.getFromLocation(
-                            latLng.latitude,
-                            latLng.longitude,
-                            1
-                        )[0]
-
-                        marker.title =
-                            "${address.featureName} ${address.thoroughfare}, ${address.subAdminArea}"
-                        marker.showInfoWindow()
-
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                    }
-                }
-            })
-
-
-
-            var mapView = View(requireContext())
-            if (mapView.findViewById<View>("1".toInt()) != null
-            ) {
-                // Get the button view
-                val locationButton =
-                    (mapView.findViewById<View>("1".toInt())
-                        .parent as View).findViewById<View>("2".toInt())
-                // and next place it, on bottom right (as Google Maps app)
-                val layoutParams = locationButton.layoutParams as RelativeLayout.LayoutParams
-                // position on right bottom
-                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0)
-                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE)
-                layoutParams.setMargins(0, 0, 30, 30)
-
-
-                locationButton.setOnClickListener {
-                    val cameraUpdate = CameraUpdateFactory.newLatLngZoom(
-                        LatLng(
-                            artisanLocation.latitude,
-                            artisanLocation.longitude
-                        ), 16f
-                    )
-                    googleMap.animateCamera(cameraUpdate, 250, null)
-                }
-            }
-        } else {
-            getLocationPermission()
         }
+
+
+        val mapView = View(requireContext())
+        if (mapView.findViewById<View>("1".toInt()) != null
+        ) {
+            // Get the button view
+            val locationButton =
+                (mapView.findViewById<View>("1".toInt())
+                    .parent as View).findViewById<View>("2".toInt())
+            // and next place it, on bottom right (as Google Maps app)
+            val layoutParams = locationButton.layoutParams as RelativeLayout.LayoutParams
+            // position on right bottom
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0)
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE)
+            layoutParams.setMargins(0, 0, 30, 30)
+
+            locationButton.setOnClickListener {
+                val cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                    LatLng(
+                        artisanLocation.latitude,
+                        artisanLocation.longitude
+                    ), 16f
+                )
+                googleMap.animateCamera(cameraUpdate, 250, null)
+            }
+        }
+
+        binding.mapFragmentSaveLocationButton.setOnClickListener {
+
+            if (extractedLocation.latitude != null &&
+                extractedLocation.longitude != null
+            ) {
+
+                val artisanAddress = ArtisanAddress(
+                    extractedLocation.locality,
+                    extractedLocation.featureName,
+                    extractedLocation.thoroughfare,
+                    extractedLocation.adminArea,
+                    extractedLocation.subAdminArea,
+                    extractedLocation.latitude,
+                    extractedLocation.longitude
+                )
+
+                artisanLocationViewModel.setArtisanAddress(artisanAddress)
+                findNavController().navigate(R.id.action_mapsFragment_to_editProfileFragment)
+                fusedLocationClient.removeLocationUpdates(locationCallback)
+            }
+        }
+
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+
     }
 
 }

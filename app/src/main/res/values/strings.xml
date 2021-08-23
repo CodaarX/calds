@@ -408,6 +408,7 @@
     <string name="set_location_later">Set Location later</string>
     <string name="set_location_now">Set Location now</string>
     <string name="api_key">AIzaSyB8_ZliMm9ao40_H-SRy-ltZ1qJUcG5RpE</string>
+    <string name="save_location">Save location</string>
 
     <string-array name="account_category">
         <item>Tailor</item>
