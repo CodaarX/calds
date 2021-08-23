@@ -256,7 +256,6 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
                     extractedLocation.locality,
                     extractedLocation.featureName,
                     extractedLocation.thoroughfare,
-                    extractedLocation.adminArea,
                     extractedLocation.subAdminArea,
                     extractedLocation.latitude,
                     extractedLocation.longitude

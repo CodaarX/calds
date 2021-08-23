@@ -213,8 +213,7 @@ class AccountFragment : BaseFragment() {
                 artisanLatitude = it.artisanLatitude.toString()
                 artisanLongitude = it.artisanLongitude.toString()
 
-
-                binding.accountFragmentWorkshopAddressValueTextView.text = "${it.featureName.toString()}, ${it.thoroughfare.toString()}, $locality, $artisanCity, $artisanState."
+                binding.accountFragmentWorkshopAddressValueTextView.text = "${it.featureName.toString()}, ${it.thoroughfare.toString()}, $artisanCity, $artisanState."
             }
         )
     }
