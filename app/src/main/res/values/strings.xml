@@ -407,6 +407,7 @@
     <string name="let_s_know_where_you_are">Let\'s Know Where you are</string>
     <string name="set_location_later">Set Location later</string>
     <string name="set_location_now">Set Location now</string>
+    <string name="am">08:40AM</string>
 
     <string-array name="account_category">
         <item>Tailor</item>

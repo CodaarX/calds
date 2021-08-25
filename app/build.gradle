@@ -22,8 +22,24 @@ android {
         versionName "1.0"
         // multiDexEnabled true
 
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
+        kapt {
+            javacOptions {
+                // These options are normally set automatically via the Hilt Gradle plugin, but we
+                // set them manually to workaround a bug in the Kotlin 1.5.20
+                option("-Adagger.fastInit=ENABLED")
+                option("-Adagger.hilt.android.internal.disableAndroidSuperclassValidation=true")
+            }
+        }
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
+
 
     buildTypes {
         release {

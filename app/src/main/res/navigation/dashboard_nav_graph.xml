@@ -291,5 +291,10 @@
             app:destination="@id/addClientFragment" />
 
     </fragment>
+    <fragment
+        android:id="@+id/clientChatFragment"
+        android:name="com.decagonhq.clads.ui.messages.ClientChatFragment"
+        android:label="fragment_client_chat"
+        tools:layout="@layout/fragment_client_chat" />
 
 </navigation>
