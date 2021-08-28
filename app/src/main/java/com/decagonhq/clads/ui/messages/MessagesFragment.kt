@@ -46,37 +46,43 @@ class MessagesFragment : Fragment() {
                 "Ola",
                 "Michavelli",
                 "Today",
-                "Lorem Ipsum"
+                "Lorem Ipsum",
+                "1"
             ),
             MessagesNotificationModel(
                 "Ruth",
                 "Unoka",
                 "Yesterday",
-                "My name is Ruth. I need a dress for sunday"
+                "My name is Ruth. I need a dress for sunday",
+                "2"
             ),
             MessagesNotificationModel(
                 "Michael",
                 "Isesele",
                 "Yesterday",
-                "Hi, I have an event next month"
+                "Hi, I have an event next month",
+                "3"
             ),
             MessagesNotificationModel(
                 "Ola",
                 "Michavelli",
                 "Today",
-                "Lorem Ipsum"
+                "Lorem Ipsum",
+                "4"
             ),
             MessagesNotificationModel(
                 "Ruth",
                 "Unoka",
                 "Yesterday",
-                "My name is Ruth. I need a dress for sunday"
+                "My name is Ruth. I need a dress for sunday",
+                "5"
             ),
             MessagesNotificationModel(
                 "Michael",
                 "Isesele",
                 "Yesterday",
-                "Hi, I have an event next month"
+                "Hi, I have an event next month",
+                "6"
             )
         )
     }

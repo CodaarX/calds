@@ -29,7 +29,7 @@ class ClientDetailsFragment : BaseFragment(), RecyclerClickListener {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = ClientDetailsFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }

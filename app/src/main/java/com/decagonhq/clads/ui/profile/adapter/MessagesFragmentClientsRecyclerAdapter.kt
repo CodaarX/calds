@@ -5,13 +5,11 @@ import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.amulyakhare.textdrawable.TextDrawable
-import com.decagonhq.clads.R
 import com.decagonhq.clads.data.domain.MessagesNotificationModel
 import com.decagonhq.clads.databinding.ChatRecyclerviewItemBinding
-import com.decagonhq.clads.databinding.MessagesRecyclerViewItemBinding
+import com.decagonhq.clads.ui.messages.MessagesFragmentDirections
 import com.decagonhq.clads.util.ColorSelector
 import java.util.*
-import kotlin.collections.ArrayList
 
 class MessagesFragmentClientsRecyclerAdapter(
     private var messageNotificationList: ArrayList<MessagesNotificationModel>
@@ -61,7 +59,9 @@ class MessagesFragmentClientsRecyclerAdapter(
 
                     binding.chatRecyclerViewItemImageView.setImageDrawable(drawable)
                     binding.chatRecyclerViewItemParentLayout.setOnClickListener {
-                        findNavController().navigate(R.id.clientChatFragment)
+                        val client = messageNotificationList[position]
+                        val action = MessagesFragmentDirections.actionNavMessagesToClientChatFragment2(client)
+                        findNavController().navigate(action)
                     }
                 }
             }

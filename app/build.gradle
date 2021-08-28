@@ -74,6 +74,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:21.0.1'
     implementation 'com.google.firebase:firebase-crashlytics:18.0.0'
     implementation 'com.google.firebase:firebase-analytics:19.0.0'
+    implementation 'com.google.firebase:firebase-database:20.0.1'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
@@ -163,5 +164,8 @@ dependencies {
 
     /* Location */
     implementation "com.google.android.gms:play-services-location:$versions.location_version"
+
+    //groupie recyclerview library
+    implementation "com.github.lisawray.groupie:groupie:2.1.0"
 
 }

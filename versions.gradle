@@ -23,5 +23,6 @@ ext.versions = [
         exoplayer_version       : '2.14.1',
         crop_image             : "2.8.0",
         image_compressor        : "3.0.1",
-        location_versions       : "18.0.0"
+        location_versions       : "18.0.0",
+
 ]
