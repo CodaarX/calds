@@ -198,14 +198,16 @@ class AccountFragment : BaseFragment() {
         /* extract address */
         artisanAddressViewModel.artisanLocation.observe(
 
-            viewLifecycleOwner, {
+            viewLifecycleOwner,
+            {
                 artisanLatitude = it.artisanLatitude.toString()
                 artisanLongitude = it.artisanLongitude.toString()
             }
         )
 
         artisanAddressViewModel.artisanLocationString.observe(
-            viewLifecycleOwner, {
+            viewLifecycleOwner,
+            {
                 binding.accountFragmentWorkshopAddressValueTextView.text = it
 
                 val splittedAddress = it.split(",")
@@ -215,7 +217,6 @@ class AccountFragment : BaseFragment() {
             }
         )
     }
-
 
     /*Get User Profile*/
     private fun getUserProfile() {
@@ -259,21 +260,18 @@ class AccountFragment : BaseFragment() {
         )
     }
 
-
     private fun setLocationLaterDialog() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.set_location_later))
             .setMessage("Location needs to be set to be visible to clients")
             .setCancelable(false)
             .setNegativeButton("Cancel") { _, _ ->
-
             }
             .setPositiveButton("Set Now") { _, _ ->
                 initiateMapLunch()
             }
             .show()
     }
-
 
     /*Update User Profile*/
     private fun updateUserProfile() {
@@ -332,7 +330,6 @@ class AccountFragment : BaseFragment() {
         )
     }
 
-
     /*Update User Profile Picture*/
     private fun updateUserProfilePicture(downloadUri: String) {
         userProfileViewModel.userProfile.observeOnce(
@@ -372,7 +369,6 @@ class AccountFragment : BaseFragment() {
         )
     }
 
-
     /*Check for Gallery Permission*/
     private fun String.checkForPermission(name: String, requestCode: Int) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -392,7 +388,6 @@ class AccountFragment : BaseFragment() {
             }
         }
     }
-
 
     // check for permission and make call
     override fun onRequestPermissionsResult(
@@ -434,7 +429,6 @@ class AccountFragment : BaseFragment() {
         dialog.show()
     }
 
-
     /*function to crop picture*/
     private val cropActivityResultContract = object : ActivityResultContract<Any?, Uri>() {
         override fun createIntent(context: Context, input: Any?): Intent {
@@ -443,7 +437,6 @@ class AccountFragment : BaseFragment() {
                 .setAspectRatio(1, 1)
                 .getIntent(context)
         }
-
 
         override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
             var imageUri: Uri? = null
@@ -455,7 +448,6 @@ class AccountFragment : BaseFragment() {
             return imageUri
         }
     }
-
 
     /*Upload Profile Picture*/
     private fun uploadImageToServer(uri: Uri) {
@@ -494,7 +486,6 @@ class AccountFragment : BaseFragment() {
         )
     }
 
-
     private fun accountLegalStatusDialog() {
         childFragmentManager.setFragmentResultListener(
             ACCOUNT_LEGAL_STATUS_REQUEST_KEY,
@@ -518,7 +509,6 @@ class AccountFragment : BaseFragment() {
             )
         }
     }
-
 
     // firstName Dialog
     private fun accountFirstNameEditDialog() {
@@ -544,7 +534,6 @@ class AccountFragment : BaseFragment() {
             )
         }
     }
-
 
     private fun accountLastNameDialogFragment() {
         // when last name value is clicked
@@ -596,7 +585,6 @@ class AccountFragment : BaseFragment() {
         }
     }
 
-
     private fun accountStreetAddressDialogFragment() {
         childFragmentManager.setFragmentResultListener(
             ACCOUNT_WORKSHOP_STREET_REQUEST_KEY,
@@ -624,7 +612,6 @@ class AccountFragment : BaseFragment() {
         )
     }
 
-
     private fun accountEmployeeNumberDialogFragment() {
         childFragmentManager.setFragmentResultListener(
             ACCOUNT_EMPLOYEE_REQUEST_KEY,
@@ -649,7 +636,6 @@ class AccountFragment : BaseFragment() {
             )
         }
     }
-
 
     private fun accountUnionNameDialogFragment() {
         // when union name value is clicked
@@ -677,7 +663,6 @@ class AccountFragment : BaseFragment() {
         }
     }
 
-
     private fun accountUnionWardDialogFragment() {
         // when ward name value is clicked
         childFragmentManager.setFragmentResultListener(
@@ -704,7 +689,6 @@ class AccountFragment : BaseFragment() {
         }
     }
 
-
     private fun accountUnionLGADialogFragment() {
         // when lga name value is clicked
         childFragmentManager.setFragmentResultListener(
@@ -730,7 +714,6 @@ class AccountFragment : BaseFragment() {
             )
         }
     }
-
 
     private fun accountUnionStateDialogFragment() {
         // when state name value is clicked
@@ -792,7 +775,6 @@ class AccountFragment : BaseFragment() {
         )
     }
 
-
     private fun checkPermissions(): Boolean {
 
         return ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
@@ -806,7 +788,6 @@ class AccountFragment : BaseFragment() {
         // ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
     }
 
-
     /**
      * Ask for GPS Location and get current location
      */
@@ -819,7 +800,7 @@ class AccountFragment : BaseFragment() {
 
         val builder: LocationSettingsRequest.Builder = LocationSettingsRequest.Builder()
             .addLocationRequest(locationRequest)
-        builder.setAlwaysShow(true)                          //this is the key ingredient
+        builder.setAlwaysShow(true) // this is the key ingredient
         val result: Task<LocationSettingsResponse> = LocationServices.getSettingsClient(requireContext()).checkLocationSettings(builder.build())
         result.addOnCompleteListener { task ->
             try {
@@ -873,7 +854,6 @@ class AccountFragment : BaseFragment() {
         }
     }
 
-
     /**
      * Method to check if location is enabled
      * @return true || false
@@ -881,15 +861,14 @@ class AccountFragment : BaseFragment() {
     private fun isLocationEnabled(): Boolean {
 
         val locationManager = requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager?
-        return locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) == true
-                ||
-                locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) == true
+        return locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) == true ||
+            locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) == true
     }
 
     // logic to lunch map if all equirements are met
-    private fun initiateMapLunch(){
-        if(checkPermissions()){
-            if(isLocationEnabled()){
+    private fun initiateMapLunch() {
+        if (checkPermissions()) {
+            if (isLocationEnabled()) {
                 findNavController().navigate(R.id.mapFragment)
             } else {
                 buildAlertMessageNoGps()

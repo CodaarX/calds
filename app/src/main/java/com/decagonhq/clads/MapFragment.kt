@@ -7,7 +7,6 @@ import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,7 +30,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import java.io.IOException
-import java.util.*
+import java.util.Locale
 
 class MapFragment : BaseFragment() {
 
@@ -45,16 +44,14 @@ class MapFragment : BaseFragment() {
     private lateinit var nowLocation: LatLng
     private lateinit var location: LatLng
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        getLastLocation()
-
     }
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
@@ -67,21 +64,19 @@ class MapFragment : BaseFragment() {
 
         getLastLocation()
 
-        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+        activity?.onBackPressedDispatcher?.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
 
-            override fun handleOnBackPressed() {
+                override fun handleOnBackPressed() {
 
-                // in here you can do logic when backPress is clicked
-                showToast("clicked")
-                findNavController().popBackStack()
+                    // in here you can do logic when backPress is clicked
+                    showToast("clicked")
+                    findNavController().popBackStack()
+                }
             }
-        })
-
-
-
+        )
     }
-
-
 
     @SuppressLint("MissingPermission")
     private fun getLastLocation() {
@@ -94,7 +89,7 @@ class MapFragment : BaseFragment() {
                 startLocationService()
             }
         }
-     }
+    }
 
     /*
     * GEts the result after calling a location
@@ -146,7 +141,7 @@ class MapFragment : BaseFragment() {
             nowLocation = LatLng(
                 userCurrentLocation.latitude,
                 userCurrentLocation.longitude
-            ) //your lat lng
+            ) // your lat lng
             val marker = googleMap.addMarker(
                 MarkerOptions()
                     .position(nowLocation)
@@ -180,7 +175,7 @@ class MapFragment : BaseFragment() {
             artisanLocationViewModel.setArtisanCoOrdinates(artisanAddress)
             artisanLocationViewModel.setArtisanAddressString(address!!)
             dialog.dismiss()
-             findNavController().navigate(R.id.action_mapFragment_to_editProfileFragment)
+            findNavController().navigate(R.id.action_mapFragment_to_editProfileFragment)
         }
     }
 

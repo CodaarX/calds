@@ -19,7 +19,6 @@ class EditProfileFragment : BaseFragment() {
     private lateinit var viewPager2: ViewPager2
     private lateinit var tabLayout: TabLayout
 
-
     // This property is only valid between onCreateView and onDestroyView.
     private val binding
         get() = _binding!!

@@ -1,6 +1,5 @@
 package com.decagonhq.clads.ui.profile.dialogfragment
 
-import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +8,6 @@ import android.widget.RadioButton
 import androidx.core.os.bundleOf
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import com.decagonhq.clads.R
 import com.decagonhq.clads.databinding.AccountEmployeeNumberDialogFragmentBinding
@@ -26,7 +24,6 @@ import com.decagonhq.clads.databinding.AccountUnionWardDialogFragmentBinding
 import com.decagonhq.clads.databinding.AccountWorkshopCityDialogFragmentBinding
 import com.decagonhq.clads.databinding.AccountWorkshopStateDialogFragmentBinding
 import com.decagonhq.clads.databinding.AccountWorkshopStreetDialogFragmentBinding
-import com.decagonhq.clads.databinding.FragmentMapBinding
 import com.decagonhq.clads.databinding.RenameGalleryImageDialogFragmentBinding
 import com.decagonhq.clads.databinding.SpecialtyAddSpecialtyDialogFragmentBinding
 import com.decagonhq.clads.databinding.SpecialtyDeliveryTimeDialogFragmentBinding
@@ -84,9 +81,6 @@ import com.decagonhq.clads.ui.profile.editprofile.SpecialtyFragment.Companion.SP
 import com.decagonhq.clads.ui.profile.editprofile.SpecialtyFragment.Companion.SPECIAL_DELIVERY_TIME_REQUEST_KEY
 import com.decagonhq.clads.ui.profile.editprofile.SpecialtyFragment.Companion.SPECIAL_OBIOMA_TRAINED_BUNDLE_KEY
 import com.decagonhq.clads.ui.profile.editprofile.SpecialtyFragment.Companion.SPECIAL_OBIOMA_TRAINED_REQUEST_KEY
-import com.decagonhq.clads.viewmodels.ArtisanLocationViewModel
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.model.LatLng
 
 class ProfileManagementDialogFragments(
     private var dialogLayoutId: Int,
@@ -98,7 +92,10 @@ class ProfileManagementDialogFragments(
         setStyle(STYLE_NO_TITLE, android.R.style.Theme_DeviceDefault_Light_Dialog_MinWidth)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? { return inflater.inflate(dialogLayoutId, container) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -1111,8 +1108,8 @@ class ProfileManagementDialogFragments(
                     when {
                         inputValue.isEmpty() -> {
                             binding.renameGalleryDescriptionDialogFragmentRenameDescriptionEditTextInputLayout.error = getString(
-                                    R.string.required
-                                )
+                                R.string.required
+                            )
                             binding.renameGalleryDescriptionDialogFragmentRenameDescriptionEditTextInputLayout.errorIconDrawable = null
                         }
                         else -> {
