@@ -410,10 +410,13 @@
     <string name="set_location_now">Set Location now</string>
     <string name="api_key">AIzaSyB8_ZliMm9ao40_H-SRy-ltZ1qJUcG5RpE</string>
     <string name="save_location">Save location</string>
-    <string name="go_to_map">Edit coOrdinates from map</string>
-    <string name="edit_address_manually">Edit coOrdinates manually</string>
+    <string name="go_to_map">Edit coordinates from map</string>
+    <string name="edit_address_manually">Edit coordinates manually</string>
     <string name="edit_street_address">Edit Street Address</string>
     <string name="street_address">street coOrdinates</string>
+    <string name="_0">0</string>
+    <string name="click_here_to_input_phonenumber">Click here to input phone number</string>
+    <string name="input_phonenumber_security_fragment_hint">Tap to input phone number</string>
 
     <string-array name="account_category">
         <item>Tailor</item>

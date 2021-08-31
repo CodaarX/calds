@@ -223,7 +223,7 @@
             android:fontFamily="@font/poppins"
             android:gravity="end"
             android:hint="@string/tap_to_enter_employees_num"
-            android:text="@string/_12"
+            android:text="@string/_0"
             android:layout_marginTop="@dimen/margin_30dp"
             android:textColor="@color/navy_blue"
             android:textSize="@dimen/text_size_12sp"

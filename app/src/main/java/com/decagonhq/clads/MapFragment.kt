@@ -46,6 +46,7 @@ class MapFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 //        getLastLocation()
     }
 
