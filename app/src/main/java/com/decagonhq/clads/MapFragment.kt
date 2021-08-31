@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.decagonhq.clads.data.domain.profile.ArtisanCoOrdinates
@@ -66,16 +67,15 @@ class MapFragment : BaseFragment() {
 
         getLastLocation()
 
-//        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-//
-//
-//            override fun handleOnBackPressed() {
-//
-//                // in here you can do logic when backPress is clicked
-//                showToast("clicked")
-//                findNavController().popBackStack()
-//            }
-//        })
+        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+
+            override fun handleOnBackPressed() {
+
+                // in here you can do logic when backPress is clicked
+                showToast("clicked")
+                findNavController().popBackStack()
+            }
+        })
 
 
 
