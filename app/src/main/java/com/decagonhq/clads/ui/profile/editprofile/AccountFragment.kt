@@ -1,18 +1,16 @@
 package com.decagonhq.clads.ui.profile.editprofile
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,7 +27,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.decagonhq.clads.MapsFragment
 import com.decagonhq.clads.R
 import com.decagonhq.clads.data.domain.images.UserProfileImage
 import com.decagonhq.clads.data.domain.profile.Union
@@ -39,9 +36,8 @@ import com.decagonhq.clads.data.local.UserProfileEntity
 import com.decagonhq.clads.databinding.AccountFragmentBinding
 import com.decagonhq.clads.ui.BaseFragment
 import com.decagonhq.clads.ui.profile.dialogfragment.ProfileManagementDialogFragments.Companion.createProfileDialogFragment
-import com.decagonhq.clads.util.Constants.LOCATION_REQUEST_CODE
+import com.decagonhq.clads.util.Constants
 import com.decagonhq.clads.util.Resource
-import com.decagonhq.clads.util.checkGPSEnabled
 import com.decagonhq.clads.util.handleApiError
 import com.decagonhq.clads.util.loadImage
 import com.decagonhq.clads.util.observeOnce
@@ -50,6 +46,14 @@ import com.decagonhq.clads.util.uriToBitmap
 import com.decagonhq.clads.viewmodels.ArtisanLocationViewModel
 import com.decagonhq.clads.viewmodels.ImageUploadViewModel
 import com.decagonhq.clads.viewmodels.UserProfileViewModel
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.location.LocationSettingsResponse
+import com.google.android.gms.location.LocationSettingsStatusCodes
+import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.theartofdev.edmodo.cropper.CropImage
@@ -65,64 +69,19 @@ import timber.log.Timber
 class AccountFragment : BaseFragment() {
 
     private lateinit var _binding: AccountFragmentBinding
-
-    // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding
-
     private val artisanAddressViewModel: ArtisanLocationViewModel by activityViewModels()
     private val imageUploadViewModel: ImageUploadViewModel by activityViewModels()
     private val userProfileViewModel: UserProfileViewModel by activityViewModels()
     private lateinit var cropActivityResultLauncher: ActivityResultLauncher<Any?>
-    private lateinit var locationManager: LocationManager
-    var gps_enabled = false
-    var network_enabled = false
-
-
     private var artisanLatitude: String = ""
     private var artisanLongitude: String = ""
     private var artisanStreet: String = ""
     private var artisanCity: String = ""
     private var artisanState: String = ""
-    private var locality: String = ""
+    private lateinit var locationManager: LocationManager
 
-
-    var broadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            /* listen for changes in cell broadcast */
-            if (LocationManager.PROVIDERS_CHANGED_ACTION == intent.action) {
-                val locationManager =
-                    context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-                val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-//                val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-                if (isGpsEnabled) {
-                    // Handle Location turned ON
-                    Toast.makeText(requireContext(), "LOCATION ENABLED", Toast.LENGTH_LONG).show()
-                    getArtisanLocation()
-                } else {
-                    Toast.makeText(requireContext(), "LOCATION DISABLED", Toast.LENGTH_LONG).show()
-                    // Handle Location turned OFF
-                }
-            }
-        }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        /* register broadcast receivers */
-        val filter = IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION)
-        filter.addAction(Intent.ACTION_PROVIDER_CHANGED)
-        requireContext().registerReceiver(broadcastReceiver, filter)
-
-        locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-
-
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         // Inflate the layout for this fragment
         _binding = AccountFragmentBinding.inflate(inflater, container, false)
         return binding.root
@@ -130,6 +89,13 @@ class AccountFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        /* register broadcast receivers */
+        val filter = IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION)
+        filter.addAction(Intent.ACTION_PROVIDER_CHANGED)
+        requireContext().registerReceiver(broadcastReceiver, filter)
+
+        locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
         /*Dialog fragment functions*/
         accountFirstNameEditDialog()
@@ -142,6 +108,7 @@ class AccountFragment : BaseFragment() {
         accountEmployeeNumberDialogFragment()
         accountOtherNameEditDialog()
         accountLegalStatusDialog()
+        requestPermissions()
 
         /*Initialize Image Cropper*/
         cropActivityResultLauncher = registerForActivityResult(cropActivityResultContract) {
@@ -172,20 +139,45 @@ class AccountFragment : BaseFragment() {
                 setLocationNowRadioButton?.setOnClickListener {
                     dialog.dismiss()
                     if (binding.accountFragmentWorkshopAddressValueTextView.text.isNullOrEmpty()) {
-                        initializeLocations()
+                        dialog.dismiss()
+                        initiateMapLunch()
                     }
                 }
 
                 setLocationLaterRadioButton?.setOnClickListener {
-                    setLocationLaterDialog()
                     dialog.dismiss()
+                    setLocationLaterDialog()
                 }
 
                 dialog.setContentView(bottomSheetView)
                 dialog.show()
             } else {
-                // EDIT ADDRESS HERE
-                showToast("EDIT ADDRESS HERE")
+
+                val dialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogStyle)
+
+                val bottomSheetView: View = layoutInflater.inflate(
+                    R.layout.account_fragment_edit_location_bottom_sheet,
+                    view.findViewById(R.id.account_fragment_edit_location_bottom_sheet) as LinearLayout?
+                )
+
+                val editLocationOnMapRadioButton: RadioButton? =
+                    bottomSheetView.findViewById(R.id.account_fragment_location_bottom_sheet_edit_location_on_map_now_radio_button)
+
+                val editLocationManuallyRadioButton: RadioButton? =
+                    bottomSheetView.findViewById(R.id.account_fragment_location_bottom_sheet_edit_location_manually_radio_button)
+
+                editLocationOnMapRadioButton?.setOnClickListener {
+                    dialog.dismiss()
+                    findNavController().navigate(R.id.mapFragment)
+                }
+
+                editLocationManuallyRadioButton?.setOnClickListener {
+                    dialog.dismiss()
+                    accountStreetAddressDialogFragment()
+                }
+
+                dialog.setContentView(bottomSheetView)
+                dialog.show()
             }
         }
 
@@ -207,16 +199,23 @@ class AccountFragment : BaseFragment() {
         artisanAddressViewModel.artisanLocation.observe(
 
             viewLifecycleOwner, {
-                artisanStreet = "${it.featureName} ${it.thoroughfare} ${it.subAdminArea}"
-                artisanCity = it.subAdminArea.toString()
-                artisanState = it.locality.toString()
                 artisanLatitude = it.artisanLatitude.toString()
                 artisanLongitude = it.artisanLongitude.toString()
+            }
+        )
 
-                binding.accountFragmentWorkshopAddressValueTextView.text = "${it.featureName.toString()}, ${it.thoroughfare.toString()}, $artisanCity, $artisanState."
+        artisanAddressViewModel.artisanLocationString.observe(
+            viewLifecycleOwner, {
+                binding.accountFragmentWorkshopAddressValueTextView.text = it
+
+                val splittedAddress = it.split(",")
+                artisanStreet = splittedAddress[0]
+                artisanCity = splittedAddress[1]
+                artisanState = "$splittedAddress[2], $splittedAddress[3]"
             }
         )
     }
+
 
     /*Get User Profile*/
     private fun getUserProfile() {
@@ -238,7 +237,6 @@ class AccountFragment : BaseFragment() {
                             accountFragmentGenderValueTextView.text = userProfile.gender
                             if (userProfile.workshopAddress?.street == null) {
                                 accountFragmentWorkshopAddressValueTextView.hint =
-                                        // ---------------------------------------------------//
                                     "Tap to enter shop address"
                             } else {
                                 accountFragmentWorkshopAddressValueTextView.text =
@@ -261,18 +259,21 @@ class AccountFragment : BaseFragment() {
         )
     }
 
+
     private fun setLocationLaterDialog() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.set_location_later))
             .setMessage("Location needs to be set to be visible to clients")
             .setCancelable(false)
             .setNegativeButton("Cancel") { _, _ ->
+
             }
             .setPositiveButton("Set Now") { _, _ ->
-                initializeLocations()
+                initiateMapLunch()
             }
             .show()
     }
+
 
     /*Update User Profile*/
     private fun updateUserProfile() {
@@ -331,6 +332,7 @@ class AccountFragment : BaseFragment() {
         )
     }
 
+
     /*Update User Profile Picture*/
     private fun updateUserProfilePicture(downloadUri: String) {
         userProfileViewModel.userProfile.observeOnce(
@@ -342,7 +344,6 @@ class AccountFragment : BaseFragment() {
                     progressDialog.hideProgressDialog()
                     handleApiError(it, mainRetrofit, requireView(), sessionManager, database)
                 } else {
-//                    progressDialog.hideProgressDialog()
                     it.data?.let { profile ->
                         val userProfile = UserProfile(
                             country = profile.country,
@@ -371,6 +372,7 @@ class AccountFragment : BaseFragment() {
         )
     }
 
+
     /*Check for Gallery Permission*/
     private fun String.checkForPermission(name: String, requestCode: Int) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -379,7 +381,6 @@ class AccountFragment : BaseFragment() {
                     requireContext(),
                     this
                 ) == PackageManager.PERMISSION_GRANTED -> {
-
                     cropActivityResultLauncher.launch(null)
                 }
                 shouldShowRequestPermissionRationale(this) -> showDialog(this, name, requestCode)
@@ -391,6 +392,7 @@ class AccountFragment : BaseFragment() {
             }
         }
     }
+
 
     // check for permission and make call
     override fun onRequestPermissionsResult(
@@ -407,14 +409,6 @@ class AccountFragment : BaseFragment() {
                 } else {
                     showToast("Permission granted")
                     cropActivityResultLauncher.launch(null)
-                }
-            }
-
-            LOCATION_REQUEST_CODE -> {
-                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    showToast("permission refused")
-                } else {
-                    checkGPSEnabled(LOCATION_REQUEST_CODE) { broadcastReceiver }
                 }
             }
         }
@@ -440,6 +434,7 @@ class AccountFragment : BaseFragment() {
         dialog.show()
     }
 
+
     /*function to crop picture*/
     private val cropActivityResultContract = object : ActivityResultContract<Any?, Uri>() {
         override fun createIntent(context: Context, input: Any?): Intent {
@@ -448,6 +443,7 @@ class AccountFragment : BaseFragment() {
                 .setAspectRatio(1, 1)
                 .getIntent(context)
         }
+
 
         override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
             var imageUri: Uri? = null
@@ -459,6 +455,7 @@ class AccountFragment : BaseFragment() {
             return imageUri
         }
     }
+
 
     /*Upload Profile Picture*/
     private fun uploadImageToServer(uri: Uri) {
@@ -485,7 +482,7 @@ class AccountFragment : BaseFragment() {
                     progressDialog.hideProgressDialog()
                     handleApiError(it, mainRetrofit, requireView(), sessionManager, database)
                 } else {
-//                    progressDialog.hideProgressDialog()
+                    //  progressDialog.hideProgressDialog()
                     showToast("Upload Successful")
                     it.data?.downloadUri?.let { imageUrl ->
                         updateUserProfilePicture(imageUrl)
@@ -496,6 +493,7 @@ class AccountFragment : BaseFragment() {
             }
         )
     }
+
 
     private fun accountLegalStatusDialog() {
         childFragmentManager.setFragmentResultListener(
@@ -521,6 +519,7 @@ class AccountFragment : BaseFragment() {
         }
     }
 
+
     // firstName Dialog
     private fun accountFirstNameEditDialog() {
         // when first name value is clicked
@@ -545,6 +544,7 @@ class AccountFragment : BaseFragment() {
             )
         }
     }
+
 
     private fun accountLastNameDialogFragment() {
         // when last name value is clicked
@@ -596,6 +596,35 @@ class AccountFragment : BaseFragment() {
         }
     }
 
+
+    private fun accountStreetAddressDialogFragment() {
+        childFragmentManager.setFragmentResultListener(
+            ACCOUNT_WORKSHOP_STREET_REQUEST_KEY,
+            requireActivity()
+        ) { key, bundle ->
+            // collect input values from dialog fragment and update the street value  and address of user
+            val streetAddress = bundle.getString(ACCOUNT_WORKSHOP_STREET_BUNDLE_KEY)
+            val currentStreetAddress =
+                binding.accountFragmentWorkshopAddressValueTextView.text.toString().trim()
+                    .split(",").takeLast(3)
+            val editedStreetAddress =
+                "${streetAddress?.trim()}, ${currentStreetAddress[0].trim()}, ${currentStreetAddress[1].trim()}, ${currentStreetAddress[2].trim()}"
+            binding.accountFragmentWorkshopAddressValueTextView.text = editedStreetAddress
+        }
+
+        val currentStreetAddress = binding.accountFragmentWorkshopAddressValueTextView.text.toString().split(",").take(1)
+        val stringStreetAddress = currentStreetAddress[0].trim()
+        val bundle = bundleOf(CURRENT_ACCOUNT_WORKSHOP_STREET_BUNDLE_KEY to stringStreetAddress)
+        createProfileDialogFragment(
+            R.layout.account_workshop_street_dialog_fragment,
+            bundle
+        ).show(
+            childFragmentManager,
+            getString(R.string.tag_employee_address_dialog_fragment)
+        )
+    }
+
+
     private fun accountEmployeeNumberDialogFragment() {
         childFragmentManager.setFragmentResultListener(
             ACCOUNT_EMPLOYEE_REQUEST_KEY,
@@ -620,6 +649,7 @@ class AccountFragment : BaseFragment() {
             )
         }
     }
+
 
     private fun accountUnionNameDialogFragment() {
         // when union name value is clicked
@@ -647,6 +677,7 @@ class AccountFragment : BaseFragment() {
         }
     }
 
+
     private fun accountUnionWardDialogFragment() {
         // when ward name value is clicked
         childFragmentManager.setFragmentResultListener(
@@ -672,6 +703,7 @@ class AccountFragment : BaseFragment() {
             )
         }
     }
+
 
     private fun accountUnionLGADialogFragment() {
         // when lga name value is clicked
@@ -699,6 +731,7 @@ class AccountFragment : BaseFragment() {
         }
     }
 
+
     private fun accountUnionStateDialogFragment() {
         // when state name value is clicked
         childFragmentManager.setFragmentResultListener(
@@ -725,48 +758,6 @@ class AccountFragment : BaseFragment() {
         }
     }
 
-    private fun initializeLocations() {
-
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestPermissions(
-                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
-                LOCATION_REQUEST_CODE
-            )
-        } else {
-            try {
-                gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-
-                if (gps_enabled) {
-                    getArtisanLocation()
-                } else {
-                    checkGPSEnabled(LOCATION_REQUEST_CODE) { broadcastReceiver }
-                }
-            } catch (ex: java.lang.Exception) {
-            }
-        }
-    }
-
-
-    @SuppressLint("MissingPermission")
-    private fun getArtisanLocation() {
-
-        findNavController().navigate(R.id.mapsFragment)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            if (
-                (!MapsFragment().isVisible) && (binding.accountFragmentWorkshopAddressValueTextView.text.isNullOrEmpty())
-            ) {
-                findNavController().navigate(R.id.mapsFragment)
-            }
-        }, 2000)
-    }
-
-
-
     // Gender Dialog
     private fun accountGenderSelectDialog() {
         // when gender value is clicked
@@ -786,6 +777,125 @@ class AccountFragment : BaseFragment() {
             createProfileDialogFragment(R.layout.account_gender_dialog_fragment, bundle).show(
                 childFragmentManager, AccountFragment::class.java.simpleName
             )
+        }
+    }
+
+    private fun requestPermissions() {
+
+        ActivityCompat.requestPermissions(
+            requireActivity(),
+            arrayOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ),
+            Constants.PERMISSION_ID
+        )
+    }
+
+
+    private fun checkPermissions(): Boolean {
+
+        return ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            requireActivity(),
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        // If we want background location
+        // on Android 10.0 and higher,
+        // use:
+        // ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
+    }
+
+
+    /**
+     * Ask for GPS Location and get current location
+     */
+    private fun buildAlertMessageNoGps() {
+
+        val locationRequest: LocationRequest = LocationRequest.create()
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        locationRequest.interval = 30 * 1000
+        locationRequest.fastestInterval = 5 * 1000
+
+        val builder: LocationSettingsRequest.Builder = LocationSettingsRequest.Builder()
+            .addLocationRequest(locationRequest)
+        builder.setAlwaysShow(true)                          //this is the key ingredient
+        val result: Task<LocationSettingsResponse> = LocationServices.getSettingsClient(requireContext()).checkLocationSettings(builder.build())
+        result.addOnCompleteListener { task ->
+            try {
+                val response: LocationSettingsResponse = task.getResult(ApiException::class.java)
+                /**
+                 * All location settings are satisfied. The client can initialize location requests here.
+                 */
+            } catch (exception: ApiException) {
+                when (exception.statusCode) {
+                    LocationSettingsStatusCodes.RESOLUTION_REQUIRED ->
+                        // Location settings are not satisfied. But could be fixed by showing the user a dialog.
+                        try {
+                            // Cast to a resolvable exception.
+                            val resolvable = exception as ResolvableApiException
+                            // Show the dialog by calling startResolutionForResult(),
+                            // and check the result in onActivityResult().
+                            resolvable.startResolutionForResult(
+                                requireActivity(),
+                                Constants.REQUEST_CHECK_SETTINGS
+                            )
+                        } catch (e: IntentSender.SendIntentException) {
+                            // Ignore the error.
+                        } catch (e: ClassCastException) {
+                            // Ignore, should be an impossible error.
+                        }
+                    LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
+                    }
+                }
+            }
+        }
+    }
+
+    //    /* set broadcast receiver go detect GPS changes */
+    var broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            /* listen for changes in cell broadcast */
+            if (LocationManager.PROVIDERS_CHANGED_ACTION == intent.action) {
+                val locationManager =
+                    context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+//                val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+                if (isGpsEnabled) {
+                    // Handle Location turned ON
+                    Toast.makeText(requireContext(), "LOCATION ENABLED", Toast.LENGTH_LONG).show()
+                    findNavController().navigate(R.id.mapFragment)
+                } else {
+                    Toast.makeText(requireContext(), "LOCATION DISABLED", Toast.LENGTH_LONG).show()
+                    // Handle Location turned OFF
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Method to check if location is enabled
+     * @return true || false
+     */
+    private fun isLocationEnabled(): Boolean {
+
+        val locationManager = requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager?
+        return locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) == true
+                ||
+                locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) == true
+    }
+
+    // logic to lunch map if all equirements are met
+    private fun initiateMapLunch(){
+        if(checkPermissions()){
+            if(isLocationEnabled()){
+                findNavController().navigate(R.id.mapFragment)
+            } else {
+                buildAlertMessageNoGps()
+            }
+        } else {
+            requestPermissions()
         }
     }
 

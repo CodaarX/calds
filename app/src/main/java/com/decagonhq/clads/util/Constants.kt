@@ -14,4 +14,7 @@ object Constants {
     const val IMAGE_URL = "image_url"
     const val GOOGLE_SIGN_IN_REQUEST_CODE = 100
     const val LOCATION_REQUEST_CODE = 1
+    const val REQUEST_CHECK_SETTING = 2
+    const val REQUEST_CHECK_SETTINGS = 100
+    const val PERMISSION_ID = 5
 }

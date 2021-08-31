@@ -1,8 +1,10 @@
 package com.decagonhq.clads.util
 
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
+import android.content.IntentSender.SendIntentException
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.provider.Settings
@@ -17,7 +19,6 @@ import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import com.decagonhq.clads.R
 import com.decagonhq.clads.data.local.CladsDatabase
-import com.decagonhq.clads.ui.authentication.MainActivity
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
@@ -31,6 +32,16 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
+import com.google.android.gms.location.LocationSettingsStatusCodes
+
+import com.decagonhq.clads.ui.authentication.MainActivity
+
+import com.google.android.gms.location.LocationSettingsResult
+
+import com.google.android.gms.common.api.GoogleApiClient
+
+
+
 
 fun Fragment.showView(view: View) {
 
@@ -129,53 +140,4 @@ fun Fragment.showLoadingBar(message: String): Dialog {
     return dialog
 }
 
-fun Fragment.checkGPSEnabled(LOCATION_REQUEST_CODE: Int, action: () -> Unit) {
 
-    val locationRequest = LocationRequest().apply {
-        interval = TimeUnit.SECONDS.toMillis(5000)
-        fastestInterval = TimeUnit.SECONDS.toMillis(3000)
-        maxWaitTime = TimeUnit.SECONDS.toMillis(30000)
-        priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-    }
-
-    val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
-
-    val client: SettingsClient = LocationServices.getSettingsClient(requireActivity())
-
-    val task: Task<LocationSettingsResponse> = client.checkLocationSettings(builder.build())
-
-    task.addOnSuccessListener { locationSettingsResponse ->
-        action.invoke()
-    }
-
-    task.addOnFailureListener { exception ->
-        if (exception is ResolvableApiException) {
-            try {
-                /** Make alert dialog to request user to turn on GPS**/
-                android.app.AlertDialog.Builder(requireContext())
-                    .setTitle("GPS Settings")
-                    .setMessage("GPS is off. App requires location turned on for verification.")
-                    .setPositiveButton(
-                        "SETTINGS"
-                    ) { dialogInterface, i ->
-                        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                        startActivityForResult(intent, LOCATION_REQUEST_CODE)
-                    }
-                    .setNegativeButton(
-                        "Cancel"
-                    ) { dialogInterface, i ->
-                        Toast.makeText(
-                            requireContext(),
-                            "GPS is off. App requires location turned on for verification.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        dialogInterface.cancel()
-                    }
-                    .create()
-                    .show()
-            } catch (sendEx: IntentSender.SendIntentException) {
-                // Ignore the error.
-            }
-        }
-    }
-}

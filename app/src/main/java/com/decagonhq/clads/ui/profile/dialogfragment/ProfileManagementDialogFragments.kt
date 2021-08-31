@@ -1,5 +1,6 @@
 package com.decagonhq.clads.ui.profile.dialogfragment
 
+import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import android.widget.RadioButton
 import androidx.core.os.bundleOf
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import com.decagonhq.clads.R
 import com.decagonhq.clads.databinding.AccountEmployeeNumberDialogFragmentBinding
@@ -24,6 +26,7 @@ import com.decagonhq.clads.databinding.AccountUnionWardDialogFragmentBinding
 import com.decagonhq.clads.databinding.AccountWorkshopCityDialogFragmentBinding
 import com.decagonhq.clads.databinding.AccountWorkshopStateDialogFragmentBinding
 import com.decagonhq.clads.databinding.AccountWorkshopStreetDialogFragmentBinding
+import com.decagonhq.clads.databinding.FragmentMapBinding
 import com.decagonhq.clads.databinding.RenameGalleryImageDialogFragmentBinding
 import com.decagonhq.clads.databinding.SpecialtyAddSpecialtyDialogFragmentBinding
 import com.decagonhq.clads.databinding.SpecialtyDeliveryTimeDialogFragmentBinding
@@ -81,6 +84,9 @@ import com.decagonhq.clads.ui.profile.editprofile.SpecialtyFragment.Companion.SP
 import com.decagonhq.clads.ui.profile.editprofile.SpecialtyFragment.Companion.SPECIAL_DELIVERY_TIME_REQUEST_KEY
 import com.decagonhq.clads.ui.profile.editprofile.SpecialtyFragment.Companion.SPECIAL_OBIOMA_TRAINED_BUNDLE_KEY
 import com.decagonhq.clads.ui.profile.editprofile.SpecialtyFragment.Companion.SPECIAL_OBIOMA_TRAINED_REQUEST_KEY
+import com.decagonhq.clads.viewmodels.ArtisanLocationViewModel
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
 
 class ProfileManagementDialogFragments(
     private var dialogLayoutId: Int,
@@ -92,13 +98,8 @@ class ProfileManagementDialogFragments(
         setStyle(STYLE_NO_TITLE, android.R.style.Theme_DeviceDefault_Light_Dialog_MinWidth)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(dialogLayoutId, container)
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? { return inflater.inflate(dialogLayoutId, container) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -389,7 +390,6 @@ class ProfileManagementDialogFragments(
                     dismiss()
                 }
             }
-
             R.layout.account_workshop_state_dialog_fragment -> {
                 /*Initialise binding*/
                 val binding = AccountWorkshopStateDialogFragmentBinding.bind(view)
@@ -451,7 +451,6 @@ class ProfileManagementDialogFragments(
                     }
                 }
             }
-
             R.layout.account_workshop_city_dialog_fragment -> {
                 /*Initialise binding*/
                 val binding = AccountWorkshopCityDialogFragmentBinding.bind(view)
@@ -517,21 +516,18 @@ class ProfileManagementDialogFragments(
             R.layout.account_workshop_street_dialog_fragment -> {
                 /*Initialise binding*/
                 val binding = AccountWorkshopStreetDialogFragmentBinding.bind(view)
-                val streetEditText =
-                    binding.accountWorkshopStreetDialogFragmentWorkshopStreetEditTextView
+                val streetEditText = binding.accountWorkshopStreetDialogFragmentWorkshopStreetEditTextView
                 val okButton = binding.accountWorkshopStreetDialogFragmentOkButton
                 val cancelButton = binding.accountWorkshopStreetDialogFragmentCancelButton
 
-                val retrievedArgs =
-                    bundle?.getString(CURRENT_ACCOUNT_WORKSHOP_STREET_BUNDLE_KEY)
+                val retrievedArgs = bundle?.getString(CURRENT_ACCOUNT_WORKSHOP_STREET_BUNDLE_KEY)
 
                 /*Attaching the data*/
                 streetEditText.setText(retrievedArgs)
 
                 /*when the dialog ok button is clicked*/
                 okButton.setOnClickListener {
-                    val inputValue =
-                        streetEditText.text.toString()
+                    val inputValue = streetEditText.text.toString()
 
                     when {
                         inputValue.isEmpty() -> {
@@ -762,7 +758,6 @@ class ProfileManagementDialogFragments(
                     }
                 }
             }
-
             R.layout.account_union_state_dialog_fragment -> {
                 /*Initialise binding*/
                 val binding = AccountUnionStateDialogFragmentBinding.bind(view)
@@ -1099,44 +1094,34 @@ class ProfileManagementDialogFragments(
                 }
             }
             R.layout.rename_gallery_image_dialog_fragment -> {
+
                 /*Initialise binding*/
                 val binding = RenameGalleryImageDialogFragmentBinding.bind(view)
-                val renameDescriptionEditText =
-                    binding.renameGalleryDescriptionDialogFragmentRenameDescriptionEditTextView
+                val renameDescriptionEditText = binding.renameGalleryDescriptionDialogFragmentRenameDescriptionEditTextView
                 val okButton = binding.renameGalleryDescriptionDialogFragmentOkButton
                 val cancelButton = binding.renameGalleryDescriptionDialogFragmentCancelButton
-
-                val retrievedArgs =
-                    bundle?.getString(CURRENT_ACCOUNT_RENAME_DESCRIPTION_BUNDLE_KEY)
+                val retrievedArgs = bundle?.getString(CURRENT_ACCOUNT_RENAME_DESCRIPTION_BUNDLE_KEY)
 
                 /*Attaching the data*/
                 renameDescriptionEditText.setText(retrievedArgs)
 
                 /*when the dialog ok button is clicked*/
                 okButton.setOnClickListener {
-                    val inputValue =
-                        renameDescriptionEditText.text.toString()
-
+                    val inputValue = renameDescriptionEditText.text.toString()
                     when {
                         inputValue.isEmpty() -> {
-                            binding.renameGalleryDescriptionDialogFragmentRenameDescriptionEditTextInputLayout.error =
-                                getString(
+                            binding.renameGalleryDescriptionDialogFragmentRenameDescriptionEditTextInputLayout.error = getString(
                                     R.string.required
                                 )
-                            binding.renameGalleryDescriptionDialogFragmentRenameDescriptionEditTextInputLayout.errorIconDrawable =
-                                null
+                            binding.renameGalleryDescriptionDialogFragmentRenameDescriptionEditTextInputLayout.errorIconDrawable = null
                         }
                         else -> {
-                            setFragmentResult(
-                                RENAME_DESCRIPTION_REQUEST_KEY,
-                                bundleOf(
-                                    RENAME_DESCRIPTION_BUNDLE_KEY to inputValue
-                                )
-                            )
+                            setFragmentResult(RENAME_DESCRIPTION_REQUEST_KEY, bundleOf(RENAME_DESCRIPTION_BUNDLE_KEY to inputValue))
                             dismiss()
                         }
                     }
                 }
+
                 /*when the dialog cancel button is clicked*/
                 cancelButton.setOnClickListener {
                     dismiss()
@@ -1164,7 +1149,6 @@ class ProfileManagementDialogFragments(
     }
 
     companion object {
-
         fun createProfileDialogFragment(
             layoutId: Int,
             bundle: Bundle? = null

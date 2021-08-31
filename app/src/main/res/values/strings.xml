@@ -4,7 +4,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="view_in_browser">view in browser</string>
     <string name="hi_obioma">Hi Ijeoma, you are almost ready to start enjoying clads. Simply click the
-        blue button below to verify your email address
+        blue button below to verify your email coOrdinates
     </string>
     <string name="hi_you_are_almost_there">Hi you are almost there to finish reseting your password please click on the reset button below</string>
     <string name="copyright_2020">copyright 2020.All rights reserved</string>
@@ -113,10 +113,10 @@
     <string name="enter_street_address">Enter Street Address</string>
     <string name="delivery_address_city">City</string>
     <string name="delivery_address_state">State</string>
-    <string name="there_are_no_delivery_address">There are no delivery address for this client</string>
+    <string name="there_are_no_delivery_address">There are no delivery coOrdinates for this client</string>
     <string name="add_address">Add Address</string>
     <string name="save_client">Save Client</string>
-    <string name="add_address_fragment">Add address</string>
+    <string name="add_address_fragment">Add coOrdinates</string>
     <string name="edit_measurement">Edit measurement</string>
 
     <string-array name="Year">
@@ -190,7 +190,7 @@
     <string name="elbow">Elbow</string>
 
     <!-- Validation strings -->
-    <string name="enter_the_delivery_address_validation">Please, enter the delivery address</string>
+    <string name="enter_the_delivery_address_validation">Please, enter the delivery coOrdinates</string>
     <string name="enter_city_validation">Please, enter a city</string>
     <string name="enter_state_validation">Please, select a state</string>
     <string name="enter_name_validation">Please, enter name</string>
@@ -308,6 +308,7 @@
     <string name="no_7_decabon_way_lekki">No 7 Decagon way, Lekki</string>
     <string name="_2020">2020</string>
     <string name="required">Required</string>
+    <string name="tag_employee_address_dialog_fragment">Employee Address dialog fragment</string>
     <string name="tag_employee_number_dialog_fragment">Employee Number dialog fragment</string>
     <string name="frstname_dialog_fragment">FirstName Dialog Fragment</string>
     <string name="rename_description_dialog_fragment">Rename Description Dialog Fragment</string>
@@ -349,7 +350,7 @@
     <string name="is_required_to_use_this_app">\ is required to use this app\</string>
     <string name="hi">Hi %s</string>
     <string name="confirk_email_hi">Hi</string>
-    <string name="confirm_email_you_are_ready_to_go">, you are almost ready to start enjoying clads. Simply click the blue button below to verify your email address</string>
+    <string name="confirm_email_you_are_ready_to_go">, you are almost ready to start enjoying clads. Simply click the blue button below to verify your email coOrdinates</string>
 
     <string name="resource_view_individual_article_fragment_article_link_key">articleItem</string>
     <string name="enter_address">Enter Address</string>
@@ -392,7 +393,7 @@
     <string name="tap_to_enter_state">Tap to Enter state</string>
     <string name="tap_to_enter_city">Tap to Enter city</string>
     <string name="tap_to_enter_street">Tap to Enter street</string>
-    <string name="tap_to_enter_address">Tap to Enter address</string>
+    <string name="tap_to_enter_address">Tap to Enter coOrdinates</string>
     <string name="tap_to_enter_employees_num">Tap to Enter employees num</string>
     <string name="tap_to_enter_legal_status">Tap to Enter Legal status</string>
     <string name="tap_to_enter_union_name">Tap to Enter union name</string>
@@ -409,6 +410,10 @@
     <string name="set_location_now">Set Location now</string>
     <string name="api_key">AIzaSyB8_ZliMm9ao40_H-SRy-ltZ1qJUcG5RpE</string>
     <string name="save_location">Save location</string>
+    <string name="go_to_map">Edit coOrdinates from map</string>
+    <string name="edit_address_manually">Edit coOrdinates manually</string>
+    <string name="edit_street_address">Edit Street Address</string>
+    <string name="street_address">street coOrdinates</string>
 
     <string-array name="account_category">
         <item>Tailor</item>

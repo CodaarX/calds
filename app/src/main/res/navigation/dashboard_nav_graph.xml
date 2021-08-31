@@ -99,8 +99,8 @@
         android:label="@string/edit_profile"
         tools:layout="@layout/edit_profile_fragment" >
         <action
-            android:id="@+id/action_editProfileFragment_to_mapsFragment"
-            app:destination="@id/mapsFragment" />
+            android:id="@+id/action_editProfileFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
     </fragment>
     <fragment
         android:id="@+id/addClientFragment"
@@ -295,13 +295,13 @@
             app:destination="@id/addClientFragment" />
 
     </fragment>
-    <fragment
-        android:id="@+id/mapsFragment"
-        android:name="com.decagonhq.clads.MapsFragment"
-        android:label="fragment_maps"
-        tools:layout="@layout/fragment_maps" >
+      <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.decagonhq.clads.MapFragment"
+        android:label=""
+        tools:layout="@layout/fragment_map" >
         <action
-            android:id="@+id/action_mapsFragment_to_editProfileFragment"
+            android:id="@+id/action_mapFragment_to_editProfileFragment"
             app:destination="@id/editProfileFragment"
             app:popUpTo="@id/editProfileFragment"
             app:popUpToInclusive="false" />
