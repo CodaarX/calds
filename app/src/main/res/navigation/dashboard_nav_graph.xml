@@ -297,7 +297,7 @@
     </fragment>
       <fragment
         android:id="@+id/mapFragment"
-        android:name="com.decagonhq.clads.MapFragment"
+        android:name="com.decagonhq.clads.ui.profile.editprofile.MapFragment"
         android:label=""
         tools:layout="@layout/fragment_map" >
         <action

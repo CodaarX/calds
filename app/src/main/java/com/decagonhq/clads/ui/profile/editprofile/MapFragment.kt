@@ -1,4 +1,4 @@
-package com.decagonhq.clads
+package com.decagonhq.clads.ui.profile.editprofile
 
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -15,6 +15,7 @@ import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.decagonhq.clads.R
 import com.decagonhq.clads.data.domain.profile.ArtisanCoOrdinates
 import com.decagonhq.clads.databinding.FragmentMapBinding
 import com.decagonhq.clads.databinding.LocationPickerBinding
