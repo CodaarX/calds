@@ -28,6 +28,7 @@ import com.decagonhq.clads.databinding.LoginFragmentBinding
 import com.decagonhq.clads.ui.BaseFragment
 import com.decagonhq.clads.ui.profile.DashboardActivity
 import com.decagonhq.clads.util.Constants.TOKEN
+import com.decagonhq.clads.util.Constants.USER_EMAIL
 import com.decagonhq.clads.util.CustomTypefaceSpan
 import com.decagonhq.clads.util.Resource
 import com.decagonhq.clads.util.ValidationObject.validateEmail
@@ -93,7 +94,8 @@ class LoginFragment : BaseFragment() {
 
         // On login button pressed
         binding.loginFragmentLogInButton.setOnClickListener {
-            val emailAddress = emailEditText.text.toString().trim()
+            val emailAddress = decodeUserEmail( emailEditText.text.toString().trim())
+
             val password = passwordEditText.text.toString().trim()
 
             when {
@@ -183,6 +185,10 @@ class LoginFragment : BaseFragment() {
         super.onResume()
         /*Method to Validate Email Field onText Change*/
         validateSignUpFieldsOnTextChange()
+    }
+
+    private fun decodeUserEmail(userEmail: String): String {
+        return userEmail.replace(",", ".")
     }
 
     /*create the googleSignIn client*/

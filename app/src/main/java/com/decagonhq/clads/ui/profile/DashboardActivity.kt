@@ -8,6 +8,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
@@ -28,11 +29,14 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.decagonhq.clads.R
+import com.decagonhq.clads.data.domain.MessagesNotificationModel
 import com.decagonhq.clads.data.local.CladsDatabase
 import com.decagonhq.clads.databinding.DashboardActivityBinding
 import com.decagonhq.clads.ui.messages.MessagesFragment
+import com.decagonhq.clads.ui.messages.User
 import com.decagonhq.clads.util.Constants
 import com.decagonhq.clads.util.CustomProgressDialog
+import com.decagonhq.clads.util.EncodeEmail.encodeUserEmail
 import com.decagonhq.clads.util.SessionManager
 import com.decagonhq.clads.util.loadImage
 import com.decagonhq.clads.util.logOut
@@ -42,6 +46,7 @@ import com.decagonhq.clads.viewmodels.ImageUploadViewModel
 import com.decagonhq.clads.viewmodels.UserProfileViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.database.FirebaseDatabase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -182,7 +187,7 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
                         )
 
                     val fullName = "${userProfile?.firstName ?: "---"} ${
-                    userProfile?.lastName ?: "---"
+                        userProfile?.lastName ?: "---"
                     }"
                     profileName.text = fullName.capitalize(Locale.ROOT)
 
@@ -191,6 +196,19 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
 
                     /*load profile image from shared pref*/
                     profileImage.loadImage(userProfile?.thumbnail)
+
+                    val fromId = userProfile?.id
+                    val fromEmail = encodeUserEmail(userProfile?.email)
+                    val firstName = userProfile?.firstName
+                    val lastName = userProfile?.lastName
+
+
+                    val fireBaseRef = FirebaseDatabase.getInstance().getReference("users/$fromEmail")
+                    val user = MessagesNotificationModel("Hello there", firstName,lastName, fromEmail, fromId)
+                    fireBaseRef.setValue(user).addOnSuccessListener {
+                        Log.d("NEWUSER", "sendMessage: User successfully registered")
+
+                    }
                 }
             }
         )
@@ -233,6 +251,8 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
             }
         }
     }
+
+
 
     /*CLose Nav Drawer if open, on back press*/
     override fun onBackPressed() {

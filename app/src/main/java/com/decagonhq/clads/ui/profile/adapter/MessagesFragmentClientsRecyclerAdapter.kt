@@ -1,14 +1,21 @@
 package com.decagonhq.clads.ui.profile.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.amulyakhare.textdrawable.TextDrawable
+import com.decagonhq.clads.data.domain.ChatMessageModel
 import com.decagonhq.clads.data.domain.MessagesNotificationModel
 import com.decagonhq.clads.databinding.ChatRecyclerviewItemBinding
 import com.decagonhq.clads.ui.messages.MessagesFragmentDirections
 import com.decagonhq.clads.util.ColorSelector
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
 import java.util.*
 
 class MessagesFragmentClientsRecyclerAdapter(
@@ -42,30 +49,61 @@ class MessagesFragmentClientsRecyclerAdapter(
                 with(messageNotificationList[position]) {
                     val clientFullName = "$firstName $lastName"
                     clientName.text = clientFullName
-                    notificationBody.text = body
+                    notificationBody.text = text
 
-                    val clientInitials = clientFullName.split(" ")[0].substring(0, 1).capitalize(
-                        Locale.ROOT
-                    ) +
-                            clientFullName.split(" ")[1].substring(0, 1).capitalize(Locale.ROOT)
-                    val color =
-                        ColorSelector.selectColorByCharacter((clientFullName.split(" ")[0].first()))
-                    val drawable = TextDrawable.builder().beginConfig()
-                        .width(150)
-                        .height(150)
-                        .fontSize(55)
-                        .endConfig()
-                        .buildRound(clientInitials, color)
+//                    val clientInitials = clientFullName.split(" ")[0].substring(0, 1).capitalize(
+//                        Locale.ROOT
+//                    ) + clientFullName.split(" ")[1].substring(0, 1).capitalize(Locale.ROOT)
+//                    val color =
+//                        ColorSelector.selectColorByCharacter((clientFullName.split(" ")[0].first()))
+//                    val drawable = TextDrawable.builder().beginConfig()
+//                        .width(150)
+//                        .height(150)
+//                        .fontSize(55)
+//                        .endConfig()
+//                        .buildRound(clientInitials, color)
 
-                    binding.chatRecyclerViewItemImageView.setImageDrawable(drawable)
+//                    binding.chatRecyclerViewItemImageView.setImageDrawable(drawable)
                     binding.chatRecyclerViewItemParentLayout.setOnClickListener {
                         val client = messageNotificationList[position]
                         val action = MessagesFragmentDirections.actionNavMessagesToClientChatFragment2(client)
                         findNavController().navigate(action)
+
+                        val fromId = FirebaseAuth.getInstance().uid
+                        val toId = messageNotificationList[position].userId
+                       
+                        val reference = FirebaseDatabase.getInstance().getReference("/latest-messages/$toId")
+                        Log.d("AAAAAAA", "onBindViewHolder: $reference")
+
+                        reference.addChildEventListener(object : ChildEventListener {
+
+                            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                                val chatMessage = snapshot.child("/latest-messages/$toId")
+                                    .getValue(ChatMessageModel::class.java) ?: return
+                                Log.d("AAAAAAA", "onChildAdded: ${chatMessage}")
+                                binding.chatRecyclerViewItemMessageTextView.text = chatMessage.text
+                            }
+
+                            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+
+                            }
+
+                            override fun onChildRemoved(snapshot: DataSnapshot) {
+                            }
+
+                            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+                            }
+                        })
+
+
                     }
                 }
             }
         }
     }
 }
+
 
