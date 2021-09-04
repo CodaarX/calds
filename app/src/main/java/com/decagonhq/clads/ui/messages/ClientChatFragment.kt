@@ -1,7 +1,6 @@
 package com.decagonhq.clads.ui.messages
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -87,6 +86,8 @@ class ClientChatFragment : BaseFragment() {
             val fromId = it.data?.id
             val fromEmail = encodeUserEmail(it.data?.email)
             val fromName = it.data?.firstName + it.data?.lastName
+            val formatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
+            val calender = Calendar.getInstance()
 
 
             val dataSenderBaseRef =
@@ -94,21 +95,26 @@ class ClientChatFragment : BaseFragment() {
             val dataReceiverBaseRef =
                 FirebaseDatabase.getInstance().getReference("test-messages/$fromEmail/$toId").push()
 
-            Log.d("KEYDATA", "sendMessage: $fromId")
-
             if (fromId == null) return@observe
             val chatMessage = toId?.let { it1 ->
-                ChatMessageModel(dataReceiverBaseRef.key, message, it1, System.currentTimeMillis() / 1000, fromId
-                )
+                ChatMessageModel(dataReceiverBaseRef.key, message, it1, formatter.format(calender.time), fromId)
             }
+
             dataSenderBaseRef.setValue(chatMessage)
                 .addOnSuccessListener {
                     binding?.clientChatFragmentTypeMessageEditText?.text?.clear()
                     binding?.clientChatFragmentRecyclerView?.scrollToPosition(adapter.itemCount - 1)
                 }
             dataReceiverBaseRef.setValue(chatMessage)
+
+            //get last sent/received messages
+            val latestMessagesSender = FirebaseDatabase.getInstance().getReference("/latest-messages/$toId/$fromEmail")
+            latestMessagesSender.setValue(chatMessage)
+
+            val latestMessagesReceiver = FirebaseDatabase.getInstance().getReference("/latest-messages/$fromEmail/$toId")
+            latestMessagesReceiver.setValue(chatMessage)
         })
-        //TODO(Get the unique id between to chatters)
+        //TODO(Get the unique id between two chatters)
 
 
 //        var mappedUserId = mappedUsers ?: myId+chatterId
@@ -121,8 +127,7 @@ class ClientChatFragment : BaseFragment() {
 //                binding?.clientChatFragmentRecyclerView?.scrollToPosition(adapter.itemCount -1)
 //            }
 
-        val latestMessages = FirebaseDatabase.getInstance().getReference("/latest-messages/$toId")
-        latestMessages.setValue(chatMessage)
+
     }
 
     private fun receiveMessage() {
@@ -136,19 +141,18 @@ class ClientChatFragment : BaseFragment() {
             reference.addChildEventListener(object : ChildEventListener {
                 override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                     val chatMessage = snapshot.getValue(ChatMessageModel::class.java)
-                    val formatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
-                    val calender = Calendar.getInstance()
+
 
                     if (chatMessage != null) {
                         if (chatMessage.toId == args.clientData?.fromEmail) {
                             ChatSenderItem(
                                 chatMessage.text,
-                                formatter.format(calender.time)
+                                chatMessage.timeStamp
                             ).let { adapter.add(it) }
                         } else {
                             ChatReceiverItem(
                                 chatMessage.text,
-                                formatter.format(calender.time)
+                                chatMessage.timeStamp
                             ).let { adapter.add(it) }
                         }
                     }
@@ -185,6 +189,8 @@ class ClientChatFragment : BaseFragment() {
 //
 //        })
     }
+
+
 
     override fun onResume() {
         super.onResume()

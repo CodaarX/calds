@@ -66,40 +66,34 @@ class MessagesFragmentClientsRecyclerAdapter(
 //                    binding.chatRecyclerViewItemImageView.setImageDrawable(drawable)
                     binding.chatRecyclerViewItemParentLayout.setOnClickListener {
                         val client = messageNotificationList[position]
-                        val action = MessagesFragmentDirections.actionNavMessagesToClientChatFragment2(client)
+                        val action =
+                            MessagesFragmentDirections.actionNavMessagesToClientChatFragment2(client)
                         findNavController().navigate(action)
-
-                        val fromId = FirebaseAuth.getInstance().uid
-                        val toId = messageNotificationList[position].userId
-                       
-                        val reference = FirebaseDatabase.getInstance().getReference("/latest-messages/$toId")
-                        Log.d("AAAAAAA", "onBindViewHolder: $reference")
-
-                        reference.addChildEventListener(object : ChildEventListener {
-
-                            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                                val chatMessage = snapshot.child("/latest-messages/$toId")
-                                    .getValue(ChatMessageModel::class.java) ?: return
-                                Log.d("AAAAAAA", "onChildAdded: ${chatMessage}")
-                                binding.chatRecyclerViewItemMessageTextView.text = chatMessage.text
-                            }
-
-                            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-
-                            }
-
-                            override fun onChildRemoved(snapshot: DataSnapshot) {
-                            }
-
-                            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                            }
-
-                            override fun onCancelled(error: DatabaseError) {
-                            }
-                        })
-
-
                     }
+                    val toId = messageNotificationList[position].fromEmail
+                    val reference =
+                        FirebaseDatabase.getInstance().getReference("/latest-messages/$toId")
+
+                    reference.addChildEventListener(object : ChildEventListener {
+                        override fun onChildAdded(
+                            snapshot: DataSnapshot,
+                            previousChildName: String?
+                        ) {
+                            val chatMessage = snapshot.getValue(ChatMessageModel::class.java) ?: return
+                            binding.chatRecyclerViewItemMessageTextView.text = chatMessage.text
+                            binding.chatRecyclerViewItemTimeTextView.text = chatMessage.timeStamp
+                        }
+
+                        override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
+
+                        override fun onChildRemoved(snapshot: DataSnapshot) {}
+
+                        override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
+
+                        override fun onCancelled(error: DatabaseError) {}
+                    })
+
+
                 }
             }
         }
