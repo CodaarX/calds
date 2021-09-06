@@ -28,10 +28,7 @@ class SpecialtyFragmentRecyclerAdapter :
     val specialtySet: Set<String> get() = _specialtySet
     val savedSpecialtySet = mutableSetOf<String>().toSortedSet()
 
-    inner class SpecialtyViewHolder(
-        var itemBinding: SpecialtyFragmentRecyclerItemBinding
-    ) :
-        RecyclerView.ViewHolder(itemBinding.root) {
+    inner class SpecialtyViewHolder(var itemBinding: SpecialtyFragmentRecyclerItemBinding) : RecyclerView.ViewHolder(itemBinding.root) {
 
         fun bind(specialty: String) = with(itemBinding) {
 

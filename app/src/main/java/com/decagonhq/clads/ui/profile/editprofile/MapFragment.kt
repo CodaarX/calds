@@ -2,9 +2,16 @@ package com.decagonhq.clads.ui.profile.editprofile
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
+import android.location.LocationManager
+import android.location.LocationManager.PROVIDERS_CHANGED_ACTION
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Looper
 import android.view.LayoutInflater
@@ -32,6 +39,9 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import java.io.IOException
 import java.util.Locale
+import android.net.NetworkInfo
+import android.widget.Toast
+
 
 class MapFragment : BaseFragment() {
 
@@ -45,11 +55,6 @@ class MapFragment : BaseFragment() {
     private lateinit var nowLocation: LatLng
     private lateinit var location: LatLng
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-//        getLastLocation()
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,18 +71,16 @@ class MapFragment : BaseFragment() {
 
         getLastLocation()
 
-        activity?.onBackPressedDispatcher?.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-
-                override fun handleOnBackPressed() {
-
-                    // in here you can do logic when backPress is clicked
-                    showToast("clicked")
-                    findNavController().popBackStack()
-                }
-            }
-        )
+//        activity?.onBackPressedDispatcher?.addCallback(
+//            viewLifecycleOwner,
+//            object : OnBackPressedCallback(true) {
+//
+//                override fun handleOnBackPressed() {
+//                    // in here you can do logic when backPress is clicked
+//                    findNavController().popBackStack()
+//                }
+//            }
+//        )
     }
 
     @SuppressLint("MissingPermission")
@@ -124,7 +127,8 @@ class MapFragment : BaseFragment() {
     @SuppressLint("MissingPermission")
     private fun startLocationService() {
         val dialog = Dialog(requireContext())
-        val b: LocationPickerBinding = LocationPickerBinding.inflate(LayoutInflater.from(requireContext()))
+        val b: LocationPickerBinding =
+            LocationPickerBinding.inflate(LayoutInflater.from(requireContext()))
         dialog.apply {
             requestWindowFeature(Window.FEATURE_NO_TITLE)
             setContentView(b.root)
@@ -163,22 +167,40 @@ class MapFragment : BaseFragment() {
                 }
             }
         }
-        dialog.setCancelable(false)
+
+         dialog.setCancelable(false)
+
         b.saveLocation.setOnClickListener {
 
-            location = LatLng(nowLocation.latitude, nowLocation.longitude)
-            val address = getAddressText(location)
-            showToast("$address")
-            val artisanAddress = ArtisanCoOrdinates(
-                nowLocation.latitude,
-                nowLocation.longitude
-            )
+            val cm = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+            val isConnected: Boolean = activeNetwork?.isConnectedOrConnecting == true
 
-            artisanLocationViewModel.setArtisanCoOrdinates(artisanAddress)
-            artisanLocationViewModel.setArtisanAddressString(address!!)
-            dialog.dismiss()
-            findNavController().navigate(R.id.action_mapFragment_to_editProfileFragment)
+            if (isConnected) {
+
+                location = LatLng(nowLocation.latitude, nowLocation.longitude)
+                val address = getAddressText(location)
+                showToast("$address")
+                val artisanAddress = ArtisanCoOrdinates(
+                    nowLocation.latitude,
+                    nowLocation.longitude
+                )
+
+                artisanLocationViewModel.setArtisanCoOrdinates(artisanAddress)
+                artisanLocationViewModel.setArtisanAddressString(address!!)
+                dialog.dismiss()
+                findNavController().navigate(R.id.action_mapFragment_to_editProfileFragment)
+
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "Poor Network service. Check your network connection.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+
         }
+
     }
 
     private fun getAddressText(location: LatLng): String? {
@@ -193,3 +215,4 @@ class MapFragment : BaseFragment() {
         return addresses?.get(0)!!.getAddressLine(0)
     }
 }
+

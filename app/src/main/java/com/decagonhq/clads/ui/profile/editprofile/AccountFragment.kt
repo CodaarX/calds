@@ -168,7 +168,7 @@ class AccountFragment : BaseFragment() {
 
                 editLocationOnMapRadioButton?.setOnClickListener {
                     dialog.dismiss()
-                    findNavController().navigate(R.id.mapFragment)
+                    initiateMapLunch()
                 }
 
                 editLocationManuallyRadioButton?.setOnClickListener {
