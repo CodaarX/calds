@@ -8,7 +8,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
@@ -186,7 +185,7 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
                         )
 
                     val fullName = "${userProfile?.firstName ?: "---"} ${
-                        userProfile?.lastName ?: "---"
+                    userProfile?.lastName ?: "---"
                     }"
                     profileName.text = fullName.capitalize(Locale.ROOT)
 
@@ -201,9 +200,8 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
                     val firstName = userProfile?.firstName
                     val lastName = userProfile?.lastName
 
-
                     val fireBaseRef = FirebaseDatabase.getInstance().getReference("users/$fromEmail")
-                    val user = MessagesNotificationModel("Hello there", firstName,lastName, fromEmail, fromId)
+                    val user = MessagesNotificationModel("Hello there", firstName, lastName, fromEmail, fromId)
                     fireBaseRef.setValue(user).addOnSuccessListener {
                     }
                 }
@@ -249,8 +247,6 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
             }
         }
     }
-
-
 
     /*CLose Nav Drawer if open, on back press*/
     override fun onBackPressed() {

@@ -5,10 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.decagonhq.clads.data.domain.ChatMessageModel
 import com.decagonhq.clads.data.domain.MessagesNotificationModel
 import com.decagonhq.clads.databinding.MessagesFragmentBinding
 import com.decagonhq.clads.ui.BaseFragment
@@ -16,8 +14,6 @@ import com.decagonhq.clads.ui.profile.adapter.MessagesFragmentClientsRecyclerAda
 import com.decagonhq.clads.util.EncodeEmail
 import com.decagonhq.clads.viewmodels.ClientViewModel
 import com.decagonhq.clads.viewmodels.UserProfileViewModel
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -38,7 +34,6 @@ class MessagesFragment : BaseFragment() {
     private val clientViewModel: ClientViewModel by activityViewModels()
     private val userProfileViewModel: UserProfileViewModel by activityViewModels()
     private val adapter = GroupAdapter<ViewHolder>()
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,7 +57,6 @@ class MessagesFragment : BaseFragment() {
         notificationRecyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
     }
-
 
     private fun getClient(userEmail: String?) {
 
@@ -96,7 +90,6 @@ class MessagesFragment : BaseFragment() {
 
             override fun onCancelled(error: DatabaseError) {
             }
-
         })
     }
 
@@ -152,5 +145,3 @@ class MessagesFragment : BaseFragment() {
         _binding = null
     }
 }
-
-

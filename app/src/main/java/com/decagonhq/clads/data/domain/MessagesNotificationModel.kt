@@ -11,7 +11,6 @@ data class MessagesNotificationModel(
     var fromEmail: String?,
     var userId: Int?
 
-    ) : Parcelable
-{
+) : Parcelable {
     constructor() : this("", "", "", "", 1)
 }

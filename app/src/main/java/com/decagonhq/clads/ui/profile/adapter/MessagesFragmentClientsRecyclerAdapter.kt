@@ -1,29 +1,25 @@
 package com.decagonhq.clads.ui.profile.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.amulyakhare.textdrawable.TextDrawable
 import com.decagonhq.clads.data.domain.ChatMessageModel
 import com.decagonhq.clads.data.domain.MessagesNotificationModel
 import com.decagonhq.clads.databinding.ChatRecyclerviewItemBinding
 import com.decagonhq.clads.ui.messages.MessagesFragmentDirections
-import com.decagonhq.clads.util.ColorSelector
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import java.util.*
 import kotlin.collections.HashMap
 
 class MessagesFragmentClientsRecyclerAdapter(
-    private var messageNotificationList: List<MessagesNotificationModel>) :
+    private var messageNotificationList: List<MessagesNotificationModel>
+) :
     RecyclerView.Adapter<MessagesFragmentClientsRecyclerAdapter.ViewHolder>() {
 
-    val latestMessagesHashMap = HashMap<String , ChatMessageModel>()
+    val latestMessagesHashMap = HashMap<String, ChatMessageModel>()
 
     inner class ViewHolder(val binding: ChatRecyclerviewItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -93,7 +89,6 @@ class MessagesFragmentClientsRecyclerAdapter(
                             binding.chatRecyclerViewItemMessageTextView.text = chatMessage.text
                             binding.chatRecyclerViewItemTimeTextView.text = chatMessage.timeStamp
                             latestMessagesHashMap[snapshot.key!!] = chatMessage
-
                         }
 
                         override fun onChildRemoved(snapshot: DataSnapshot) {}
@@ -102,15 +97,8 @@ class MessagesFragmentClientsRecyclerAdapter(
 
                         override fun onCancelled(error: DatabaseError) {}
                     })
-
-
                 }
             }
         }
     }
-
 }
-
-
-
-

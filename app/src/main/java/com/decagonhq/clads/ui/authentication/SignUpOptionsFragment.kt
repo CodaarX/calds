@@ -131,9 +131,7 @@ class SignUpOptionsFragment : BaseFragment() {
                     sessionManager.saveToSharedPref(Constants.TOKEN, it)
                     Log.d("GTOKEN", "${account.idToken}")
                     Log.d("GTOKEN", "${sessionManager.loadFromSharedPref(Constants.TOKEN)}")
-                    Log.d("GTOKEN", "${it}")
-
-
+                    Log.d("GTOKEN", "$it")
                 }
             }
 

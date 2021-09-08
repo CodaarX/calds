@@ -23,7 +23,8 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 
 class ClientChatFragment : BaseFragment() {
     private val args: ClientChatFragmentArgs by navArgs()
@@ -36,9 +37,9 @@ class ClientChatFragment : BaseFragment() {
     var chatterId = ""
     private val userProfileViewModel: UserProfileViewModel by viewModels()
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
@@ -50,7 +51,6 @@ class ClientChatFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         userProfileViewModel.getLocalDatabaseUserProfile()
-
 
         receiveMessage()
         binding?.clientChatFragmentRecyclerView?.adapter = adapter
@@ -73,48 +73,46 @@ class ClientChatFragment : BaseFragment() {
 //            }
 //
 //        })
-
-
     }
-
 
     private fun sendMessage() {
         val message = binding?.clientChatFragmentTypeMessageEditText?.text.toString()
         val toId = args.clientData?.fromEmail
 
-        userProfileViewModel.userProfile.observe(viewLifecycleOwner, {
-            val fromId = it.data?.id
-            val fromEmail = encodeUserEmail(it.data?.email)
-            val formatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
-            val calender = Calendar.getInstance()
+        userProfileViewModel.userProfile.observe(
+            viewLifecycleOwner,
+            {
+                val fromId = it.data?.id
+                val fromEmail = encodeUserEmail(it.data?.email)
+                val formatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
+                val calender = Calendar.getInstance()
 
+                val dataSenderBaseRef =
+                    FirebaseDatabase.getInstance().getReference("/test-messages/$toId/$fromEmail").push()
+                val dataReceiverBaseRef =
+                    FirebaseDatabase.getInstance().getReference("test-messages/$fromEmail/$toId").push()
 
-            val dataSenderBaseRef =
-                FirebaseDatabase.getInstance().getReference("/test-messages/$toId/$fromEmail").push()
-            val dataReceiverBaseRef =
-                FirebaseDatabase.getInstance().getReference("test-messages/$fromEmail/$toId").push()
-
-            if (fromId == null) return@observe
-            val chatMessage = toId?.let { it1 ->
-                ChatMessageModel(dataReceiverBaseRef.key, message, it1, formatter.format(calender.time), fromId)
-            }
-
-            dataSenderBaseRef.setValue(chatMessage)
-                .addOnSuccessListener {
-                    binding?.clientChatFragmentTypeMessageEditText?.text?.clear()
-                    binding?.clientChatFragmentRecyclerView?.scrollToPosition(adapter.itemCount - 1)
+                if (fromId == null) return@observe
+                val chatMessage = toId?.let { it1 ->
+                    ChatMessageModel(dataReceiverBaseRef.key, message, it1, formatter.format(calender.time), fromId)
                 }
-            dataReceiverBaseRef.setValue(chatMessage)
 
-            //get last sent/received messages
-            val latestMessagesSender = FirebaseDatabase.getInstance().getReference("/latest-messages/$toId/$fromEmail")
-            latestMessagesSender.setValue(chatMessage)
+                dataSenderBaseRef.setValue(chatMessage)
+                    .addOnSuccessListener {
+                        binding?.clientChatFragmentTypeMessageEditText?.text?.clear()
+                        binding?.clientChatFragmentRecyclerView?.scrollToPosition(adapter.itemCount - 1)
+                    }
+                dataReceiverBaseRef.setValue(chatMessage)
 
-            val latestMessagesReceiver = FirebaseDatabase.getInstance().getReference("/latest-messages/$fromEmail/$toId")
-            latestMessagesReceiver.setValue(chatMessage)
-        })
-        //TODO(Get the unique id between two chatters)
+                // get last sent/received messages
+                val latestMessagesSender = FirebaseDatabase.getInstance().getReference("/latest-messages/$toId/$fromEmail")
+                latestMessagesSender.setValue(chatMessage)
 
+                val latestMessagesReceiver = FirebaseDatabase.getInstance().getReference("/latest-messages/$fromEmail/$toId")
+                latestMessagesReceiver.setValue(chatMessage)
+            }
+        )
+        // TODO(Get the unique id between two chatters)
 
 //        var mappedUserId = mappedUsers ?: myId+chatterId
 
@@ -125,8 +123,6 @@ class ClientChatFragment : BaseFragment() {
 //                binding?.clientChatFragmentTypeMessageEditText?.text?.clear()
 //                binding?.clientChatFragmentRecyclerView?.scrollToPosition(adapter.itemCount -1)
 //            }
-
-
     }
 
 //    private fun refreshRecyclerViewMessages () {
@@ -137,44 +133,43 @@ class ClientChatFragment : BaseFragment() {
     private fun receiveMessage() {
         val toId = args.clientData?.fromEmail
 
-        userProfileViewModel.userProfile.observe(viewLifecycleOwner, {
-            val fromEmail = encodeUserEmail(it.data?.email)
-            val reference = FirebaseDatabase.getInstance().getReference("/test-messages/$toId/$fromEmail")
+        userProfileViewModel.userProfile.observe(
+            viewLifecycleOwner,
+            {
+                val fromEmail = encodeUserEmail(it.data?.email)
+                val reference = FirebaseDatabase.getInstance().getReference("/test-messages/$toId/$fromEmail")
 
-            reference.addChildEventListener(object : ChildEventListener {
-                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                    val chatMessage = snapshot.getValue(ChatMessageModel::class.java)
+                reference.addChildEventListener(object : ChildEventListener {
+                    override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                        val chatMessage = snapshot.getValue(ChatMessageModel::class.java)
 
-
-                    if (chatMessage != null) {
-                        if (chatMessage.toId == args.clientData?.fromEmail) {
-                            ChatSenderItem(
-                                chatMessage.text,
-                                chatMessage.timeStamp
-                            ).let { adapter.add(it) }
-                        } else { ChatReceiverItem(chatMessage.text, chatMessage.timeStamp).let { adapter.add(it) }
+                        if (chatMessage != null) {
+                            if (chatMessage.toId == args.clientData?.fromEmail) {
+                                ChatSenderItem(
+                                    chatMessage.text,
+                                    chatMessage.timeStamp
+                                ).let { adapter.add(it) }
+                            } else {
+                                ChatReceiverItem(chatMessage.text, chatMessage.timeStamp).let { adapter.add(it) }
+                            }
                         }
                     }
-                }
 
-                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                }
-                override fun onChildRemoved(snapshot: DataSnapshot) {}
-                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
-                override fun onCancelled(error: DatabaseError) {}
-
-            })
-        })
+                    override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                    }
+                    override fun onChildRemoved(snapshot: DataSnapshot) {}
+                    override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
+                    override fun onCancelled(error: DatabaseError) {}
+                })
+            }
+        )
     }
-
-
 
     override fun onResume() {
         super.onResume()
         val fullName = args.clientData?.firstName + " " + args.clientData?.lastName
         (activity as updateToolbarTitleListener).updateTitle(fullName)
     }
-
 }
 
 class ChatSenderItem(val text: String, val time: String) : Item<ViewHolder>() {
