@@ -77,6 +77,7 @@ class MessagesFragmentClientsRecyclerAdapter(
                             snapshot: DataSnapshot,
                             previousChildName: String?
                         ) {
+
                             val chatMessage = snapshot.getValue(ChatMessageModel::class.java) ?: return
                             binding.chatRecyclerViewItemMessageTextView.text = chatMessage.text
                             binding.chatRecyclerViewItemTimeTextView.text = chatMessage.timeStamp

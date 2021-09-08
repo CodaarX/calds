@@ -3,8 +3,8 @@ package com.decagonhq.clads.data.domain
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
-class ChatMessageModel(val id: String? = null, val text: String, val toId: String, val timeStamp: String, val fromId: Int? = null, val userName: String? = null) {
-    constructor() : this("", "", "1", "", 1)
+class ChatMessageModel(val text: String, val toId: String, val timeStamp: String, val fromId: String) {
+    constructor() : this("", "", "", "")
 }
 
 @Parcelize

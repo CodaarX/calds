@@ -2,16 +2,12 @@ package com.decagonhq.clads.ui.profile.editprofile
 
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
-import android.location.LocationManager
-import android.location.LocationManager.PROVIDERS_CHANGED_ACTION
 import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.Bundle
 import android.os.Looper
 import android.view.LayoutInflater
@@ -19,7 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
-import androidx.activity.OnBackPressedCallback
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.decagonhq.clads.R
@@ -39,8 +35,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import java.io.IOException
 import java.util.Locale
-import android.net.NetworkInfo
-import android.widget.Toast
 
 class MapFragment : BaseFragment() {
 
@@ -53,7 +47,6 @@ class MapFragment : BaseFragment() {
     private lateinit var userCurrentLocation: Location
     private lateinit var nowLocation: LatLng
     private lateinit var location: LatLng
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -167,7 +160,7 @@ class MapFragment : BaseFragment() {
             }
         }
 
-         dialog.setCancelable(false)
+        dialog.setCancelable(false)
 
         b.saveLocation.setOnClickListener {
 
@@ -189,7 +182,6 @@ class MapFragment : BaseFragment() {
                 artisanLocationViewModel.setArtisanAddressString(address!!)
                 dialog.dismiss()
                 findNavController().navigate(R.id.action_mapFragment_to_editProfileFragment)
-
             } else {
                 Toast.makeText(
                     requireContext(),
@@ -197,9 +189,7 @@ class MapFragment : BaseFragment() {
                     Toast.LENGTH_LONG
                 ).show()
             }
-
         }
-
     }
 
     private fun getAddressText(location: LatLng): String? {
@@ -214,4 +204,3 @@ class MapFragment : BaseFragment() {
         return addresses?.get(0)!!.getAddressLine(0)
     }
 }
-

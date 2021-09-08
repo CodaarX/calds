@@ -13,19 +13,18 @@ import com.decagonhq.clads.databinding.FragmentClientChatBinding
 import com.decagonhq.clads.ui.BaseFragment
 import com.decagonhq.clads.ui.profile.updateToolbarTitleListener
 import com.decagonhq.clads.util.EncodeEmail.encodeUserEmail
+import com.decagonhq.clads.viewmodels.FireBaseViewModel
 import com.decagonhq.clads.viewmodels.UserProfileViewModel
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
+import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
+@AndroidEntryPoint
 class ClientChatFragment : BaseFragment() {
     private val args: ClientChatFragmentArgs by navArgs()
     private var _binding: FragmentClientChatBinding? = null
@@ -36,6 +35,7 @@ class ClientChatFragment : BaseFragment() {
     var myId = ""
     var chatterId = ""
     private val userProfileViewModel: UserProfileViewModel by viewModels()
+    private val firebaseViewModel: FireBaseViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,6 +58,22 @@ class ClientChatFragment : BaseFragment() {
             sendMessage()
         }
 
+        firebaseViewModel.chatSenderItem.observe(
+            viewLifecycleOwner,
+            {
+                adapter.add(it)
+                binding?.clientChatFragmentRecyclerView?.scrollToPosition(adapter.itemCount - 1)
+            }
+        )
+
+        firebaseViewModel.chatReceiverItem.observe(
+            viewLifecycleOwner,
+            {
+                adapter.add(it)
+                binding?.clientChatFragmentRecyclerView?.scrollToPosition(adapter.itemCount - 1)
+            }
+        )
+
 //        val newDbRef = FirebaseDatabase.getInstance().getReference("/user-messages")
 //
 //        newDbRef.addListenerForSingleValueEvent(object  : ValueEventListener{
@@ -76,43 +92,34 @@ class ClientChatFragment : BaseFragment() {
     }
 
     private fun sendMessage() {
+        // initialize text views
         val message = binding?.clientChatFragmentTypeMessageEditText?.text.toString()
+
+        // get user profile from args (from message to chat screen)
         val toId = args.clientData?.fromEmail
 
+        // observe view model for user profile
         userProfileViewModel.userProfile.observe(
             viewLifecycleOwner,
             {
-                val fromId = it.data?.id
+                // get user ID and Email from this.User
                 val fromEmail = encodeUserEmail(it.data?.email)
                 val formatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
                 val calender = Calendar.getInstance()
 
-                val dataSenderBaseRef =
-                    FirebaseDatabase.getInstance().getReference("/test-messages/$toId/$fromEmail").push()
-                val dataReceiverBaseRef =
-                    FirebaseDatabase.getInstance().getReference("test-messages/$fromEmail/$toId").push()
+                if (toId == null) return@observe // check if id is null
 
-                if (fromId == null) return@observe
+                // get the entire message of the  sender
                 val chatMessage = toId?.let { it1 ->
-                    ChatMessageModel(dataReceiverBaseRef.key, message, it1, formatter.format(calender.time), fromId)
+                    ChatMessageModel(message, toId, formatter.format(calender.time), fromEmail!!)
                 }
 
-                dataSenderBaseRef.setValue(chatMessage)
-                    .addOnSuccessListener {
-                        binding?.clientChatFragmentTypeMessageEditText?.text?.clear()
-                        binding?.clientChatFragmentRecyclerView?.scrollToPosition(adapter.itemCount - 1)
-                    }
-                dataReceiverBaseRef.setValue(chatMessage)
+                firebaseViewModel.sendMessages(chatMessage, fromEmail!!, toId)
 
-                // get last sent/received messages
-                val latestMessagesSender = FirebaseDatabase.getInstance().getReference("/latest-messages/$toId/$fromEmail")
-                latestMessagesSender.setValue(chatMessage)
-
-                val latestMessagesReceiver = FirebaseDatabase.getInstance().getReference("/latest-messages/$fromEmail/$toId")
-                latestMessagesReceiver.setValue(chatMessage)
+                binding?.clientChatFragmentTypeMessageEditText?.text?.clear()
+                binding?.clientChatFragmentRecyclerView?.scrollToPosition(adapter.itemCount - 1)
             }
         )
-        // TODO(Get the unique id between two chatters)
 
 //        var mappedUserId = mappedUsers ?: myId+chatterId
 
@@ -137,30 +144,8 @@ class ClientChatFragment : BaseFragment() {
             viewLifecycleOwner,
             {
                 val fromEmail = encodeUserEmail(it.data?.email)
-                val reference = FirebaseDatabase.getInstance().getReference("/test-messages/$toId/$fromEmail")
 
-                reference.addChildEventListener(object : ChildEventListener {
-                    override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                        val chatMessage = snapshot.getValue(ChatMessageModel::class.java)
-
-                        if (chatMessage != null) {
-                            if (chatMessage.toId == args.clientData?.fromEmail) {
-                                ChatSenderItem(
-                                    chatMessage.text,
-                                    chatMessage.timeStamp
-                                ).let { adapter.add(it) }
-                            } else {
-                                ChatReceiverItem(chatMessage.text, chatMessage.timeStamp).let { adapter.add(it) }
-                            }
-                        }
-                    }
-
-                    override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                    }
-                    override fun onChildRemoved(snapshot: DataSnapshot) {}
-                    override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
-                    override fun onCancelled(error: DatabaseError) {}
-                })
+                firebaseViewModel.receiveMessages(toId!!, fromEmail!!, args.clientData!!)
             }
         )
     }
