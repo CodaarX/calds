@@ -33,7 +33,6 @@ import com.decagonhq.clads.data.domain.MessagesNotificationModel
 import com.decagonhq.clads.data.local.CladsDatabase
 import com.decagonhq.clads.databinding.DashboardActivityBinding
 import com.decagonhq.clads.ui.messages.MessagesFragment
-import com.decagonhq.clads.ui.messages.User
 import com.decagonhq.clads.util.Constants
 import com.decagonhq.clads.util.CustomProgressDialog
 import com.decagonhq.clads.util.EncodeEmail.encodeUserEmail
@@ -206,8 +205,6 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
                     val fireBaseRef = FirebaseDatabase.getInstance().getReference("users/$fromEmail")
                     val user = MessagesNotificationModel("Hello there", firstName,lastName, fromEmail, fromId)
                     fireBaseRef.setValue(user).addOnSuccessListener {
-                        Log.d("NEWUSER", "sendMessage: User successfully registered")
-
                     }
                 }
             }
@@ -237,6 +234,7 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
                     confirmationDialog.setMessage(R.string.logout_confirmation_dialog_message)
                     confirmationDialog.setPositiveButton(R.string.yes) { _: DialogInterface, _: Int ->
                         logOut(sessionManager, database)
+                        userProfileViewModel.userProfile.removeObservers(this)
                     }
                     confirmationDialog.setNegativeButton(
                         R.string.no

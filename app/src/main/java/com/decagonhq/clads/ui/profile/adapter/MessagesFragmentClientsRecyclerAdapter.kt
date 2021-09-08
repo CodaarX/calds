@@ -17,11 +17,13 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import java.util.*
+import kotlin.collections.HashMap
 
 class MessagesFragmentClientsRecyclerAdapter(
-    private var messageNotificationList: ArrayList<MessagesNotificationModel>
-) :
+    private var messageNotificationList: List<MessagesNotificationModel>) :
     RecyclerView.Adapter<MessagesFragmentClientsRecyclerAdapter.ViewHolder>() {
+
+    val latestMessagesHashMap = HashMap<String , ChatMessageModel>()
 
     inner class ViewHolder(val binding: ChatRecyclerviewItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -82,9 +84,17 @@ class MessagesFragmentClientsRecyclerAdapter(
                             val chatMessage = snapshot.getValue(ChatMessageModel::class.java) ?: return
                             binding.chatRecyclerViewItemMessageTextView.text = chatMessage.text
                             binding.chatRecyclerViewItemTimeTextView.text = chatMessage.timeStamp
+                            latestMessagesHashMap[snapshot.key!!] = chatMessage
+//                            refreshRecyclerViewMessages()
                         }
 
-                        override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
+                        override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                            val chatMessage = snapshot.getValue(ChatMessageModel::class.java) ?: return
+                            binding.chatRecyclerViewItemMessageTextView.text = chatMessage.text
+                            binding.chatRecyclerViewItemTimeTextView.text = chatMessage.timeStamp
+                            latestMessagesHashMap[snapshot.key!!] = chatMessage
+
+                        }
 
                         override fun onChildRemoved(snapshot: DataSnapshot) {}
 
@@ -98,6 +108,9 @@ class MessagesFragmentClientsRecyclerAdapter(
             }
         }
     }
+
 }
+
+
 
 

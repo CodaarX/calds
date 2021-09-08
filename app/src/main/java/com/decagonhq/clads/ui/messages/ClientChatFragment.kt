@@ -85,7 +85,6 @@ class ClientChatFragment : BaseFragment() {
         userProfileViewModel.userProfile.observe(viewLifecycleOwner, {
             val fromId = it.data?.id
             val fromEmail = encodeUserEmail(it.data?.email)
-            val fromName = it.data?.firstName + it.data?.lastName
             val formatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
             val calender = Calendar.getInstance()
 
@@ -130,11 +129,15 @@ class ClientChatFragment : BaseFragment() {
 
     }
 
+//    private fun refreshRecyclerViewMessages () {
+//        latestMessagesHashMap.values.forEach{
+//
+//        }
+
     private fun receiveMessage() {
         val toId = args.clientData?.fromEmail
 
         userProfileViewModel.userProfile.observe(viewLifecycleOwner, {
-            val fromId = it.data?.id
             val fromEmail = encodeUserEmail(it.data?.email)
             val reference = FirebaseDatabase.getInstance().getReference("/test-messages/$toId/$fromEmail")
 
@@ -149,45 +152,19 @@ class ClientChatFragment : BaseFragment() {
                                 chatMessage.text,
                                 chatMessage.timeStamp
                             ).let { adapter.add(it) }
-                        } else {
-                            ChatReceiverItem(
-                                chatMessage.text,
-                                chatMessage.timeStamp
-                            ).let { adapter.add(it) }
+                        } else { ChatReceiverItem(chatMessage.text, chatMessage.timeStamp).let { adapter.add(it) }
                         }
                     }
                 }
 
-                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
+                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                }
                 override fun onChildRemoved(snapshot: DataSnapshot) {}
                 override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
                 override fun onCancelled(error: DatabaseError) {}
 
             })
         })
-
-//        val reference = FirebaseDatabase.getInstance().getReference("/user-messages/$toId")
-//        reference.addChildEventListener(object : ChildEventListener {
-//            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-//                val chatMessage = snapshot.getValue(ChatMessageModel::class.java)
-//                val formatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
-//                val calender = Calendar.getInstance()
-//
-//                if (chatMessage != null) {
-//                    if (chatMessage.toId == args.clientData?.userId) {
-//                        ChatSenderItem(chatMessage.text, formatter.format(calender.time)).let { adapter.add(it) }
-//                    } else {
-//                        ChatReceiverItem(chatMessage.text, formatter.format(calender.time)).let { adapter.add(it) }
-//                    }
-//                }
-//            }
-//
-//            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
-//            override fun onChildRemoved(snapshot: DataSnapshot) {}
-//            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
-//            override fun onCancelled(error: DatabaseError) {}
-//
-//        })
     }
 
 
@@ -198,9 +175,6 @@ class ClientChatFragment : BaseFragment() {
         (activity as updateToolbarTitleListener).updateTitle(fullName)
     }
 
-}
-
-data class User(val fromId: Int?, val fromEmail: String?, val fromName: String) {
 }
 
 class ChatSenderItem(val text: String, val time: String) : Item<ViewHolder>() {

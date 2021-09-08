@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.decagonhq.clads.data.domain.ChatMessageModel
@@ -12,7 +13,9 @@ import com.decagonhq.clads.data.domain.MessagesNotificationModel
 import com.decagonhq.clads.databinding.MessagesFragmentBinding
 import com.decagonhq.clads.ui.BaseFragment
 import com.decagonhq.clads.ui.profile.adapter.MessagesFragmentClientsRecyclerAdapter
+import com.decagonhq.clads.util.EncodeEmail
 import com.decagonhq.clads.viewmodels.ClientViewModel
+import com.decagonhq.clads.viewmodels.UserProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
@@ -21,6 +24,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
+import timber.log.Timber
 
 class MessagesFragment : BaseFragment() {
 
@@ -32,6 +36,7 @@ class MessagesFragment : BaseFragment() {
     private lateinit var notificationAdapter: MessagesFragmentClientsRecyclerAdapter
     private var userArrayList: ArrayList<MessagesNotificationModel> = arrayListOf()
     private val clientViewModel: ClientViewModel by activityViewModels()
+    private val userProfileViewModel: UserProfileViewModel by activityViewModels()
     private val adapter = GroupAdapter<ViewHolder>()
 
 
@@ -47,51 +52,44 @@ class MessagesFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 //        getNotification()
-        getClient()
+
+        userProfileViewModel.userProfile.observe(viewLifecycleOwner) {
+            val userEmail = EncodeEmail.encodeUserEmail(it.data?.email)
+            getClient(userEmail)
+        }
+
         notificationRecyclerView = binding.messagesFragmentClientMessagesRecyclerView
         notificationRecyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-
     }
 
-    fun listenForMessages() {
-        val toId = userArrayList
-        val fromId = FirebaseAuth.getInstance().uid
-        val reference = FirebaseDatabase.getInstance().getReference("/latest-messages/$fromId")
-        reference.addChildEventListener(object : ChildEventListener {
-            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                val chatMessage = snapshot.getValue(ChatMessageModel::class.java)
-            }
 
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+    private fun getClient(userEmail: String?) {
 
-            }
-
-            override fun onChildRemoved(snapshot: DataSnapshot) {
-            }
-
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-            }
-        })
-    }
-
-    private fun getClient() {
         val firebaseRef = FirebaseDatabase.getInstance().getReference("/users")
+
         firebaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 userArrayList.clear()
-                if(snapshot.exists()) {
-                    snapshot.children.forEach {
-
-                        val user = it.getValue(MessagesNotificationModel::class.java)
-                        if (user != null) {
-                            userArrayList.add(user)
+                Timber.e(userEmail)
+                if (snapshot.exists()) {
+                    val userList =
+                        snapshot.children.mapNotNull {
+                            it.getValue(MessagesNotificationModel::class.java)
+                        }.filter {
+                            it.fromEmail != userEmail && !it.firstName.isNullOrEmpty()
                         }
-                    }
-                    notificationAdapter = MessagesFragmentClientsRecyclerAdapter(userArrayList)
+//                    snapshot.children.forEach {
+//
+//                        val user = it.getValue(MessagesNotificationModel::class.java)
+//                        if (user != null && user.fromEmail != userEmail ) {
+//                                userArrayList.add(user)
+//
+//                        }
+//                        Timber.e(user.toString())
+//                    }
+                    notificationAdapter = MessagesFragmentClientsRecyclerAdapter(userList)
+                    Timber.e(userList.toString())
                     notificationRecyclerView.adapter = notificationAdapter
                 }
             }
