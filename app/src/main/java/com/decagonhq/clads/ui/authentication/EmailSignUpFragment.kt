@@ -88,7 +88,6 @@ class EmailSignUpFragment : BaseFragment() {
                             Toast.LENGTH_SHORT
                         ).show()
 
-//
                         authenticationViewModel.userRegData.removeObservers {
                             viewLifecycleOwner.lifecycle
                         }

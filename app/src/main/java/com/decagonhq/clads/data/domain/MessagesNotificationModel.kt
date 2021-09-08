@@ -1,9 +1,16 @@
 package com.decagonhq.clads.data.domain
 
-data class MessagesNotificationModel(
-    var firstName: String,
-    var lastName: String,
-    var day: String,
-    var body: String
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-)
+@Parcelize
+data class MessagesNotificationModel(
+    var text: String?,
+    var firstName: String?,
+    var lastName: String?,
+    var fromEmail: String?,
+    var userId: Int?
+
+) : Parcelable {
+    constructor() : this("", "", "", "", 1)
+}

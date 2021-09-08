@@ -42,7 +42,6 @@ import java.util.Locale
 import android.net.NetworkInfo
 import android.widget.Toast
 
-
 class MapFragment : BaseFragment() {
 
     /* Initialize variables */
