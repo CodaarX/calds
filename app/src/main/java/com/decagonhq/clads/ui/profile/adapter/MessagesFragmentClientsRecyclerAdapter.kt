@@ -1,5 +1,6 @@
 package com.decagonhq.clads.ui.profile.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
@@ -8,14 +9,16 @@ import com.decagonhq.clads.data.domain.ChatMessageModel
 import com.decagonhq.clads.data.domain.MessagesNotificationModel
 import com.decagonhq.clads.databinding.ChatRecyclerviewItemBinding
 import com.decagonhq.clads.ui.messages.MessagesFragmentDirections
+import com.decagonhq.clads.util.loadImage
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import timber.log.Timber
 import kotlin.collections.HashMap
 
 class MessagesFragmentClientsRecyclerAdapter(
-    private var messageNotificationList: List<MessagesNotificationModel>
+    private var messageNotificationList: List<MessagesNotificationModel>, val email: String
 ) :
     RecyclerView.Adapter<MessagesFragmentClientsRecyclerAdapter.ViewHolder>() {
 
@@ -41,7 +44,6 @@ class MessagesFragmentClientsRecyclerAdapter(
 
     /*bind the views with their holders*/
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
         holder.itemView.apply {
             with(holder) {
                 with(messageNotificationList[position]) {
@@ -49,52 +51,68 @@ class MessagesFragmentClientsRecyclerAdapter(
                     clientName.text = clientFullName
                     notificationBody.text = text
 
-//                    val clientInitials = clientFullName.split(" ")[0].substring(0, 1).capitalize(
-//                        Locale.ROOT
-//                    ) + clientFullName.split(" ")[1].substring(0, 1).capitalize(Locale.ROOT)
-//                    val color =
-//                        ColorSelector.selectColorByCharacter((clientFullName.split(" ")[0].first()))
-//                    val drawable = TextDrawable.builder().beginConfig()
-//                        .width(150)
-//                        .height(150)
-//                        .fontSize(55)
-//                        .endConfig()
-//                        .buildRound(clientInitials, color)
-
-//                    binding.chatRecyclerViewItemImageView.setImageDrawable(drawable)
+                    binding.chatRecyclerViewItemImageView.loadImage(userImage)
                     binding.chatRecyclerViewItemParentLayout.setOnClickListener {
                         val client = messageNotificationList[position]
                         val action =
                             MessagesFragmentDirections.actionNavMessagesToClientChatFragment2(client)
                         findNavController().navigate(action)
                     }
-                    val toId = messageNotificationList[position].fromEmail
+
+
+//                    val id: GetUserEmail? = null
+//                    val fromId = id?.getEmail()
+//                    Timber.e(fromId.toString())
+//
+//                    val toId = fromEmail
+
                     val reference =
-                        FirebaseDatabase.getInstance().getReference("/latest-messages/$toId")
+                        FirebaseDatabase.getInstance().getReference("/latest-messages/$email")
 
                     reference.addChildEventListener(object : ChildEventListener {
                         override fun onChildAdded(
                             snapshot: DataSnapshot,
                             previousChildName: String?
                         ) {
+                            Log.d("SNAPSHOT_TWO", "onChildAdded: $snapshot")
 
-                            val chatMessage = snapshot.getValue(ChatMessageModel::class.java) ?: return
-                            binding.chatRecyclerViewItemMessageTextView.text = chatMessage.text
-                            binding.chatRecyclerViewItemTimeTextView.text = chatMessage.timeStamp
-                            latestMessagesHashMap[snapshot.key!!] = chatMessage
-//                            refreshRecyclerViewMessages()
+                            val nodeKey =  snapshot.key
+
+                            Log.d("SNAPSHOT_TWO", "nodeAdded: $nodeKey")
+
+                            Log.d("SNAPSHOT_TWO", "emailAdded: $fromEmail")
+
+                            val chatMessage =
+                                snapshot.getValue(ChatMessageModel::class.java) ?: return
+                            if (nodeKey == fromEmail) {
+                                binding.chatRecyclerViewItemMessageTextView.text = chatMessage.text
+                                binding.chatRecyclerViewItemTimeTextView.text =
+                                    chatMessage.timeStamp
+                                latestMessagesHashMap[snapshot.key!!] = chatMessage
+                            }
                         }
 
-                        override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                            val chatMessage = snapshot.getValue(ChatMessageModel::class.java) ?: return
-                            binding.chatRecyclerViewItemMessageTextView.text = chatMessage.text
-                            binding.chatRecyclerViewItemTimeTextView.text = chatMessage.timeStamp
-                            latestMessagesHashMap[snapshot.key!!] = chatMessage
+                        override fun onChildChanged(
+                            snapshot: DataSnapshot,
+                            previousChildName: String?
+                        ) {
+                            val chatMessage =
+                                snapshot.getValue(ChatMessageModel::class.java) ?: return
+
+                            if (fromEmail != email) {
+                                binding.chatRecyclerViewItemMessageTextView.text = chatMessage.text
+                                binding.chatRecyclerViewItemTimeTextView.text =
+                                    chatMessage.timeStamp
+                                latestMessagesHashMap[snapshot.key!!] = chatMessage
+                            }
                         }
 
                         override fun onChildRemoved(snapshot: DataSnapshot) {}
-
-                        override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
+                        override fun onChildMoved(
+                            snapshot: DataSnapshot,
+                            previousChildName: String?
+                        ) {
+                        }
 
                         override fun onCancelled(error: DatabaseError) {}
                     })

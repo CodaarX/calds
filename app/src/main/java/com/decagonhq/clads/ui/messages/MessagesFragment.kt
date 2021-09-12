@@ -5,12 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.decagonhq.clads.data.domain.MessagesNotificationModel
 import com.decagonhq.clads.databinding.MessagesFragmentBinding
 import com.decagonhq.clads.ui.BaseFragment
 import com.decagonhq.clads.ui.profile.adapter.MessagesFragmentClientsRecyclerAdapter
+import com.decagonhq.clads.ui.profile.updateToolbarTitleListener
 import com.decagonhq.clads.util.EncodeEmail
 import com.decagonhq.clads.viewmodels.ClientViewModel
 import com.decagonhq.clads.viewmodels.UserProfileViewModel
@@ -31,9 +33,7 @@ class MessagesFragment : BaseFragment() {
     private lateinit var notificationRecyclerView: RecyclerView
     private lateinit var notificationAdapter: MessagesFragmentClientsRecyclerAdapter
     private var userArrayList: ArrayList<MessagesNotificationModel> = arrayListOf()
-    private val clientViewModel: ClientViewModel by activityViewModels()
     private val userProfileViewModel: UserProfileViewModel by activityViewModels()
-    private val adapter = GroupAdapter<ViewHolder>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,6 +51,14 @@ class MessagesFragment : BaseFragment() {
         userProfileViewModel.userProfile.observe(viewLifecycleOwner) {
             val userEmail = EncodeEmail.encodeUserEmail(it.data?.email)
             getClient(userEmail)
+
+            it.data?.let { it1 ->
+                (activity as updateToolbarTitleListener).updateUserName(
+                    it1.firstName)
+            }
+            it.data?.let {
+                (activity as updateToolbarTitleListener).profileImage(it.thumbnail)
+            }
         }
 
         notificationRecyclerView = binding.messagesFragmentClientMessagesRecyclerView
@@ -63,6 +71,7 @@ class MessagesFragment : BaseFragment() {
         val firebaseRef = FirebaseDatabase.getInstance().getReference("/users")
 
         firebaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
+
             override fun onDataChange(snapshot: DataSnapshot) {
                 userArrayList.clear()
                 Timber.e(userEmail)
@@ -72,17 +81,20 @@ class MessagesFragment : BaseFragment() {
                             it.getValue(MessagesNotificationModel::class.java)
                         }.filter {
                             it.fromEmail != userEmail && !it.firstName.isNullOrEmpty()
+
                         }
-//                    snapshot.children.forEach {
-//
-//                        val user = it.getValue(MessagesNotificationModel::class.java)
-//                        if (user != null && user.fromEmail != userEmail ) {
-//                                userArrayList.add(user)
-//
-//                        }
-//                        Timber.e(user.toString())
-//                    }
-                    notificationAdapter = MessagesFragmentClientsRecyclerAdapter(userList)
+                    userProfileViewModel.userProfile.observe(viewLifecycleOwner, {
+                        it.data?.let { userProfile ->
+                            notificationAdapter =
+                                EncodeEmail.encodeUserEmail(userProfile.email)?.let { it1 ->
+                                    MessagesFragmentClientsRecyclerAdapter(userList,
+                                        it1
+                                    )
+                                }!!
+
+                        }
+                    })
+
                     Timber.e(userList.toString())
                     notificationRecyclerView.adapter = notificationAdapter
                 }
@@ -93,52 +105,6 @@ class MessagesFragment : BaseFragment() {
         })
     }
 
-    private fun getNotification() {
-        userArrayList = arrayListOf(
-            MessagesNotificationModel(
-                "Lorem Ipsum",
-                "Ola",
-                "Michavelli",
-                "yesterday",
-                1
-            ),
-            MessagesNotificationModel(
-                "My name is Ruth. I need a dress for sunday",
-                "Ruth",
-                "Unoka",
-                "Today",
-                2
-            ),
-            MessagesNotificationModel(
-                "Hi, I have an event next month",
-                "Michael",
-                "Isesele",
-                "Today",
-                3
-            ),
-            MessagesNotificationModel(
-                "Lorem Ipsum",
-                "John",
-                "Ose",
-                "Lorem Ipsum",
-                4
-            ),
-            MessagesNotificationModel(
-                "Hello there",
-                "Tolulope",
-                "Lo",
-                "Today",
-                5
-            ),
-            MessagesNotificationModel(
-                "Hi, I have an event next month",
-                "Tomisin",
-                "Ade",
-                "Last Month",
-                6
-            )
-        )
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()

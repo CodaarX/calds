@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import com.decagonhq.clads.R
 import com.decagonhq.clads.data.domain.ChatMessageModel
@@ -110,11 +111,10 @@ class ClientChatFragment : BaseFragment() {
                 if (toId == null) return@observe // check if id is null
 
                 // get the entire message of the  sender
-                val chatMessage = toId?.let { it1 ->
+                val chatMessage =
                     ChatMessageModel(message, toId, formatter.format(calender.time), fromEmail!!)
-                }
 
-                firebaseViewModel.sendMessages(chatMessage, fromEmail!!, toId)
+                firebaseViewModel.sendMessages(chatMessage, fromEmail, toId)
 
                 binding?.clientChatFragmentTypeMessageEditText?.text?.clear()
                 binding?.clientChatFragmentRecyclerView?.scrollToPosition(adapter.itemCount - 1)
@@ -150,10 +150,15 @@ class ClientChatFragment : BaseFragment() {
         )
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         val fullName = args.clientData?.firstName + " " + args.clientData?.lastName
-        (activity as updateToolbarTitleListener).updateTitle(fullName)
+        val profileImage = args.clientData?.userImage
+
+        (activity as updateToolbarTitleListener).updateUserName(fullName)
+        if (profileImage != null) {
+            (activity as updateToolbarTitleListener).profileImage(profileImage)
+        }
     }
 }
 
@@ -178,3 +183,5 @@ class ChatReceiverItem(val text: String, val time: String) : Item<ViewHolder>() 
         return R.layout.receiver_chat_item
     }
 }
+
+

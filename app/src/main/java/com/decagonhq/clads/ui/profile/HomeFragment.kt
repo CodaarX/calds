@@ -60,15 +60,18 @@ class HomeFragment : BaseFragment(), ClientListRvAdapter.Interaction {
             }
         }
 
-        updateUserCardNames()
+//        updateUserCardNames()
 
         homeFragmentYearDropdown = binding.homeFragmentYearDropdownAutocompleteTextView
         chartData(view)
     }
 
+
+
     override fun onResume() {
         super.onResume()
         val chartYear = resources.getStringArray(R.array.Year)
+//        updateUserCardNames()
         val accountCategoriesArrayAdapter =
             ArrayAdapter(requireContext(), R.layout.chart_year_dropdown_item, chartYear)
         homeFragmentYearDropdown.setAdapter(accountCategoriesArrayAdapter)

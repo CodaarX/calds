@@ -38,7 +38,7 @@ fun ImageView.loadImage(imageUrl: String?) {
     Glide.with(this)
         .load(imgUri).apply(
             RequestOptions()
-                .placeholder(R.drawable.nav_drawer_profile_avatar)
-                .error(R.drawable.ic_broken_image)
+                .placeholder(R.drawable.edit_profile_icon)
+                .error(R.drawable.edit_profile_icon)
         ).into(this)
 }

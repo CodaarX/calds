@@ -1,5 +1,6 @@
 package com.decagonhq.clads.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -45,6 +46,7 @@ class FireBaseViewModel @Inject constructor(
 
             // set value to
             dataReceiverBaseRef.setValue(chatMessage)
+            dataSenderBaseRef.setValue(chatMessage)
 
             // get last sent/received messages
             val latestMessagesSender =
@@ -65,6 +67,9 @@ class FireBaseViewModel @Inject constructor(
 
             reference.addChildEventListener(object : ChildEventListener {
                 override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+
+                    Log.d("SNAPSHOT", "onChildAdded: $snapshot")
+
                     val chatMessage = snapshot.getValue(ChatMessageModel::class.java)
 
                     if (chatMessage != null) {
@@ -72,12 +77,16 @@ class FireBaseViewModel @Inject constructor(
                             ChatSenderItem(
                                 chatMessage.text,
                                 chatMessage.timeStamp
-                            ).let { _chatSenderItem.value = it }
+                            ).let { _chatSenderItem.value = it
+                                Log.d("ITTTTTTTT", "onChildAdded: $it")
+                                }
+
                         } else {
                             ChatReceiverItem(
                                 chatMessage.text,
                                 chatMessage.timeStamp
-                            ).let { _chatReceiverItem.value = it }
+                            ).let { _chatReceiverItem.value = it
+                                Log.d("ITTTTTTTT", "onChildAdded: $it")}
                         }
                     }
                 }

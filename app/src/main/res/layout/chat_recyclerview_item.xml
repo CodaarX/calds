@@ -11,7 +11,7 @@
     android:layout_height="wrap_content">
 
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/chat_recycler_view_item_image_view"
         android:layout_width="46dp"
         android:layout_height="46dp"
@@ -42,7 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_12dp"
         android:fontFamily="@font/poppins_medium"
-        android:text="Hello, Im Ruth"
+        android:text=""
         android:textColor="@color/black"
         android:textSize="@dimen/text_size_10sp"
         app:layout_constraintEnd_toEndOf="@+id/chat_recycler_view_item_time_text_view"
@@ -54,7 +54,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/margin_16dp"
-            android:text="@string/am"
+            android:text=""
             android:fontFamily="@font/poppins"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_10sp"

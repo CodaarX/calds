@@ -12,7 +12,7 @@ import com.decagonhq.clads.data.domain.profile.WorkshopAddress
 data class UserProfileEntity(
     val country: String?,
     val deliveryTime: String? = null,
-    val email: String,
+    var email: String,
     val firstName: String,
     val gender: String?,
     val genderFocus: List<String>,

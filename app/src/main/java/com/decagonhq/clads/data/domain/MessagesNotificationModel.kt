@@ -9,8 +9,9 @@ data class MessagesNotificationModel(
     var firstName: String?,
     var lastName: String?,
     var fromEmail: String?,
-    var userId: Int?
+    var userId: Int?,
+    var userImage: String?
 
 ) : Parcelable {
-    constructor() : this("", "", "", "", 1)
+    constructor() : this("", "", "", "", 1, "")
 }
