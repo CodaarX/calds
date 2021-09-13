@@ -182,5 +182,3 @@ class ChatReceiverItem(val text: String, val time: String) : Item<ViewHolder>() 
         return R.layout.receiver_chat_item
     }
 }
-
-

@@ -31,7 +31,6 @@ import com.decagonhq.clads.R
 import com.decagonhq.clads.data.domain.MessagesNotificationModel
 import com.decagonhq.clads.data.local.CladsDatabase
 import com.decagonhq.clads.databinding.DashboardActivityBinding
-import com.decagonhq.clads.ui.messages.ClientChatFragment
 import com.decagonhq.clads.ui.messages.MessagesFragment
 import com.decagonhq.clads.util.Constants
 import com.decagonhq.clads.util.CustomProgressDialog
@@ -134,7 +133,6 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
         toolbarProfilePicture = binding.appBarDashboard.dashboardActivityToolbarProfileImageView
         toolbarUserName = binding.appBarDashboard.dashboardActivityToolbarHiIjeomaTextView
         toolbarFragmentName = binding.appBarDashboard.dashboardActivityToolbarFragmentNameTextView
-
 
         bottomNavigationView =
             binding.appBarDashboard.contentDashboard.dashboardActivityBottomNavigationView
@@ -274,7 +272,7 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
                         )
 
                     val fullName = "${userProfile?.firstName ?: "---"} ${
-                        userProfile?.lastName ?: "---"
+                    userProfile?.lastName ?: "---"
                     }"
                     profileName.text = fullName.capitalize(Locale.ROOT)
 
@@ -501,7 +499,6 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
         }
     }
 
-
     override fun updateTitle(title: String) {
         toolbarFragmentName.text = title
     }
@@ -515,7 +512,6 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
     override fun profileImage(image: String) {
         toolbarProfilePicture.loadImage(image)
     }
-
 }
 
 interface updateToolbarTitleListener {

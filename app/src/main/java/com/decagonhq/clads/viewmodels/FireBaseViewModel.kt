@@ -77,16 +77,18 @@ class FireBaseViewModel @Inject constructor(
                             ChatSenderItem(
                                 chatMessage.text,
                                 chatMessage.timeStamp
-                            ).let { _chatSenderItem.value = it
+                            ).let {
+                                _chatSenderItem.value = it
                                 Log.d("ITTTTTTTT", "onChildAdded: $it")
-                                }
-
+                            }
                         } else {
                             ChatReceiverItem(
                                 chatMessage.text,
                                 chatMessage.timeStamp
-                            ).let { _chatReceiverItem.value = it
-                                Log.d("ITTTTTTTT", "onChildAdded: $it")}
+                            ).let {
+                                _chatReceiverItem.value = it
+                                Log.d("ITTTTTTTT", "onChildAdded: $it")
+                            }
                         }
                     }
                 }

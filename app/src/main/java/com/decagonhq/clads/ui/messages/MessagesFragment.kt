@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.decagonhq.clads.data.domain.MessagesNotificationModel
@@ -14,14 +13,11 @@ import com.decagonhq.clads.ui.BaseFragment
 import com.decagonhq.clads.ui.profile.adapter.MessagesFragmentClientsRecyclerAdapter
 import com.decagonhq.clads.ui.profile.updateToolbarTitleListener
 import com.decagonhq.clads.util.EncodeEmail
-import com.decagonhq.clads.viewmodels.ClientViewModel
 import com.decagonhq.clads.viewmodels.UserProfileViewModel
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.ViewHolder
 import timber.log.Timber
 
 class MessagesFragment : BaseFragment() {
@@ -54,7 +50,8 @@ class MessagesFragment : BaseFragment() {
 
             it.data?.let { it1 ->
                 (activity as updateToolbarTitleListener).updateUserName(
-                    it1.firstName)
+                    it1.firstName
+                )
             }
             it.data?.let {
                 (activity as updateToolbarTitleListener).profileImage(it.thumbnail)
@@ -81,19 +78,21 @@ class MessagesFragment : BaseFragment() {
                             it.getValue(MessagesNotificationModel::class.java)
                         }.filter {
                             it.fromEmail != userEmail && !it.firstName.isNullOrEmpty()
-
                         }
-                    userProfileViewModel.userProfile.observe(viewLifecycleOwner, {
-                        it.data?.let { userProfile ->
-                            notificationAdapter =
-                                EncodeEmail.encodeUserEmail(userProfile.email)?.let { it1 ->
-                                    MessagesFragmentClientsRecyclerAdapter(userList,
-                                        it1
-                                    )
-                                }!!
-
+                    userProfileViewModel.userProfile.observe(
+                        viewLifecycleOwner,
+                        {
+                            it.data?.let { userProfile ->
+                                notificationAdapter =
+                                    EncodeEmail.encodeUserEmail(userProfile.email)?.let { it1 ->
+                                        MessagesFragmentClientsRecyclerAdapter(
+                                            userList,
+                                            it1
+                                        )
+                                    }!!
+                            }
                         }
-                    })
+                    )
 
                     Timber.e(userList.toString())
                     notificationRecyclerView.adapter = notificationAdapter
@@ -104,7 +103,6 @@ class MessagesFragment : BaseFragment() {
             }
         })
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

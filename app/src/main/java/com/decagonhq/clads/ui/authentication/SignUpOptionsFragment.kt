@@ -2,7 +2,6 @@ package com.decagonhq.clads.ui.authentication
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -129,7 +128,6 @@ class SignUpOptionsFragment : BaseFragment() {
             account.idToken.let {
                 if (it != null) {
                     sessionManager.saveToSharedPref(Constants.TOKEN, it)
-
                 }
             }
 

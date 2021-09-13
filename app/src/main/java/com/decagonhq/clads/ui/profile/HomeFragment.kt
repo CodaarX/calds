@@ -66,8 +66,6 @@ class HomeFragment : BaseFragment(), ClientListRvAdapter.Interaction {
         chartData(view)
     }
 
-
-
     override fun onResume() {
         super.onResume()
         val chartYear = resources.getStringArray(R.array.Year)

@@ -14,11 +14,11 @@ import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import timber.log.Timber
 import kotlin.collections.HashMap
 
 class MessagesFragmentClientsRecyclerAdapter(
-    private var messageNotificationList: List<MessagesNotificationModel>, val email: String
+    private var messageNotificationList: List<MessagesNotificationModel>,
+    val email: String
 ) :
     RecyclerView.Adapter<MessagesFragmentClientsRecyclerAdapter.ViewHolder>() {
 
@@ -59,7 +59,6 @@ class MessagesFragmentClientsRecyclerAdapter(
                         findNavController().navigate(action)
                     }
 
-
 //                    val id: GetUserEmail? = null
 //                    val fromId = id?.getEmail()
 //                    Timber.e(fromId.toString())
@@ -76,7 +75,7 @@ class MessagesFragmentClientsRecyclerAdapter(
                         ) {
                             Log.d("SNAPSHOT_TWO", "onChildAdded: $snapshot")
 
-                            val nodeKey =  snapshot.key
+                            val nodeKey = snapshot.key
 
                             Log.d("SNAPSHOT_TWO", "nodeAdded: $nodeKey")
 
