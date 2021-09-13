@@ -1,6 +1,5 @@
 package com.decagonhq.clads.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -44,11 +43,11 @@ class FireBaseViewModel @Inject constructor(
             dataSenderBaseRef = FirebaseDatabase.getInstance().getReference("/text-messages/$toId/$fromEmail").push()
             dataReceiverBaseRef = FirebaseDatabase.getInstance().getReference("/text-messages/$fromEmail/$toId").push()
 
-            // set value to
+            // set value to the node
             dataReceiverBaseRef.setValue(chatMessage)
             dataSenderBaseRef.setValue(chatMessage)
 
-            // get last sent/received messages
+            // set last sent/received messages
             val latestMessagesSender =
                 FirebaseDatabase.getInstance().getReference("/latest-messages/$toId/$fromEmail")
             latestMessagesSender.setValue(chatMessage)
@@ -59,16 +58,13 @@ class FireBaseViewModel @Inject constructor(
         }
     }
 
+    // get chat messages
     fun receiveMessages(toId: String, fromEmail: String, args: MessagesNotificationModel) {
 
         viewModelScope.launch {
-
             val reference = FirebaseDatabase.getInstance().getReference("/text-messages/$toId/$fromEmail")
-
             reference.addChildEventListener(object : ChildEventListener {
                 override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-
-                    Log.d("SNAPSHOT", "onChildAdded: $snapshot")
 
                     val chatMessage = snapshot.getValue(ChatMessageModel::class.java)
 
@@ -79,7 +75,6 @@ class FireBaseViewModel @Inject constructor(
                                 chatMessage.timeStamp
                             ).let {
                                 _chatSenderItem.value = it
-                                Log.d("ITTTTTTTT", "onChildAdded: $it")
                             }
                         } else {
                             ChatReceiverItem(
@@ -87,12 +82,10 @@ class FireBaseViewModel @Inject constructor(
                                 chatMessage.timeStamp
                             ).let {
                                 _chatReceiverItem.value = it
-                                Log.d("ITTTTTTTT", "onChildAdded: $it")
                             }
                         }
                     }
                 }
-
                 override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
                 override fun onChildRemoved(snapshot: DataSnapshot) {}
                 override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}

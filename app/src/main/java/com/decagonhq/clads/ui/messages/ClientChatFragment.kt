@@ -15,7 +15,6 @@ import com.decagonhq.clads.ui.profile.updateToolbarTitleListener
 import com.decagonhq.clads.util.EncodeEmail.encodeUserEmail
 import com.decagonhq.clads.viewmodels.FireBaseViewModel
 import com.decagonhq.clads.viewmodels.UserProfileViewModel
-import com.google.firebase.database.DatabaseReference
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
@@ -29,11 +28,7 @@ class ClientChatFragment : BaseFragment() {
     private val args: ClientChatFragmentArgs by navArgs()
     private var _binding: FragmentClientChatBinding? = null
     val binding get() = _binding
-    private lateinit var databaseRef: DatabaseReference
     private val adapter = GroupAdapter<ViewHolder>()
-    private var mappedUsers: String? = null
-    var myId = ""
-    var chatterId = ""
     private val userProfileViewModel: UserProfileViewModel by viewModels()
     private val firebaseViewModel: FireBaseViewModel by viewModels()
 
@@ -73,22 +68,6 @@ class ClientChatFragment : BaseFragment() {
                 binding?.clientChatFragmentRecyclerView?.scrollToPosition(adapter.itemCount - 1)
             }
         )
-
-//        val newDbRef = FirebaseDatabase.getInstance().getReference("/user-messages")
-//
-//        newDbRef.addListenerForSingleValueEvent(object  : ValueEventListener{
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                for(userSnapShot in snapshot.children){
-//                    if( userSnapShot.key?.contains(myId) == true && userSnapShot.key?.contains(chatterId) == true  ){
-//                        mappedUsers = userSnapShot.key
-//                    }
-//                }
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//            }
-//
-//        })
     }
 
     private fun sendMessage() {
@@ -119,22 +98,7 @@ class ClientChatFragment : BaseFragment() {
                 binding?.clientChatFragmentRecyclerView?.scrollToPosition(adapter.itemCount - 1)
             }
         )
-
-//        var mappedUserId = mappedUsers ?: myId+chatterId
-
-//        if (toId == null) return
-//        val chatMessage = ChatMessageModel(message, toId, System.currentTimeMillis() / 1000)
-//        databaseRef.setValue(chatMessage)
-//            .addOnSuccessListener {
-//                binding?.clientChatFragmentTypeMessageEditText?.text?.clear()
-//                binding?.clientChatFragmentRecyclerView?.scrollToPosition(adapter.itemCount -1)
-//            }
     }
-
-//    private fun refreshRecyclerViewMessages () {
-//        latestMessagesHashMap.values.forEach{
-//
-//        }
 
     private fun receiveMessage() {
         val toId = args.clientData?.fromEmail

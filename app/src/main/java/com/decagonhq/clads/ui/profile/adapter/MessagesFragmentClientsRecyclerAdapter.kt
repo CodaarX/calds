@@ -1,6 +1,5 @@
 package com.decagonhq.clads.ui.profile.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
@@ -14,7 +13,6 @@ import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import kotlin.collections.HashMap
 
 class MessagesFragmentClientsRecyclerAdapter(
     private var messageNotificationList: List<MessagesNotificationModel>,
@@ -58,13 +56,6 @@ class MessagesFragmentClientsRecyclerAdapter(
                             MessagesFragmentDirections.actionNavMessagesToClientChatFragment2(client)
                         findNavController().navigate(action)
                     }
-
-//                    val id: GetUserEmail? = null
-//                    val fromId = id?.getEmail()
-//                    Timber.e(fromId.toString())
-//
-//                    val toId = fromEmail
-
                     val reference =
                         FirebaseDatabase.getInstance().getReference("/latest-messages/$email")
 
@@ -73,17 +64,9 @@ class MessagesFragmentClientsRecyclerAdapter(
                             snapshot: DataSnapshot,
                             previousChildName: String?
                         ) {
-                            Log.d("SNAPSHOT_TWO", "onChildAdded: $snapshot")
-
-                            val nodeKey = snapshot.key
-
-                            Log.d("SNAPSHOT_TWO", "nodeAdded: $nodeKey")
-
-                            Log.d("SNAPSHOT_TWO", "emailAdded: $fromEmail")
-
                             val chatMessage =
                                 snapshot.getValue(ChatMessageModel::class.java) ?: return
-                            if (nodeKey == fromEmail) {
+                            if (snapshot.key == fromEmail) {
                                 binding.chatRecyclerViewItemMessageTextView.text = chatMessage.text
                                 binding.chatRecyclerViewItemTimeTextView.text =
                                     chatMessage.timeStamp
@@ -94,24 +77,13 @@ class MessagesFragmentClientsRecyclerAdapter(
                         override fun onChildChanged(
                             snapshot: DataSnapshot,
                             previousChildName: String?
-                        ) {
-                            val chatMessage =
-                                snapshot.getValue(ChatMessageModel::class.java) ?: return
-
-                            if (fromEmail != email) {
-                                binding.chatRecyclerViewItemMessageTextView.text = chatMessage.text
-                                binding.chatRecyclerViewItemTimeTextView.text =
-                                    chatMessage.timeStamp
-                                latestMessagesHashMap[snapshot.key!!] = chatMessage
-                            }
-                        }
+                        ) {}
 
                         override fun onChildRemoved(snapshot: DataSnapshot) {}
                         override fun onChildMoved(
                             snapshot: DataSnapshot,
                             previousChildName: String?
-                        ) {
-                        }
+                        ) {}
 
                         override fun onCancelled(error: DatabaseError) {}
                     })

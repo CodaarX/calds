@@ -173,42 +173,6 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
             toolbarNotificationIcon.visibility = View.GONE
         }
 
-//        /*Observing the user profile to display the user name*/
-//        userProfileViewModel.userProfile.observe(
-//            this,
-//            Observer {
-//                it.data.let { userProfile ->
-//                    binding.appBarDashboard.dashboardActivityToolbarHiIjeomaTextView.text =
-//                        getString(
-//                            R.string.hi,
-//                            userProfile?.firstName?.capitalize(Locale.ROOT) ?: " "
-//                        )
-//
-//                    val fullName = "${userProfile?.firstName ?: "---"} ${
-//                    userProfile?.lastName ?: "---"
-//                    }"
-//                    profileName.text = fullName.capitalize(Locale.ROOT)
-//
-//                    /*Load Profile Picture with Glide*/
-//                    toolbarProfilePicture.loadImage(userProfile?.thumbnail)
-//
-//                    /*load profile image from shared pref*/
-//                    profileImage.loadImage(userProfile?.thumbnail)
-//
-//                    val fromId = userProfile?.id
-//                    val fromEmail = encodeUserEmail(userProfile?.email)
-//                    val firstName = userProfile?.firstName
-//                    val lastName = userProfile?.lastName
-//                    val userImage = userProfile?.thumbnail
-//
-//                    val fireBaseRef = FirebaseDatabase.getInstance().getReference("users/$fromEmail")
-//                    val user = MessagesNotificationModel("", firstName, lastName, fromEmail, fromId, userImage)
-//                    fireBaseRef.setValue(user).addOnSuccessListener {
-//                    }
-//                }
-//            }
-//        )
-
         navigationView.setNavigationItemSelectedListener { it ->
             when (it.itemId) {
                 R.id.clientFragment -> {
@@ -283,21 +247,21 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
                     profileImage.loadImage(userProfile?.thumbnail)
 
                     /*Instantiate firebase user model*/
-                    val fromId = userProfile?.id
-                    val fromEmail = encodeUserEmail(userProfile?.email)
+                    val userId = userProfile?.id
+                    val userEmail = encodeUserEmail(userProfile?.email)
                     val firstName = userProfile?.firstName
                     val lastName = userProfile?.lastName
                     val userImage = userProfile?.thumbnail
 
                     /*Add signedIn user to firebase*/
                     val fireBaseRef =
-                        FirebaseDatabase.getInstance().getReference("users/$fromEmail")
+                        FirebaseDatabase.getInstance().getReference("users/$userEmail")
                     val user = MessagesNotificationModel(
                         "",
                         firstName,
                         lastName,
-                        fromEmail,
-                        fromId,
+                        userEmail,
+                        userId,
                         userImage
                     )
                     fireBaseRef.setValue(user).addOnSuccessListener {
@@ -504,9 +468,7 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
     }
 
     override fun updateUserName(userName: String) {
-//        if (ClientChatFragment().isVisible) {
         toolbarUserName.text = userName
-//        }
     }
 
     override fun profileImage(image: String) {

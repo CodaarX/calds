@@ -241,7 +241,7 @@ class AccountFragment : BaseFragment() {
                                     "Tap to enter shop address"
                             } else {
                                 accountFragmentWorkshopAddressValueTextView.text =
-                                    "${userProfile.workshopAddress?.street}, ${userProfile.workshopAddress?.city}, ${userProfile.workshopAddress?.state}."
+                                    "${userProfile.workshopAddress.street}, ${userProfile.workshopAddress.city}, ${userProfile.workshopAddress?.state}."
                             }
                             accountFragmentNameOfUnionValueTextView.text =
                                 userProfile.union?.name ?: "Tap to enter Union name"

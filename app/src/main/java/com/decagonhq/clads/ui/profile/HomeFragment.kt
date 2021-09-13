@@ -69,7 +69,7 @@ class HomeFragment : BaseFragment(), ClientListRvAdapter.Interaction {
     override fun onResume() {
         super.onResume()
         val chartYear = resources.getStringArray(R.array.Year)
-//        updateUserCardNames()
+        updateUserCardNames()
         val accountCategoriesArrayAdapter =
             ArrayAdapter(requireContext(), R.layout.chart_year_dropdown_item, chartYear)
         homeFragmentYearDropdown.setAdapter(accountCategoriesArrayAdapter)

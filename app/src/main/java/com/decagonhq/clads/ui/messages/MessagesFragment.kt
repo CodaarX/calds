@@ -42,12 +42,10 @@ class MessagesFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        getNotification()
 
         userProfileViewModel.userProfile.observe(viewLifecycleOwner) {
             val userEmail = EncodeEmail.encodeUserEmail(it.data?.email)
             getClient(userEmail)
-
             it.data?.let { it1 ->
                 (activity as updateToolbarTitleListener).updateUserName(
                     it1.firstName
@@ -83,18 +81,12 @@ class MessagesFragment : BaseFragment() {
                         viewLifecycleOwner,
                         {
                             it.data?.let { userProfile ->
-                                notificationAdapter =
-                                    EncodeEmail.encodeUserEmail(userProfile.email)?.let { it1 ->
-                                        MessagesFragmentClientsRecyclerAdapter(
-                                            userList,
-                                            it1
-                                        )
-                                    }!!
+                                notificationAdapter = EncodeEmail.encodeUserEmail(userProfile.email)?.let { it1 ->
+                                    MessagesFragmentClientsRecyclerAdapter(userList, it1)
+                                }!!
                             }
                         }
                     )
-
-                    Timber.e(userList.toString())
                     notificationRecyclerView.adapter = notificationAdapter
                 }
             }
