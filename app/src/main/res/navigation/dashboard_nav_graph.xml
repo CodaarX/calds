@@ -24,6 +24,9 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_nav_home_to_transactionHistory2"
+            app:destination="@id/transaction_history" />
     </fragment>
 
     <fragment
@@ -325,4 +328,8 @@
             app:nullable="true"
             android:defaultValue="@null" />
     </fragment>
+    <fragment
+        android:id="@+id/transaction_history"
+        android:name="com.decagonhq.clads.ui.transactionhistory.TransactionHistory"
+        android:label="Transaction History" />
 </navigation>

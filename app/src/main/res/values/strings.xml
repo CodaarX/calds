@@ -418,6 +418,12 @@
     <string name="input_phonenumber_security_fragment_hint">Tap to input phone number</string>
     <string name="am">08:40AM</string>
     <string name="type_a_message">Type a message</string>
+    <string name="monday_7_may_2020_07_45_am">Monday, 7 May 2020, 07:45 am</string>
+    <string name="ankara_high_slitted_maxi_skirt">Ankara High Slitted Maxi Skirt</string>
+    <string name="ifeyinwa_machala">Ifeyinwa Machala</string>
+    <string name="accept">Accept</string>
+    <string name="accepted">Accepted</string>
+    <string name="complete">Complete</string>
 
     <string-array name="account_category">
         <item>Tailor</item>

@@ -190,6 +190,11 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
                     drawerLayout.closeDrawer(GravityCompat.START)
                     return@setNavigationItemSelectedListener true
                 }
+                R.id.transactionHistory -> {
+                    findNavController(R.id.nav_host_fragment_content_dashboard).navigate(R.id.transaction_history)
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    return@setNavigationItemSelectedListener true
+                }
                 R.id.logout -> {
 
                     // Using a dialog to ask the user for confirmation before logging out
