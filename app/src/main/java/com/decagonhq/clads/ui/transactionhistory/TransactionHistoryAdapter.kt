@@ -1,21 +1,15 @@
 package com.decagonhq.clads.ui.transactionhistory
 
-import android.content.res.Resources
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.annotation.NonNull
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.decagonhq.clads.R
 import com.decagonhq.clads.data.domain.TransactionHistoryModel
 import com.decagonhq.clads.databinding.TransactionHistoryFragmentRecyclerViewItemBinding
-import com.decagonhq.clads.util.Resource
 import com.decagonhq.clads.util.hideView
 import com.decagonhq.clads.util.invisibleView
-import com.decagonhq.clads.util.loadImage
 import com.decagonhq.clads.util.showView
 
 class TransactionHistoryAdapter :
@@ -39,8 +33,6 @@ class TransactionHistoryAdapter :
             binding.transactionHistoryTransactionFeeTextView.text =
                 transactionHistoryModel?.transactionFee
         }
-
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -54,9 +46,9 @@ class TransactionHistoryAdapter :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
+        // toggle buttons onclick
         holder.binding.apply {
             transactionHistoryTransactionAcceptButton.setOnClickListener {
-                Toast.makeText(holder.itemView.context, "Accepted", Toast.LENGTH_SHORT).show()
                 transactionHistoryTransactionAcceptButton.text = "Accepted"
                 transactionHistoryTransactionAcceptButton.background = null
                 transactionHistoryTransactionDeclineButton.hideView()
@@ -68,8 +60,6 @@ class TransactionHistoryAdapter :
                 transactionHistoryTransactionCompleteButton.hideView()
                 transactionHistoryTransactionCompletedTextView.showView()
                 transactionHistoryTransactionAcceptButton.invisibleView()
-
-
             }
 
             transactionHistoryTransactionDeclineButton.setOnClickListener {
@@ -78,27 +68,23 @@ class TransactionHistoryAdapter :
                 transactionHistoryTransactionAcceptButton.invisibleView()
                 transactionHistoryUserImageView.invisibleView()
                 transactionHistoryChatWithTailorTextView.invisibleView()
-
             }
         }
-        }
+    }
+}
+
+object DiffCallback : DiffUtil.ItemCallback<TransactionHistoryModel>() {
+    override fun areItemsTheSame(
+        oldItem: TransactionHistoryModel,
+        newItem: TransactionHistoryModel
+    ): Boolean {
+        return oldItem.id == newItem.id
     }
 
-
-    object DiffCallback : DiffUtil.ItemCallback<TransactionHistoryModel>() {
-        override fun areItemsTheSame(
-            oldItem: TransactionHistoryModel,
-            newItem: TransactionHistoryModel
-        ): Boolean {
-            return oldItem.id == newItem.id
-        }
-
-        override fun areContentsTheSame(
-            oldItem: TransactionHistoryModel,
-            newItem: TransactionHistoryModel
-        ): Boolean {
-            return oldItem == newItem
-        }
-
+    override fun areContentsTheSame(
+        oldItem: TransactionHistoryModel,
+        newItem: TransactionHistoryModel
+    ): Boolean {
+        return oldItem == newItem
     }
-
+}

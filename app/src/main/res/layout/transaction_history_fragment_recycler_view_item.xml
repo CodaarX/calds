@@ -7,7 +7,7 @@
     android:layout_marginHorizontal="20dp"
     android:padding="16dp"
     android:elevation="4dp"
-    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
     android:background="@drawable/transaction_history_recycler_view_item_background">
 
     <androidx.cardview.widget.CardView

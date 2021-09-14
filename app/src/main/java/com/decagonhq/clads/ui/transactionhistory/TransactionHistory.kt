@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import com.decagonhq.clads.R
 import com.decagonhq.clads.data.domain.TransactionHistoryModel
 import com.decagonhq.clads.databinding.TransactionHistoryFragmentBinding
-import com.decagonhq.clads.util.showView
 
 class TransactionHistory : Fragment() {
     private var _binding: TransactionHistoryFragmentBinding? = null
@@ -26,9 +25,42 @@ class TransactionHistory : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val transactionHistoryList = listOf(TransactionHistoryModel("1", R.drawable.navy_blue_suit,"Ankara High Slitted Maxi Skirt", "Monday, 7 May 2020, 07:45 am  ", "Ifeyinwa Machala", "\$150.00"))
-           val transactionRV = binding?.transactionHistoryRecyclerView
-            val transactionHistoryAdapter = TransactionHistoryAdapter()
+        val transactionHistoryList = listOf(
+            TransactionHistoryModel(
+                "1",
+                R.drawable.navy_blue_suit,
+                "Ankara High Slitted Maxi Skirt",
+                "Monday, 7 May 2020, 07:45 am  ",
+                "Ifeyinwa Machala",
+                "\$150.00"
+            ),
+            TransactionHistoryModel(
+                "1",
+                R.drawable.jenifa_stiches,
+                "Ankara High Slitted Maxi Skirt",
+                "Monday, 7 May 2020, 07:45 am  ",
+                "Ifeyinwa Machala",
+                "\$150.00"
+            ),
+            TransactionHistoryModel(
+                "1",
+                R.drawable.elegant_suit_photo,
+                "Ankara High Slitted Maxi Skirt",
+                "Monday, 7 May 2020, 07:45 am  ",
+                "Ifeyinwa Machala",
+                "\$150.00"
+            ),
+            TransactionHistoryModel(
+                "1",
+                R.drawable.description,
+                "Ankara High Slitted Maxi Skirt",
+                "Monday, 7 May 2020, 07:45 am  ",
+                "Ifeyinwa Machala",
+                "\$150.00"
+            )
+        )
+        val transactionRV = binding?.transactionHistoryRecyclerView
+        val transactionHistoryAdapter = TransactionHistoryAdapter()
         transactionRV?.adapter = transactionHistoryAdapter
         transactionHistoryAdapter.submitList(transactionHistoryList)
     }
