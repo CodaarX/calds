@@ -87,6 +87,7 @@
         android:background="@drawable/transaction_history_accept_button_background"
         android:textColor="@color/navy_blue"
         android:textSize="@dimen/text_size_8sp"
+        app:layout_constraintEnd_toStartOf="@id/transaction_history_transaction_decline_button"
         app:layout_constraintStart_toStartOf="@+id/transaction_history_transaction_title_text_view"
         app:layout_constraintTop_toBottomOf="@+id/transaction_history_transaction_fee_text_view" />
 
@@ -112,6 +113,19 @@
         android:text="Declined"
         android:visibility="invisible"
         android:textColor="#DD2F59"
+        android:textSize="@dimen/text_size_8sp"
+        app:layout_constraintStart_toStartOf="@+id/transaction_history_transaction_title_text_view"
+        app:layout_constraintTop_toBottomOf="@+id/transaction_history_transaction_fee_text_view" />
+
+    <TextView
+        android:id="@+id/transaction_history_transaction_accepted_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_10dp"
+        android:paddingVertical="@dimen/padding_5dp"
+        android:text="Accepted"
+        android:visibility="invisible"
+        android:textColor="@color/navy_blue"
         android:textSize="@dimen/text_size_8sp"
         app:layout_constraintStart_toStartOf="@+id/transaction_history_transaction_title_text_view"
         app:layout_constraintTop_toBottomOf="@+id/transaction_history_transaction_fee_text_view" />

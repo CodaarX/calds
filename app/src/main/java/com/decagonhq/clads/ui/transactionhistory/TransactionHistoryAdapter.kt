@@ -49,15 +49,16 @@ class TransactionHistoryAdapter :
         // toggle buttons onclick
         holder.binding.apply {
             transactionHistoryTransactionAcceptButton.setOnClickListener {
-                transactionHistoryTransactionAcceptButton.text = "Accepted"
-                transactionHistoryTransactionAcceptButton.background = null
+                transactionHistoryTransactionAcceptButton.invisibleView()
+                transactionHistoryTransactionAcceptedTextView.showView()
                 transactionHistoryTransactionDeclineButton.hideView()
                 transactionHistoryTransactionCompleteButton.showView()
-                transactionHistoryTransactionDeclineButton.setBackgroundResource(R.drawable.transaction_history_accept_button_background)
+//                transactionHistoryTransactionDeclineButton.setBackgroundResource(R.drawable.transaction_history_accept_button_background)
             }
 
             transactionHistoryTransactionCompleteButton.setOnClickListener {
                 transactionHistoryTransactionCompleteButton.hideView()
+                transactionHistoryTransactionAcceptedTextView.invisibleView()
                 transactionHistoryTransactionCompletedTextView.showView()
                 transactionHistoryTransactionAcceptButton.invisibleView()
             }
