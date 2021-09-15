@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.decagonhq.clads.R
 import com.decagonhq.clads.data.domain.TransactionHistoryModel
 import com.decagonhq.clads.databinding.TransactionHistoryFragmentRecyclerViewItemBinding
 import com.decagonhq.clads.util.hideView
