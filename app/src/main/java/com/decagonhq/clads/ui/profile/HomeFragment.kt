@@ -19,6 +19,7 @@ import com.decagonhq.clads.util.ChartData.chartData
 import com.decagonhq.clads.viewmodels.ClientViewModel
 import com.decagonhq.clads.viewmodels.UserProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Locale
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment(), ClientListRvAdapter.Interaction {
@@ -59,7 +60,7 @@ class HomeFragment : BaseFragment(), ClientListRvAdapter.Interaction {
             }
         }
 
-        updateUserCardNames()
+//        updateUserCardNames()
 
         homeFragmentYearDropdown = binding.homeFragmentYearDropdownAutocompleteTextView
         chartData(view)
@@ -68,6 +69,7 @@ class HomeFragment : BaseFragment(), ClientListRvAdapter.Interaction {
     override fun onResume() {
         super.onResume()
         val chartYear = resources.getStringArray(R.array.Year)
+        updateUserCardNames()
         val accountCategoriesArrayAdapter =
             ArrayAdapter(requireContext(), R.layout.chart_year_dropdown_item, chartYear)
         homeFragmentYearDropdown.setAdapter(accountCategoriesArrayAdapter)
@@ -82,7 +84,7 @@ class HomeFragment : BaseFragment(), ClientListRvAdapter.Interaction {
                 it.data.let { userProfile ->
                     val fullName =
                         "${userProfile?.firstName ?: "---"} ${userProfile?.lastName ?: "---"}"
-                    binding.homeFragmentAccountNameTextView.text = fullName
+                    binding.homeFragmentAccountNameTextView.text = fullName.capitalize(Locale.ROOT)
                 }
             }
         )

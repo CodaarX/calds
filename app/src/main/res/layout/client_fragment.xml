@@ -7,21 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.client.ClientFragment">
 
-
-    <TextView
-        android:id="@+id/client_list_screen_title"
-        style="@style/client_list_screen_header_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_25dp"
-        android:paddingBottom="@dimen/padding_14dp"
-        android:text="@string/clients"
-        android:textSize="@dimen/text_size_20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.12"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <LinearLayout
         android:id="@+id/client_list_home_image_text_placeholder"
         android:layout_width="wrap_content"
@@ -85,10 +70,10 @@
         android:id="@+id/client_fragment_swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/client_list_screen_title">
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/client_list_screen_recycler_view"
@@ -100,8 +85,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/client_list_screen_title"
-            tools:itemCount="0"
+            app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/fragment_client_list_recycler_view_layout_look" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

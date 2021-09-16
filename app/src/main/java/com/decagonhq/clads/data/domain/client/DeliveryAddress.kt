@@ -13,5 +13,6 @@ data class DeliveryAddress(
     val city: String? = null,
 
     @ColumnInfo(name = "deliveryAddress_state")
-    val state: String? = null
+    val state: String? = null,
+
 ) : Parcelable

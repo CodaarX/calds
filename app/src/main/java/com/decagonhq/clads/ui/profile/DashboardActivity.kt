@@ -28,11 +28,13 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.decagonhq.clads.R
+import com.decagonhq.clads.data.domain.MessagesNotificationModel
 import com.decagonhq.clads.data.local.CladsDatabase
 import com.decagonhq.clads.databinding.DashboardActivityBinding
 import com.decagonhq.clads.ui.messages.MessagesFragment
 import com.decagonhq.clads.util.Constants
 import com.decagonhq.clads.util.CustomProgressDialog
+import com.decagonhq.clads.util.EncodeEmail.encodeUserEmail
 import com.decagonhq.clads.util.SessionManager
 import com.decagonhq.clads.util.loadImage
 import com.decagonhq.clads.util.logOut
@@ -42,11 +44,13 @@ import com.decagonhq.clads.viewmodels.ImageUploadViewModel
 import com.decagonhq.clads.viewmodels.UserProfileViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.database.FirebaseDatabase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -128,8 +132,8 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
             binding.appBarDashboard.dashboardActivityToolbarNotificationImageView
         toolbarProfilePicture = binding.appBarDashboard.dashboardActivityToolbarProfileImageView
         toolbarUserName = binding.appBarDashboard.dashboardActivityToolbarHiIjeomaTextView
-        toolbarFragmentName =
-            binding.appBarDashboard.dashboardActivityToolbarFragmentNameTextView
+        toolbarFragmentName = binding.appBarDashboard.dashboardActivityToolbarFragmentNameTextView
+
         bottomNavigationView =
             binding.appBarDashboard.contentDashboard.dashboardActivityBottomNavigationView
         navigationView = binding.navView
@@ -169,31 +173,6 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
             toolbarNotificationIcon.visibility = View.GONE
         }
 
-        /*Observing the user profile to display the user name*/
-        userProfileViewModel.userProfile.observe(
-            this,
-            Observer {
-                it.data.let { userProfile ->
-                    binding.appBarDashboard.dashboardActivityToolbarHiIjeomaTextView.text =
-                        getString(
-                            R.string.hi,
-                            userProfile?.firstName ?: " "
-                        )
-
-                    val fullName = "${userProfile?.firstName ?: getString(R.string.ijeoma)} ${
-                    userProfile?.lastName ?: getString(R.string.babangida)
-                    }"
-                    profileName.text = fullName
-
-                    /*Load Profile Picture with Glide*/
-                    toolbarProfilePicture.loadImage(userProfile?.thumbnail)
-
-                    /*load profile image from shared pref*/
-                    profileImage.loadImage(userProfile?.thumbnail)
-                }
-            }
-        )
-
         navigationView.setNavigationItemSelectedListener { it ->
             when (it.itemId) {
                 R.id.clientFragment -> {
@@ -211,6 +190,11 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
                     drawerLayout.closeDrawer(GravityCompat.START)
                     return@setNavigationItemSelectedListener true
                 }
+                R.id.transactionHistory -> {
+                    findNavController(R.id.nav_host_fragment_content_dashboard).navigate(R.id.transaction_history)
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    return@setNavigationItemSelectedListener true
+                }
                 R.id.logout -> {
 
                     // Using a dialog to ask the user for confirmation before logging out
@@ -218,6 +202,7 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
                     confirmationDialog.setMessage(R.string.logout_confirmation_dialog_message)
                     confirmationDialog.setPositiveButton(R.string.yes) { _: DialogInterface, _: Int ->
                         logOut(sessionManager, database)
+                        userProfileViewModel.userProfile.removeObservers(this)
                     }
                     confirmationDialog.setNegativeButton(
                         R.string.no
@@ -242,9 +227,59 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
         }
     }
 
+    private fun getUserName() {
+        /*Observing the user profile to display the user name*/
+        userProfileViewModel.userProfile.observe(
+            this,
+            Observer {
+                it.data.let { userProfile ->
+
+                    toolbarUserName.text =
+                        getString(
+                            R.string.hi,
+                            userProfile?.firstName?.capitalize(Locale.ROOT) ?: " "
+                        )
+
+                    val fullName = "${userProfile?.firstName ?: "---"} ${
+                    userProfile?.lastName ?: "---"
+                    }"
+                    profileName.text = fullName.capitalize(Locale.ROOT)
+
+                    /*Load Profile Picture with Glide*/
+                    toolbarProfilePicture.loadImage(userProfile?.thumbnail)
+
+                    /*load profile image from shared pref*/
+                    profileImage.loadImage(userProfile?.thumbnail)
+
+                    /*Instantiate firebase user model*/
+                    val userId = userProfile?.id
+                    val userEmail = encodeUserEmail(userProfile?.email)
+                    val firstName = userProfile?.firstName
+                    val lastName = userProfile?.lastName
+                    val userImage = userProfile?.thumbnail
+
+                    /*Add signedIn user to firebase*/
+                    val fireBaseRef =
+                        FirebaseDatabase.getInstance().getReference("users/$userEmail")
+                    val user = MessagesNotificationModel(
+                        "",
+                        firstName,
+                        lastName,
+                        userEmail,
+                        userId,
+                        userImage
+                    )
+                    fireBaseRef.setValue(user).addOnSuccessListener {
+                    }
+                }
+            }
+        )
+    }
+
     override fun onResume() {
         super.onResume()
         navController.addOnDestinationChangedListener(listener)
+        getUserName()
     }
 
     private fun createNotification() {
@@ -319,36 +354,36 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
                     }
                     R.id.editProfileFragment -> {
                         bottomNavigationView.visibility = View.GONE
-                        toolbarProfilePicture.visibility = View.INVISIBLE
-                        toolbarUserName.visibility = View.INVISIBLE
+                        toolbarProfilePicture.visibility = View.GONE
+                        toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
                         toolbarFragmentName.visibility = View.VISIBLE
                     }
                     R.id.clientFragment -> {
-                        bottomNavigationView.visibility = View.VISIBLE
-                        toolbarProfilePicture.visibility = View.INVISIBLE
-                        toolbarUserName.visibility = View.INVISIBLE
+                        bottomNavigationView.visibility = View.GONE
+                        toolbarProfilePicture.visibility = View.GONE
+                        toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
-                        toolbarFragmentName.visibility = View.GONE
+                        toolbarFragmentName.visibility = View.VISIBLE
                     }
                     R.id.addClientFragment -> {
                         bottomNavigationView.visibility = View.GONE
-                        toolbarProfilePicture.visibility = View.INVISIBLE
-                        toolbarUserName.visibility = View.INVISIBLE
+                        toolbarProfilePicture.visibility = View.GONE
+                        toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
                         toolbarFragmentName.visibility = View.VISIBLE
                     }
                     R.id.nav_messages -> {
                         bottomNavigationView.visibility = View.VISIBLE
-                        toolbarProfilePicture.visibility = View.INVISIBLE
-                        toolbarUserName.visibility = View.INVISIBLE
+                        toolbarProfilePicture.visibility = View.GONE
+                        toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
                         toolbarFragmentName.visibility = View.VISIBLE
                     }
                     R.id.nav_media -> {
                         bottomNavigationView.visibility = View.VISIBLE
                         toolbarProfilePicture.visibility = View.GONE
-                        toolbarUserName.visibility = View.INVISIBLE
+                        toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
                         toolbarFragmentName.visibility = View.VISIBLE
                     }
@@ -368,22 +403,22 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
                     }
                     R.id.resourceArticlesFragment -> {
                         bottomNavigationView.visibility = View.GONE
-                        toolbarProfilePicture.visibility = View.INVISIBLE
-                        toolbarUserName.visibility = View.INVISIBLE
+                        toolbarProfilePicture.visibility = View.GONE
+                        toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
                         toolbarFragmentName.visibility = View.VISIBLE
                     }
                     R.id.resourceGeneralFragment -> {
                         bottomNavigationView.visibility = View.GONE
-                        toolbarProfilePicture.visibility = View.INVISIBLE
-                        toolbarUserName.visibility = View.INVISIBLE
+                        toolbarProfilePicture.visibility = View.GONE
+                        toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
                         toolbarFragmentName.visibility = View.VISIBLE
                     }
                     R.id.resourceVideosFragment -> {
                         bottomNavigationView.visibility = View.GONE
-                        toolbarProfilePicture.visibility = View.INVISIBLE
-                        toolbarUserName.visibility = View.INVISIBLE
+                        toolbarProfilePicture.visibility = View.GONE
+                        toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
                         toolbarFragmentName.visibility = View.VISIBLE
                     }
@@ -392,18 +427,25 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
                         toolbarProfilePicture.visibility = View.GONE
                         toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
-                        toolbarFragmentName.visibility = View.INVISIBLE
+                        toolbarFragmentName.visibility = View.VISIBLE
                     }
                     R.id.individualVideoScreenFragment -> {
                         bottomNavigationView.visibility = View.GONE
                         toolbarProfilePicture.visibility = View.GONE
                         toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
-                        toolbarFragmentName.visibility = View.INVISIBLE
+                        toolbarFragmentName.visibility = View.VISIBLE
+                    }
+                    R.id.clientChatFragment -> {
+                        bottomNavigationView.visibility = View.GONE
+                        toolbarProfilePicture.visibility = View.VISIBLE
+                        toolbarUserName.visibility = View.VISIBLE
+                        toolbarNotificationIcon.visibility = View.GONE
+                        toolbarFragmentName.visibility = View.GONE
                     }
                     else -> {
-                        bottomNavigationView.visibility = View.VISIBLE
-                        toolbarProfilePicture.visibility = View.INVISIBLE
+                        bottomNavigationView.visibility = View.GONE
+                        toolbarProfilePicture.visibility = View.GONE
                         toolbarUserName.visibility = View.GONE
                         toolbarNotificationIcon.visibility = View.GONE
                         toolbarFragmentName.visibility = View.VISIBLE
@@ -429,8 +471,18 @@ class DashboardActivity : AppCompatActivity(), updateToolbarTitleListener {
     override fun updateTitle(title: String) {
         toolbarFragmentName.text = title
     }
+
+    override fun updateUserName(userName: String) {
+        toolbarUserName.text = userName
+    }
+
+    override fun profileImage(image: String) {
+        toolbarProfilePicture.loadImage(image)
+    }
 }
 
 interface updateToolbarTitleListener {
     fun updateTitle(title: String)
+    fun updateUserName(userName: String)
+    fun profileImage(image: String)
 }

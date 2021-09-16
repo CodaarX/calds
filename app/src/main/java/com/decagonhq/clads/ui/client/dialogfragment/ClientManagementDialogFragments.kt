@@ -28,7 +28,6 @@ import com.decagonhq.clads.ui.client.MeasurementsFragment.Companion.EDIT_MEASURE
 import com.decagonhq.clads.viewmodels.ClientsRegisterViewModel
 import com.google.gson.Gson
 import java.io.InputStream
-import java.lang.Exception
 import java.util.Locale
 
 class ClientManagementDialogFragments(
@@ -181,7 +180,8 @@ class ClientManagementDialogFragments(
                 stateSelectorDropdown = binding.addAddressFragmentStateAddressEditTextView
 
                 // set view data
-                val adapterState = ArrayAdapter(requireContext(), R.layout.list_item, states.sorted())
+                val adapterState =
+                    ArrayAdapter(requireContext(), R.layout.list_item, states.sorted())
                 stateSelectorDropdown.setAdapter(adapterState)
 
                 // lga
@@ -224,45 +224,37 @@ class ClientManagementDialogFragments(
                 /*Attaching the data*/
                 if (splitAddress != null && splitAddress.size >= 3) {
 
-                    binding.addAddressFragmentTitleAddAddressTextView.text = getString(R.string.Edit_delivery_address)
+                    /* Set dialogue title*/
+                    binding.addAddressFragmentTitleAddAddressTextView.text =
+                        getString(R.string.Edit_delivery_address)
 
+                    /* get current user location*/
                     val currentState = splitAddress[2]
                     val currentLga = splitAddress[1].trim()
                     val currentStreet = splitAddress[0].trim()
 
+                    /* populate state array */
                     for (state in locations.data) {
                         states.add(state.state)
                     }
 
                     stateEditText.setText(currentState, false)
 
+                    /* populate LGA arary*/
                     for (state in locations.data) {
-                        for (data in state.lgas) {
-                            lga.add(data)
+                        if (state.state.trim() == currentState.trim()) {
+                            for (data in state.lgas) {
+                                lga.add(data)
+                            }
                         }
                     }
 
                     val lgaPicked = lga[lga.indexOf(currentLga)]
-                    cityEditText.setText(lgaPicked, false)
 
+                    /* set fields */
+                    cityEditText.setText(lgaPicked, false)
                     enterAddressEditText.setText(currentStreet)
                 }
-
-// for fixing lga prefill on edit
-
-//                for (state in locations.data) {
-//                    for (data in state.lgas) {
-//                        if (state.state === currentState){
-//                            lga.add(data)
-//
-//                            if(data === currentLga){
-//                                val lgaPicked = lga[lga.indexOf(currentLga)]
-//                                cityEditText.setText(lgaPicked, false)
-//
-//                            }
-//                        }
-//                    }
-//                }
 
                 /*Saving the changes for the address*/
                 saveAddressButton.setOnClickListener {
@@ -322,9 +314,13 @@ class ClientManagementDialogFragments(
                             return@setOnClickListener
                         }
                         else -> {
+
                             val addressBundle = DeliveryAddress(
-                                addressName.capitalize(Locale.ROOT), addressCity.capitalize(Locale.ROOT), addressState
+                                addressName.capitalize(Locale.ROOT),
+                                addressCity.capitalize(Locale.ROOT),
+                                addressState
                             )
+
                             /*Save Temporal Client Address*/
                             registerClientViewModel.clientNewAddress(addressBundle)
 

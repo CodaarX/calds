@@ -4,7 +4,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="view_in_browser">view in browser</string>
     <string name="hi_obioma">Hi Ijeoma, you are almost ready to start enjoying clads. Simply click the
-        blue button below to verify your email address
+        blue button below to verify your email coOrdinates
     </string>
     <string name="hi_you_are_almost_there">Hi you are almost there to finish reseting your password please click on the reset button below</string>
     <string name="copyright_2020">copyright 2020.All rights reserved</string>
@@ -32,7 +32,7 @@
     <string name="all_have_an_account">Have an account?</string>
     <string name="all_login">Login</string>
     <string name="email_sign_up_fragment_choose_account_category">Choose account category</string>
-    <string name="client">Client</string>
+    <string name="client">Clients</string>
     <string name="weaver">Weaver</string>
     <string name="tailor">Tailor</string>
     <string name="all_confirm_password">Confirm Password</string>
@@ -41,7 +41,7 @@
     <string name="all_other_name">Other Name</string>
     <string name="lorem_ipsum_ipsum_sum">Lorem Ipsum. Ipsum sum.</string>
     <string name="sign_up">sign up</string>
-    <string name="Loading">Loading...</string>
+    <string name="Loading">Loading…</string>
     <string name="have_an_account_login">Have an account? Login</string>
     <string name="sign_up_with_phone_number">Sign up with phone number</string>
     <string name="signup_with_google">Signup with Google</string>
@@ -113,10 +113,10 @@
     <string name="enter_street_address">Enter Street Address</string>
     <string name="delivery_address_city">City</string>
     <string name="delivery_address_state">State</string>
-    <string name="there_are_no_delivery_address">There are no delivery address for this client</string>
+    <string name="there_are_no_delivery_address">There are no delivery coOrdinates for this client</string>
     <string name="add_address">Add Address</string>
     <string name="save_client">Save Client</string>
-    <string name="add_address_fragment">Add address</string>
+    <string name="add_address_fragment">Add coOrdinates</string>
     <string name="edit_measurement">Edit measurement</string>
 
     <string-array name="Year">
@@ -190,7 +190,7 @@
     <string name="elbow">Elbow</string>
 
     <!-- Validation strings -->
-    <string name="enter_the_delivery_address_validation">Please, enter the delivery address</string>
+    <string name="enter_the_delivery_address_validation">Please, enter the delivery coOrdinates</string>
     <string name="enter_city_validation">Please, enter a city</string>
     <string name="enter_state_validation">Please, select a state</string>
     <string name="enter_name_validation">Please, enter name</string>
@@ -308,6 +308,7 @@
     <string name="no_7_decabon_way_lekki">No 7 Decagon way, Lekki</string>
     <string name="_2020">2020</string>
     <string name="required">Required</string>
+    <string name="tag_employee_address_dialog_fragment">Employee Address dialog fragment</string>
     <string name="tag_employee_number_dialog_fragment">Employee Number dialog fragment</string>
     <string name="frstname_dialog_fragment">FirstName Dialog Fragment</string>
     <string name="rename_description_dialog_fragment">Rename Description Dialog Fragment</string>
@@ -349,7 +350,7 @@
     <string name="is_required_to_use_this_app">\ is required to use this app\</string>
     <string name="hi">Hi %s</string>
     <string name="confirk_email_hi">Hi</string>
-    <string name="confirm_email_you_are_ready_to_go">, you are almost ready to start enjoying clads. Simply click the blue button below to verify your email address</string>
+    <string name="confirm_email_you_are_ready_to_go">, you are almost ready to start enjoying clads. Simply click the blue button below to verify your email coOrdinates</string>
 
     <string name="resource_view_individual_article_fragment_article_link_key">articleItem</string>
     <string name="enter_address">Enter Address</string>
@@ -383,6 +384,46 @@
     <string name="state_label_str">STATE</string>
     <string name="hint_9_obasanjo_street">hint: 9, obasanjo street</string>
     <string name="Edit_delivery_address">Edit Delivery Address</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="select_payment_term">Select Payment Term</string>
+    <string name="select_payment_option">Select Payment Option</string>
+    <string name="tap_to_enter_number">Tap to Enter Number</string>
+    <string name="tap_to_select_gender">Tap to select gender</string>
+    <string name="tap_to_enter_state">Tap to Enter state</string>
+    <string name="tap_to_enter_city">Tap to Enter city</string>
+    <string name="tap_to_enter_street">Tap to Enter street</string>
+    <string name="tap_to_enter_address">Tap to Enter coOrdinates</string>
+    <string name="tap_to_enter_employees_num">Tap to Enter employees num</string>
+    <string name="tap_to_enter_legal_status">Tap to Enter Legal status</string>
+    <string name="tap_to_enter_union_name">Tap to Enter union name</string>
+    <string name="tap_to_enter_union_ward">Tap to Enter union ward</string>
+    <string name="tap_to_enter_union_lga">Tap to Enter Union LGA</string>
+    <string name="tap_to_enter_union_state">Tap to Enter Union State</string>
+    <string name="tap_to_enter_first_name">Tap to Enter First name</string>
+    <string name="tap_to_enter_last_name">Tap to Enter Last name</string>
+    <string name="tap_to_select_payment_term">Tap to Select Payment Term</string>
+    <string name="tap_to_select_payment_option">Tap to Select Payment Option</string>
+    <string name="location_rationale">Clads connects Tailors to potential clients that are within their proximities. We need to know your location to do this</string>
+    <string name="let_s_know_where_you_are">Let\'s Know Where you are</string>
+    <string name="set_location_later">Set Location later</string>
+    <string name="set_location_now">Set Location now</string>
+    <string name="save_location">Save location</string>
+    <string name="go_to_map">Edit coordinates from map</string>
+    <string name="edit_address_manually">Edit coordinates manually</string>
+    <string name="edit_street_address">Edit Street Address</string>
+    <string name="street_address">street coOrdinates</string>
+    <string name="_0">0</string>
+    <string name="click_here_to_input_phonenumber">Click here to input phone number</string>
+    <string name="input_phonenumber_security_fragment_hint">Tap to input phone number</string>
+    <string name="am">08:40AM</string>
+    <string name="type_a_message">Type a message</string>
+    <string name="monday_7_may_2020_07_45_am">Monday, 7 May 2020, 07:45 am</string>
+    <string name="ankara_high_slitted_maxi_skirt">Ankara High Slitted Maxi Skirt</string>
+    <string name="ifeyinwa_machala">Ifeyinwa Machala</string>
+    <string name="accept">Accept</string>
+    <string name="accepted">Accepted</string>
+    <string name="complete">Complete</string>
 
     <string-array name="account_category">
         <item>Tailor</item>

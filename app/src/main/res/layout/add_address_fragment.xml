@@ -22,39 +22,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-
-<!--    <com.google.android.material.textfield.TextInputLayout-->
-<!--        android:id="@+id/add_address_fragment_enter_delivery_address_edit_text_layout"-->
-<!--        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginHorizontal="@dimen/margin_27dp"-->
-<!--        app:boxStrokeColor="@color/deep_sky_blue"-->
-<!--        app:boxStrokeWidth="@dimen/margin_2dp"-->
-<!--        app:counterOverflowTextAppearance="@color/red"-->
-<!--        app:counterOverflowTextColor="@color/red"-->
-<!--        app:helperText="@string/enter_delivery_address"-->
-<!--        app:hintEnabled="false"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHorizontal_bias="0.542"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/add_address_fragment_add_address_text_view">-->
-
-<!--        <com.google.android.material.textfield.TextInputEditText-->
-<!--            android:id="@+id/add_address_fragment_enter_delivery_address_edit_text"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:backgroundTint="@color/white"-->
-<!--            android:fontFamily="@font/roboto_medium"-->
-<!--            android:inputType="text"-->
-<!--            android:paddingStart="@dimen/padding_0dp"-->
-<!--            android:textColor="@color/navy_blue"-->
-<!--            android:textCursorDrawable="@color/navy_blue"-->
-<!--            android:textSize="@dimen/text_size_16sp" />-->
-<!--    </com.google.android.material.textfield.TextInputLayout>-->
-
-
-
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/add_address_fragment_enter_delivery_address_edit_text_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
@@ -144,39 +111,6 @@
             android:textSize="@dimen/text_size_16sp" />
 
     </com.google.android.material.textfield.TextInputLayout>
-
-
-
-
-
-
-
-
-
-
-
-    <!--    <com.google.android.material.textfield.TextInputLayout-->
-<!--        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginTop="16dp"-->
-<!--        android:hint="@string/state_label_str"-->
-<!--        app:boxBackgroundColor="@color/white"-->
-<!--        android:paddingTop="5dp"-->
-<!--        android:paddingBottom="5dp"-->
-<!--        android:fontFamily="@font/roboto_medium"-->
-<!--        app:layout_constraintEnd_toEndOf="@+id/add_address_fragment_lga_address_edit_text_layout"-->
-<!--        app:layout_constraintStart_toStartOf="@+id/add_address_fragment_lga_address_edit_text_layout"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/add_address_fragment_title_add_address_text_view">-->
-
-
-<!--        <AutoCompleteTextView-->
-<!--            android:id="@+id/add_address_fragment_state_address_edit_text_view"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:inputType="none" />-->
-
-<!--    </com.google.android.material.textfield.TextInputLayout>-->
 
     <Button
         android:id="@+id/add_address_fragment_save_address_button"

@@ -93,7 +93,8 @@ class LoginFragment : BaseFragment() {
 
         // On login button pressed
         binding.loginFragmentLogInButton.setOnClickListener {
-            val emailAddress = emailEditText.text.toString().trim()
+            val emailAddress = decodeUserEmail(emailEditText.text.toString().trim())
+
             val password = passwordEditText.text.toString().trim()
 
             when {
@@ -183,6 +184,10 @@ class LoginFragment : BaseFragment() {
         super.onResume()
         /*Method to Validate Email Field onText Change*/
         validateSignUpFieldsOnTextChange()
+    }
+
+    private fun decodeUserEmail(userEmail: String): String {
+        return userEmail.replace(",", ".")
     }
 
     /*create the googleSignIn client*/

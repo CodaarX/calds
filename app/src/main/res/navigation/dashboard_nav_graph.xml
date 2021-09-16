@@ -24,6 +24,9 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_nav_home_to_transactionHistory2"
+            app:destination="@id/transaction_history" />
     </fragment>
 
     <fragment
@@ -55,7 +58,16 @@
         android:id="@+id/nav_messages"
         android:name="com.decagonhq.clads.ui.messages.MessagesFragment"
         android:label="@string/menu_messages"
-        tools:layout="@layout/messages_fragment" />
+        tools:layout="@layout/messages_fragment" >
+        <action
+            android:id="@+id/action_nav_messages_to_clientChatFragment2"
+            app:destination="@id/clientChatFragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out"
+            app:popUpToInclusive="true" />
+    </fragment>
 
     <fragment
         android:id="@+id/resourceGeneralFragment"
@@ -97,7 +109,11 @@
         android:id="@+id/editProfileFragment"
         android:name="com.decagonhq.clads.ui.profile.editprofile.EditProfileFragment"
         android:label="@string/edit_profile"
-        tools:layout="@layout/edit_profile_fragment" />
+        tools:layout="@layout/edit_profile_fragment" >
+        <action
+            android:id="@+id/action_editProfileFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
+    </fragment>
     <fragment
         android:id="@+id/addClientFragment"
         android:name="com.decagonhq.clads.ui.client.AddClientFragment"
@@ -270,12 +286,12 @@
     <fragment
         android:id="@+id/individualVideoScreenFragment"
         android:name="com.decagonhq.clads.ui.resource.IndividualVideoScreenFragment"
-        android:label="@string/individual_video"
+        android:label="Videos"
         tools:layout="@layout/individual_video_screen_fragment" />
     <fragment
         android:id="@+id/resourceViewIndividualArticleFragment"
         android:name="com.decagonhq.clads.ui.resource.ResourceIndividualArticleWebViewFragment"
-        android:label="Article/Publications" />
+        android:label="Articles" />
     <fragment
         android:id="@+id/clientDetailsFragment"
         android:name="com.decagonhq.clads.ui.client.ClientDetailsFragment"
@@ -291,5 +307,29 @@
             app:destination="@id/addClientFragment" />
 
     </fragment>
-
+      <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.decagonhq.clads.ui.profile.editprofile.MapFragment"
+        android:label=""
+        tools:layout="@layout/fragment_map" />
+        <action
+            android:id="@+id/action_mapFragment_to_editProfileFragment"
+            app:destination="@id/editProfileFragment"
+            app:popUpTo="@id/editProfileFragment"
+            app:popUpToInclusive="false" />
+    <fragment
+        android:id="@+id/clientChatFragment"
+        android:name="com.decagonhq.clads.ui.messages.ClientChatFragment"
+        android:label=""
+        tools:layout="@layout/fragment_client_chat" >
+        <argument
+            android:name="clientData"
+            app:argType="com.decagonhq.clads.data.domain.MessagesNotificationModel"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
+    <fragment
+        android:id="@+id/transaction_history"
+        android:name="com.decagonhq.clads.ui.transactionhistory.TransactionHistory"
+        android:label="Transaction History" />
 </navigation>

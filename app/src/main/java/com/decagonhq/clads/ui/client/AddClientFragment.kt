@@ -1,9 +1,11 @@
 package com.decagonhq.clads.ui.client
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
@@ -87,6 +89,11 @@ class AddClientFragment : BaseFragment() {
         setObservers()
     }
 
+    override fun onResume() {
+        super.onResume()
+        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -125,15 +132,17 @@ class AddClientFragment : BaseFragment() {
                             clientViewModel.updateClient(
                                 it1,
                                 Client(
-                                    id = clientBio.id,
-                                    artisanId = clientBio.artisanId,
-                                    fullName = clientBio.fullName,
-                                    phoneNumber = clientBio.phoneNumber,
-                                    email = clientBio.email,
-                                    gender = clientBio.gender,
+                                    // id = clientBio.id, // ------ //
+                                    artisanId = editClient!!.artisanId,
+                                    fullName = editClient!!.fullName,
+                                    phoneNumber = editClient!!.phoneNumber,
+                                    email = editClient!!.email,
+                                    gender = editClient!!.gender,
                                     deliveryAddresses = arrayListOf(clientDeliveryAddress),
                                     measurements = clientMeasurements
-                                )
+                                ).also {
+                                    Log.d("ALSO_CLIENT", " $it")
+                                }
                             )
                         }
                     }

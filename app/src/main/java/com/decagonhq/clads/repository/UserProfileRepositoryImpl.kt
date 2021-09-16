@@ -1,5 +1,6 @@
 package com.decagonhq.clads.repository
 
+import android.util.Log
 import androidx.room.withTransaction
 import com.decagonhq.clads.data.domain.profile.UserProfile
 import com.decagonhq.clads.data.local.CladsDatabase
@@ -64,10 +65,12 @@ class UserProfileRepositoryImpl(
                     ?.let {
                         database.userProfileDao().addUserProfile(
                             it
-                        )
+                        ).also {
+                            Log.d("DATABASE_IT", "Database insertion successful $it")
+                        }
                     }
             }
-        }
+        } else Log.d("DATABASE_ERROR", "Update Profile Failed")
     }
 
     override suspend fun saveUserProfileToLocalDatabase() {

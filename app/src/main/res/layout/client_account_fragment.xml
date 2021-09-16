@@ -28,6 +28,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/all_first_name"
+                android:maxLines="1"
                 android:paddingLeft="@dimen/padding_0dp" />
 
             <View
@@ -53,6 +54,7 @@
                 style="@style/input_text_style"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:maxLines="1"
                 android:hint="@string/all_last_name" />
 
             <View
@@ -79,6 +81,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/enter_phone_number"
+                android:maxLines="1"
                 android:inputType="phone" />
 
             <View
@@ -105,6 +108,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins"
+                android:maxLines="2"
                 android:hint="@string/all_email_address" />
 
             <View

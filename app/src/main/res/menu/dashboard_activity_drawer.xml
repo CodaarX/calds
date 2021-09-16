@@ -16,6 +16,10 @@
             android:id="@+id/subscriptionFragment"
             android:icon="@drawable/nav_drawer_shopping_cart"
             android:title="@string/subscription" />
+        <item
+            android:id="@+id/transactionHistory"
+            android:icon="@drawable/nav_drawer_transaction_history_icon"
+            android:title="Transaction History"/>
         <item android:id="@+id/logout"
             android:icon="@drawable/nav_drawer_logout_icon"
             android:title="@string/logout"/>

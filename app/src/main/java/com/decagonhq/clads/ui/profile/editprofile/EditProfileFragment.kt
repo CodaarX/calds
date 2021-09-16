@@ -11,14 +11,18 @@ import com.decagonhq.clads.ui.BaseFragment
 import com.decagonhq.clads.ui.profile.adapter.EditProfilePagerAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class EditProfileFragment : BaseFragment() {
     private var _binding: EditProfileFragmentBinding? = null
     private lateinit var viewPager2: ViewPager2
     private lateinit var tabLayout: TabLayout
 
     // This property is only valid between onCreateView and onDestroyView.
-    private val binding get() = _binding!!
+    private val binding
+        get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

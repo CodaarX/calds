@@ -4,14 +4,23 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.decagonhq.clads.data.domain.MessagesNotificationModel
 import com.decagonhq.clads.databinding.MessagesFragmentBinding
+import com.decagonhq.clads.ui.BaseFragment
 import com.decagonhq.clads.ui.profile.adapter.MessagesFragmentClientsRecyclerAdapter
+import com.decagonhq.clads.ui.profile.updateToolbarTitleListener
+import com.decagonhq.clads.util.EncodeEmail
+import com.decagonhq.clads.viewmodels.UserProfileViewModel
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import timber.log.Timber
 
-class MessagesFragment : Fragment() {
+class MessagesFragment : BaseFragment() {
 
     private var _binding: MessagesFragmentBinding? = null
 
@@ -19,7 +28,8 @@ class MessagesFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var notificationRecyclerView: RecyclerView
     private lateinit var notificationAdapter: MessagesFragmentClientsRecyclerAdapter
-    private lateinit var messageNotificationList: ArrayList<MessagesNotificationModel>
+    private var userArrayList: ArrayList<MessagesNotificationModel> = arrayListOf()
+    private val userProfileViewModel: UserProfileViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,53 +42,58 @@ class MessagesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getNotification()
+
+        userProfileViewModel.userProfile.observe(viewLifecycleOwner) {
+            val userEmail = EncodeEmail.encodeUserEmail(it.data?.email)
+            getClient(userEmail)
+            it.data?.let { it1 ->
+                (activity as updateToolbarTitleListener).updateUserName(
+                    it1.firstName
+                )
+            }
+            it.data?.let {
+                (activity as updateToolbarTitleListener).profileImage(it.thumbnail)
+            }
+        }
+
         notificationRecyclerView = binding.messagesFragmentClientMessagesRecyclerView
-        notificationAdapter = MessagesFragmentClientsRecyclerAdapter(messageNotificationList)
         notificationRecyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        notificationRecyclerView.adapter = notificationAdapter
     }
 
-    private fun getNotification() {
-        messageNotificationList = arrayListOf(
-            MessagesNotificationModel(
-                "Ola",
-                "Michavelli",
-                "Today",
-                "Lorem Ipsum"
-            ),
-            MessagesNotificationModel(
-                "Ruth",
-                "Unoka",
-                "Yesterday",
-                "My name is Ruth. I need a dress for sunday"
-            ),
-            MessagesNotificationModel(
-                "Michael",
-                "Isesele",
-                "Yesterday",
-                "Hi, I have an event next month"
-            ),
-            MessagesNotificationModel(
-                "Ola",
-                "Michavelli",
-                "Today",
-                "Lorem Ipsum"
-            ),
-            MessagesNotificationModel(
-                "Ruth",
-                "Unoka",
-                "Yesterday",
-                "My name is Ruth. I need a dress for sunday"
-            ),
-            MessagesNotificationModel(
-                "Michael",
-                "Isesele",
-                "Yesterday",
-                "Hi, I have an event next month"
-            )
-        )
+    private fun getClient(userEmail: String?) {
+
+        val firebaseRef = FirebaseDatabase.getInstance().getReference("/users")
+
+        firebaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                userArrayList.clear()
+                Timber.e(userEmail)
+                if (snapshot.exists()) {
+                    val userList =
+                        snapshot.children.mapNotNull {
+                            it.getValue(MessagesNotificationModel::class.java)
+                        }.filter {
+                            it.fromEmail != userEmail && !it.firstName.isNullOrEmpty()
+                        }
+                    userProfileViewModel.userProfile.observe(
+                        viewLifecycleOwner,
+                        {
+                            it.data?.let { userProfile ->
+                                notificationAdapter = EncodeEmail.encodeUserEmail(userProfile.email)?.let { it1 ->
+                                    MessagesFragmentClientsRecyclerAdapter(userList, it1)
+                                }!!
+                            }
+                        }
+                    )
+                    notificationRecyclerView.adapter = notificationAdapter
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
     }
 
     override fun onDestroyView() {
