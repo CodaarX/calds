@@ -14,11 +14,14 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import com.decagonhq.clads.R
 import com.decagonhq.clads.ui.authentication.EmailSignUpFragmentTest.Companion.EMAIL
 import com.decagonhq.clads.ui.authentication.EmailSignUpFragmentTest.Companion.PASSWORD
+import dagger.hilt.android.AndroidEntryPoint
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
 
+@AndroidEntryPoint
 @RunWith(AndroidJUnit4ClassRunner::class)
 class LoginFragmentTest {
 
@@ -54,14 +57,7 @@ class LoginFragmentTest {
     fun test_typing() {
         val mockNavController = mock(NavController::class.java)
 
-//        val scenario =
-//            launchFragmentInContainer<LoginFragment>(themeResId = R.style.Theme_MaterialComponents)
-//        scenario.onFragment { fragment ->
-//            Navigation.setViewNavController(fragment.requireView(), mockNavController)
-//        }
-
-        val scenario =
-            launchFragmentInContainer(themeResId = R.style.Base_Theme_MaterialComponents) {
+        val scenario = launchFragmentInContainer(themeResId = R.style.Base_Theme_MaterialComponents) {
                 LoginFragment().also { fragment ->
 
                     fragment.viewLifecycleOwnerLiveData.observeForever { viewLifecycleOwner ->
@@ -77,6 +73,9 @@ class LoginFragmentTest {
         onView(withId(R.id.login_fragment_password_edit_text)).perform(replaceText(PASSWORD))
         closeSoftKeyboard()
         onView(withId(R.id.login_fragment_log_in_button)).perform(click())
-//        verify(mockNavController).navigate(R.id.action_loginFragment_to_dashboardFragment)
+
+        onView(withId(R.id.home_fragment_card_details_constraint_layout)).check(matches(isDisplayed()))
+        onView(withId(R.id.home_fragment_chat_constraint_layout)).check(matches(isDisplayed()))
+        onView(withId(R.id.home_fragment_client_list_recycler_view)).check(matches(isDisplayed()))
     }
 }

@@ -17,8 +17,7 @@ import org.junit.runner.RunWith
 class ResetPasswordConfirmationFragmentTest {
     @Before
     fun setUp() {
-        val scenario =
-            launchFragmentInContainer<ResetPasswordConfirmationFragment>(themeResId = R.style.Base_Theme_MaterialComponents)
+        val scenario = launchFragmentInContainer<ResetPasswordConfirmationFragment>(themeResId = R.style.Base_Theme_MaterialComponents)
         val context = ApplicationProvider.getApplicationContext<Context>()
     }
 

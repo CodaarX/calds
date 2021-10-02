@@ -77,20 +77,12 @@ class EmailSignUpFragmentTest {
             )
         )
         closeSoftKeyboard()
-        onView(withId(R.id.email_sign_up_fragment_last_name_edit_text)).perform(
-            replaceText(
-                LAST_NAME
-            )
-        )
+        onView(withId(R.id.email_sign_up_fragment_last_name_edit_text)).perform(replaceText(LAST_NAME))
         closeSoftKeyboard()
         onView(withId(R.id.email_sign_up_fragment_email_edit_text)).perform(replaceText(EMAIL))
         closeSoftKeyboard()
         /*Select Spinner Item*/
-        onView(withId(R.id.email_sign_up_fragment_account_category_text_view)).perform(
-            replaceText(
-                ACCOUNT_TYPE
-            )
-        )
+        onView(withId(R.id.email_sign_up_fragment_account_category_text_view)).perform(replaceText(ACCOUNT_TYPE))
         onView(withId(R.id.email_sign_up_fragment_password_edit_text)).perform(
             swipeUp(),
             replaceText(PASSWORD)
