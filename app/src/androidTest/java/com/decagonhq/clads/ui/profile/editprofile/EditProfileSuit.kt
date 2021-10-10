@@ -7,10 +7,9 @@ import org.junit.runners.Suite
 @Suite.SuiteClasses(
     AccountFragmentTest::class,
     EditProfileFragmentTest::class,
-    MapFragmentTest::class,
     PaymentMethodFragmentTest::class,
+    HomeFragmentTest::class,
     SecurityFragmentTest::class,
     SpecialtyFragmentTest::class,
-    SpecialtyModelFragmentTest::class
 )
 class EditProfileSuit

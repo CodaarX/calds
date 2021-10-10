@@ -1,24 +1,29 @@
 package com.decagonhq.clads.ui.authentication
 
-import android.content.Context
-import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.test.core.app.ApplicationProvider
+import android.os.Bundle
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import com.decagonhq.clads.R
+import com.decagonhq.clads.launchFragmentInHiltContainer
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4ClassRunner::class)
+@HiltAndroidTest
 class ResetPasswordConfirmationFragmentTest {
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
+
+    @ExperimentalCoroutinesApi
     @Before
     fun setUp() {
-        val scenario = launchFragmentInContainer<ResetPasswordConfirmationFragment>(themeResId = R.style.Base_Theme_MaterialComponents)
-        val context = ApplicationProvider.getApplicationContext<Context>()
+        hiltRule.inject()
+        launchFragmentInHiltContainer<ResetPasswordConfirmationFragment>(fragmentArgs = Bundle()) {}
     }
 
     @Test

@@ -21,25 +21,21 @@
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/account_tab_item"
             android:text="@string/account" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/specialty_tab_item"
             android:text="@string/specialty" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/payment_tab_item"
             android:text="@string/payment_method" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/security_tab_item"
             android:text="@string/security" />
     </com.google.android.material.tabs.TabLayout>
 

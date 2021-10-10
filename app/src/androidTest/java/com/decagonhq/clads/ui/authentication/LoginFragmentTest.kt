@@ -1,34 +1,30 @@
 package com.decagonhq.clads.ui.authentication
 
-import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
+import android.os.Bundle
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
-import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import com.decagonhq.clads.R
-import com.decagonhq.clads.ui.authentication.EmailSignUpFragmentTest.Companion.EMAIL
-import com.decagonhq.clads.ui.authentication.EmailSignUpFragmentTest.Companion.PASSWORD
-import dagger.hilt.android.AndroidEntryPoint
+import com.decagonhq.clads.launchFragmentInHiltContainer
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.verify
 
-@AndroidEntryPoint
-@RunWith(AndroidJUnit4ClassRunner::class)
+@HiltAndroidTest
 class LoginFragmentTest {
 
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
+
+    @ExperimentalCoroutinesApi
     @Before
     fun setUp() {
-        val scenario =
-            launchFragmentInContainer<LoginFragment>(themeResId = R.style.Theme_MaterialComponents)
+        hiltRule.inject()
+        launchFragmentInHiltContainer<LoginFragment>(fragmentArgs = Bundle()) {}
     }
 
     // Test view visibility
@@ -50,32 +46,5 @@ class LoginFragmentTest {
     @Test
     fun login_fragment_log_in_card_view() {
         onView(withId(R.id.login_fragment_log_in_button)).check(matches(isDisplayed()))
-    }
-
-    // Test typing and perform click
-    @Test
-    fun test_typing() {
-        val mockNavController = mock(NavController::class.java)
-
-        val scenario = launchFragmentInContainer(themeResId = R.style.Base_Theme_MaterialComponents) {
-                LoginFragment().also { fragment ->
-
-                    fragment.viewLifecycleOwnerLiveData.observeForever { viewLifecycleOwner ->
-                        if (viewLifecycleOwner != null) {
-                            // The fragment’s view has just been created
-                            Navigation.setViewNavController(fragment.requireView(), mockNavController)
-                        }
-                    }
-                }
-            }
-
-        onView(withId(R.id.login_fragment_email_address_edit_text)).perform(replaceText(EMAIL))
-        onView(withId(R.id.login_fragment_password_edit_text)).perform(replaceText(PASSWORD))
-        closeSoftKeyboard()
-        onView(withId(R.id.login_fragment_log_in_button)).perform(click())
-
-        onView(withId(R.id.home_fragment_card_details_constraint_layout)).check(matches(isDisplayed()))
-        onView(withId(R.id.home_fragment_chat_constraint_layout)).check(matches(isDisplayed()))
-        onView(withId(R.id.home_fragment_client_list_recycler_view)).check(matches(isDisplayed()))
     }
 }

@@ -1,6 +1,5 @@
 package com.decagonhq.clads.util
 
-import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
@@ -51,5 +50,4 @@ inline fun <DB, REMOTE> networkBoundResource(
         fetchFromLocal().map { Resource.Success(it) }
     }
     emitAll(dataStream)
-    Log.d("ds", dataStream.toString())
 }
