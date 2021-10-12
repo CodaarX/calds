@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/client_add_address_fragment_root_layout"
     android:paddingBottom="@dimen/margin_24dp"
     tools:context=".ui.client.AddAddressFragment">
 

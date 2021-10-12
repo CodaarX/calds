@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/black"
+    android:id="@+id/edit_image_fragment_root_layout"
     tools:context=".ui.media.PhotoGalleryEditImageFragment">
 
     <ImageView
