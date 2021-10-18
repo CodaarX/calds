@@ -18,6 +18,9 @@ import org.junit.Test
 @HiltAndroidTest
 class AccountFragmentTest {
 
+//    @Mock
+//    lateinit var profile: UserProfileEntity
+
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 

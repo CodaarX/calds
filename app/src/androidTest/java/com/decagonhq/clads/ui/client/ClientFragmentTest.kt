@@ -25,7 +25,6 @@ class ClientFragmentTest {
         launchFragmentInHiltContainer<ClientFragment>(fragmentArgs = Bundle()) {}
     }
 
-
     @Test
     fun test_client_fragment_recycler_view_visibility() {
         Espresso.onView(ViewMatchers.withId(R.id.client_list_screen_recycler_view)).check(
@@ -52,6 +51,4 @@ class ClientFragmentTest {
             )
         )
     }
-
-
 }

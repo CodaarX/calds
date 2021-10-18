@@ -6,7 +6,6 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.decagonhq.clads.R
 import com.decagonhq.clads.launchFragmentInHiltContainer
-import com.decagonhq.clads.ui.client.ClientFragment
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,7 +24,6 @@ class MediaFragmentPhotoNameTest {
         hiltRule.inject()
         launchFragmentInHiltContainer<MediaFragmentPhotoName>(fragmentArgs = Bundle()) {}
     }
-
 
     @Test
     fun test_photo_fragment_visibility() {
@@ -53,5 +51,4 @@ class MediaFragmentPhotoNameTest {
             )
         )
     }
-
 }

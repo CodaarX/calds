@@ -8,7 +8,6 @@ import com.decagonhq.clads.R
 import com.decagonhq.clads.launchFragmentInHiltContainer
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import junit.framework.TestCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Rule
@@ -40,7 +39,4 @@ class MeasurementsFragmentTest {
             )
         )
     }
-
-
-
 }

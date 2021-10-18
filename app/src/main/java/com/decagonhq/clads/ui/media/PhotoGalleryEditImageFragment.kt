@@ -30,7 +30,6 @@ import com.decagonhq.clads.util.DataListener
 import com.decagonhq.clads.util.Resource
 import com.decagonhq.clads.util.handleApiError
 import com.decagonhq.clads.viewmodels.ImageUploadViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.MultipartBody
 
 class PhotoGalleryEditImageFragment : BaseFragment() {

@@ -6,10 +6,8 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.decagonhq.clads.R
 import com.decagonhq.clads.launchFragmentInHiltContainer
-import com.decagonhq.clads.ui.client.ClientFragment
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import junit.framework.TestCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Rule
@@ -35,6 +33,4 @@ class SubscriptionFragmentTest {
             )
         )
     }
-
-
 }

@@ -26,7 +26,7 @@ class TransactionHistoryTest {
     }
 
     @Test
-    fun verify_message_fragment_rv_displayed(){
+    fun verify_message_fragment_rv_displayed() {
         Espresso.onView(ViewMatchers.withId(R.id.transaction_history_recycler_view)).check(
             ViewAssertions.matches(
                 ViewMatchers.isDisplayed()

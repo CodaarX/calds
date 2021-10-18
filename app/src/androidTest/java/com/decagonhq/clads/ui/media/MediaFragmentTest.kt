@@ -14,7 +14,7 @@ import org.junit.Rule
 import org.junit.Test
 
 @HiltAndroidTest
-class MediaFragmentTest{
+class MediaFragmentTest {
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 
@@ -26,7 +26,7 @@ class MediaFragmentTest{
     }
 
     @Test
-    fun test_media_fragment_is_in_view(){
+    fun test_media_fragment_is_in_view() {
         Espresso.onView(ViewMatchers.withId(R.id.media_fragment_photo_icon_image_View)).check(
             ViewAssertions.matches(
                 ViewMatchers.isDisplayed()
@@ -35,7 +35,7 @@ class MediaFragmentTest{
     }
 
     @Test
-    fun test_images_are_not_in_view_when_recycler_list_is_empty(){
+    fun test_images_are_not_in_view_when_recycler_list_is_empty() {
         Espresso.onView(ViewMatchers.withId(R.id.media_fragment_you_have_no_photo_in_gallery_text_view)).check(
             ViewAssertions.matches(
                 ViewMatchers.isDisplayed()

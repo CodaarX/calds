@@ -26,7 +26,7 @@ class DeliveryAddressFragmentTest {
     }
 
     @Test
-    fun test_all_views_are_displayed(){
+    fun test_all_views_are_displayed() {
         Espresso.onView(ViewMatchers.withId(R.id.delivery_address_fragment_address_text_view)).check(
             ViewAssertions.matches(
                 ViewMatchers.isDisplayed()

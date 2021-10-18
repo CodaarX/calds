@@ -26,7 +26,7 @@ class MessagesFragmentTest {
     }
 
     @Test
-    fun verify_message_fragment_rv_displayed(){
+    fun verify_message_fragment_rv_displayed() {
         Espresso.onView(ViewMatchers.withId(R.id.messages_fragment_client_messages_recycler_view)).check(
             ViewAssertions.matches(
                 ViewMatchers.isDisplayed()

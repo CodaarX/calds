@@ -6,7 +6,6 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.decagonhq.clads.R
 import com.decagonhq.clads.launchFragmentInHiltContainer
-import com.decagonhq.clads.ui.profile.HomeFragment
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,7 +14,7 @@ import org.junit.Rule
 import org.junit.Test
 
 @HiltAndroidTest
-class AddAddressFragmentTest  {
+class AddAddressFragmentTest {
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 
@@ -27,45 +26,38 @@ class AddAddressFragmentTest  {
     }
 
     @Test
-    fun verify_add_state_address_displayed(){
+    fun verify_add_state_address_displayed() {
         Espresso.onView(ViewMatchers.withId(R.id.add_address_fragment_state_address_edit_text_view)).check(
             ViewAssertions.matches(
                 ViewMatchers.isDisplayed()
             )
         )
-
     }
 
     @Test
-    fun verify_all_views_are_displayed(){
+    fun verify_all_views_are_displayed() {
         Espresso.onView(ViewMatchers.withId(R.id.client_add_address_fragment_root_layout)).check(
             ViewAssertions.matches(
                 ViewMatchers.isDisplayed()
             )
         )
-
     }
 
-
     @Test
-    fun verify_add_lga_address_displayed(){
+    fun verify_add_lga_address_displayed() {
         Espresso.onView(ViewMatchers.withId(R.id.add_address_fragment_lga_address_edit_text_view)).check(
             ViewAssertions.matches(
                 ViewMatchers.isDisplayed()
             )
         )
-
     }
 
-
     @Test
-    fun verify_edit_address_edit_text_is_displayed(){
+    fun verify_edit_address_edit_text_is_displayed() {
         Espresso.onView(ViewMatchers.withId(R.id.add_address_fragment_enter_delivery_address_edit_text)).check(
             ViewAssertions.matches(
                 ViewMatchers.isDisplayed()
             )
         )
-
     }
-
 }
